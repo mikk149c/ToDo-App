@@ -5,27 +5,28 @@
 classDiagram
 
     
-    class ToDoItems {
-        +list items
-        +makeItem() ToDoItem
-        +deleteItem()
+    class ToDoBoard {
+        +list statusColumn
+        +createColumn(str)
+        +removeColumn(int)
+        +getStatusColumns() list
     }
     
-    class ToDoItem {
-        +str name
-        +Status status
-        +setStatus()
-        +getStatus() Status
-        +setName()
-        +getName() str
+    class ToDoNote {
+        +str content
+        +setContent()
+        +getContent() str
     }
 
-    class Status {
-        +str name
+    class StatusColumn {
+        +str title
+        +list notes
         +getName() str
         +setName()
+        +getNotes() str
+        +setNotes()
     }
 
-    ToDoItems "1" o-- "*" ToDoItem : creates
-    ToDoItem "1" *-- "1" Status
+    ToDoBoard "1" o-- "*" StatusColumn : creates
+    StatusColumn "1" *-- "*" ToDoNote
 ```
