@@ -4,10 +4,15 @@ public class ToDoBoard
 {
     public List<StatusColumn> StatusColumns { get; }
 
+    public ToDoBoard()
+    {
+        StatusColumns = new List<StatusColumn>();
+    }
+
     public void CreateColumn(string title)
     {
         var newColumn = new StatusColumn(title);
-        StatusColumns.Append(newColumn);
+        StatusColumns.Add(newColumn);
     }
 
     public void RemoveColumn(int index)
