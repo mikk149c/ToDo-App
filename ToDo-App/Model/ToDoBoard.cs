@@ -40,6 +40,6 @@ public class ToDoBoard
             }
             //handle change in position if note is deleted before or after insertion
         }
-        StatusColumns[toColumnIndex].Notes.RemoveAt(deletePos);
+        StatusColumns[fromColumnIndex].Notes.RemoveAt(deletePos);
     }
 }
