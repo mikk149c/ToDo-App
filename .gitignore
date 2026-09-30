@@ -64,3 +64,16 @@ out/
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+### WinUI 3 / Windows App SDK
+# MSIX packaging output
+AppPackages/
+BundleArtifacts/
+*.msix
+*.msixbundle
+*.appx
+*.appxbundle
+*.appxupload
+
+# Signing certificates
+*.pfx
