@@ -35,10 +35,10 @@ public class ToDoBoard
         if (fromColumnIndex == toColumnIndex)
         {
             if (toPos < fromPos)
-            {
-                deletePos++;
+            { 
+                deletePos++; //handle change in the original notes position, if the note is moved further up in the same list
             }
-            //handle change in position if note is deleted before or after insertion
+            
         }
         StatusColumns[fromColumnIndex].Notes.RemoveAt(deletePos);
     }
