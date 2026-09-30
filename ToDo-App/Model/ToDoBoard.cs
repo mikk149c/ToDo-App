@@ -20,4 +20,26 @@ public class ToDoBoard
         // TODO: handle invalid index
         StatusColumns.RemoveAt(index);
     }
+
+    public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
+    {
+        if(fromColumnIndex == toColumnIndex && fromPos == toPos)
+        {
+            return; //skip since it would land at the same position and column
+        }
+
+        ToDoNote note = StatusColumns[fromColumnIndex].Notes[fromPos];
+        StatusColumns[toColumnIndex].Notes.Insert(toPos, note);
+
+        int deletePos = fromPos;
+        if (fromColumnIndex == toColumnIndex)
+        {
+            if (toPos < fromPos)
+            {
+                deletePos++;
+            }
+            //handle change in position if note is deleted before or after insertion
+        }
+        StatusColumns[toColumnIndex].Notes.RemoveAt(deletePos);
+    }
 }
