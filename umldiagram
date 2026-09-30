@@ -23,7 +23,7 @@ classDiagram
     class Status {
         +str name
         +getName() str
-        +getName()
+        +setName()
     }
 
     ToDoItems "1" o-- "*" ToDoItem : creates
