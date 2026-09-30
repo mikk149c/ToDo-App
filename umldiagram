@@ -1,14 +1,11 @@
 # ToDo Class Diagram
 
 ```mermaid
----
-config:
-  theme: 
----
+
 classDiagram
 
     
-    class ToDoModel {
+    class ToDoItems {
         +list items
         +makeItem() ToDoItem
         +deleteItem()
@@ -25,9 +22,10 @@ classDiagram
 
     class Status {
         +str name
+        +getName() str
         +getName()
     }
 
-    ToDoModel "1" o-- "*" ToDoItem : creates
+    ToDoItems "1" o-- "*" ToDoItem : creates
     ToDoItem "1" *-- "1" Status
 ```
