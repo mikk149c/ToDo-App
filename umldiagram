@@ -1,0 +1,14 @@
+# ToDo Class Diagram
+
+```mermaid
+classDiagram
+    class ToDoItem {
+        +str name
+    }
+
+    class ToDoModel {
+        +makeItem() ToDoItem
+    }
+
+    ToDoModel "1" o-- "*" ToDoItem : creates
+```
