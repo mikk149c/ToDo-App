@@ -8,8 +8,14 @@ classDiagram
     class ToDoBoard {
         +list statusColumn
         +CreateColumn(str)
+<<<<<<< Updated upstream
         +RemoveColumn(guid)
         +MoveNote(note, fromColumn, toColumn, position)
+=======
+        +RemoveColumn(int)
+        +MoveNote(fromPos, fromColumnIndex, toColumnIndex, toPos)
+        +MoveColumn(fromColumnIndex, toColumnIndex)
+>>>>>>> Stashed changes
     }
     
     class ToDoNote {
@@ -20,8 +26,14 @@ classDiagram
     class StatusColumn {
         +str Title
         +list notes
+<<<<<<< Updated upstream
         +AddNote(str)
         +RemoveNote(guid)
+=======
+        +AddNote(note)
+        +RemoveNote(guid)
+        +InsertNote(int, note)
+>>>>>>> Stashed changes
     }
 
     ToDoBoard "1" *-- "*" StatusColumn : contains
