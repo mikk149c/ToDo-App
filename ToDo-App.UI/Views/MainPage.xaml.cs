@@ -1,18 +1,29 @@
 namespace ToDo_App.UI.Views
 {
     /// <summary>
-    /// A simple page that can be used on its own or navigated to within a Frame.
+    /// Kanban-style board mockup showing ToDos grouped into columns.
     /// </summary>
     public partial class MainPage : Page
     {
-        int count = 0;
-
         public MainPage()
         {
             this.InitializeComponent();
         }
 
-        private void OnCountClicked(object sender, RoutedEventArgs e)
-            => txtCount.Text = $"Current count: {count++}";
+        // Stub: adds a placeholder card to "Planned" until the real models and "new ToDo" flow exist.
+        private void OnAddTodoClicked(object sender, RoutedEventArgs e)
+        {
+            var card = new Border
+            {
+                Style = (Style)Resources["TodoCard"],
+                Child = new TextBlock
+                {
+                    Style = (Style)Resources["TodoTitle"],
+                    Text = $"New ToDo {PlannedItems.Children.Count + 1}",
+                },
+            };
+
+            PlannedItems.Children.Add(card);
+        }
     }
 }
