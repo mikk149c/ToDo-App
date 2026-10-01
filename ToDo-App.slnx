@@ -11,5 +11,9 @@
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Deploy />
   </Project>
-  <Project Path="ToDo-App/ToDo-App.csproj" />
+  <Project Path="ToDo-App/ToDo-App.csproj">
+    <Platform Solution="*|x64" Project="Any CPU" />
+    <Platform Solution="*|x86" Project="Any CPU" />
+    <Platform Solution="*|ARM64" Project="Any CPU" />
+  </Project>
 </Solution>
