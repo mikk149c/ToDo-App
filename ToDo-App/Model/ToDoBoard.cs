@@ -113,7 +113,23 @@ public class ToDoBoard
         var startPos = notePosTuple.noteIndex;
         MoveNote(startColumn, startPos, startColumn, startPos - 1);
     }
-
+    
+    public void MoveNoteRight(Guid noteId)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        var startColumn = notePosTuple.columnIndex;
+        var startPos = notePosTuple.noteIndex;
+        MoveNote(startColumn, startPos, startColumn + 1, 0);
+    }
+    
+    public void MoveNoteLeft(Guid noteId)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        var startColumn = notePosTuple.columnIndex;
+        var startPos = notePosTuple.noteIndex;
+        MoveNote(startColumn, startPos, startColumn - 1, 0);
+    }
+    
     public void SetNoteContent(int columnIndex, int noteIndex, string content)
     {
         StatusColumns[columnIndex].Notes[noteIndex].Content = content;
