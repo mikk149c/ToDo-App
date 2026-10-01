@@ -3,7 +3,7 @@
 public class StatusColumn
 {
     public string Title { get; set; }
-    public List<ToDoNote> Notes { get;}
+    public List<ToDoNote> Notes { get; set; }
 
     public StatusColumn(string title)
     {

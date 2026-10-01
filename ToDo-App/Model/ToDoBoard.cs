@@ -2,7 +2,7 @@
 
 public class ToDoBoard
 {
-    public List<StatusColumn> StatusColumns { get; }
+    public List<StatusColumn> StatusColumns { get; set; }
 
     public ToDoBoard()
     {
