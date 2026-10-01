@@ -200,5 +200,32 @@ public class Tests
         Assert.That(board.StatusColumns[0].Notes.Count, Is.EqualTo(2));
         Assert.That(board.StatusColumns.Count, Is.EqualTo(1));
     }
-    
+
+    [Test]
+    public void TestMoveNoteRightAndLeft()
+    {
+        String firstContent = "Køb bananer\nÆbler\nCitroner";
+        var ShoppingNote = new ToDoNote(firstContent);
+        String secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
+        var ProgrammingLanguageNote = new ToDoNote(secondContent);
+
+        board.CreateColumn("Planned");
+        board.StatusColumns[0].AddNote(ShoppingNote);
+
+        board.CreateColumn("In Progress");
+        board.StatusColumns[1].AddNote(ProgrammingLanguageNote);
+
+        Assert.That(board.StatusColumns[0].Notes[0], Is.EqualTo(ShoppingNote));
+        Assert.That(board.StatusColumns[1].Notes[0], Is.EqualTo(ProgrammingLanguageNote));
+
+        board.MoveNoteRight(ShoppingNote.Id);
+
+        Assert.That(board.StatusColumns[1].Notes[0], Is.EqualTo(ShoppingNote));
+        Assert.That(board.StatusColumns[1].Notes[1], Is.EqualTo(ProgrammingLanguageNote));
+        
+        board.MoveNoteLeft(ProgrammingLanguageNote.Id);
+        
+        Assert.That(board.StatusColumns[0].Notes[0], Is.EqualTo(ProgrammingLanguageNote));
+        Assert.That(board.StatusColumns[1].Notes[0], Is.EqualTo(ShoppingNote));
+    }
 }

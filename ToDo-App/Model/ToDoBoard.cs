@@ -56,7 +56,7 @@ public class ToDoBoard
             }
         }
 
-        return (-1,-1);
+        throw new Exception("Note Guid not found");
     }
 
     public void AddNote(int columnIndex, string title)
