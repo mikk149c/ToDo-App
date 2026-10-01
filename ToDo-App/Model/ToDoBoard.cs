@@ -43,6 +43,22 @@ public class ToDoBoard
         StatusColumns[columnIndex].Title = columnTitle;
     }
 
+    public (int columnIndex, int noteIndex)? GetNotePositionFromId(Guid id)
+    {
+        for (int col = 0; col < StatusColumns.Count; col++)
+        {
+            for (int pos = 0; pos < StatusColumns[col].Notes.Count; pos++)
+            {
+                if (StatusColumns[col].Notes[pos].Id == id)
+                {
+                    return (col, pos);
+                }
+            }
+        }
+
+        return null;
+    }
+
     public void AddNote(int columnIndex, string title)
     {
         var note = new ToDoNote(title);
