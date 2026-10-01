@@ -7,26 +7,23 @@ classDiagram
     
     class ToDoBoard {
         +list statusColumn
-        +createColumn(str)
-        +removeColumn(int)
-        +getStatusColumns() list
+        +CreateColumn(str)
+        +RemoveColumn(guid)
+        +MoveNote(note, fromColumn, toColumn, position)
     }
     
     class ToDoNote {
-        +str content
-        +setContent()
-        +getContent() str
+        +guid Id
+        +str Content
     }
 
     class StatusColumn {
-        +str title
+        +str Title
         +list notes
-        +getName() str
-        +setName()
-        +getNotes() str
-        +setNotes()
+        +AddNote(str)
+        +RemoveNote(guid)
     }
 
-    ToDoBoard "1" o-- "*" StatusColumn : creates
+    ToDoBoard "1" *-- "*" StatusColumn : contains
     StatusColumn "1" *-- "*" ToDoNote
 ```
