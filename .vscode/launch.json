@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ToDo-App.UI (x64)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/ToDo-App.UI/bin/x64/Debug/net10.0-windows10.0.19041.0/win-x64/ToDo-App.UI.exe",
+            "cwd": "${workspaceFolder}/ToDo-App.UI",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}

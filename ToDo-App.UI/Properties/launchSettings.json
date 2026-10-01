@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ToDo-App.UI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ToDo-App.UI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
