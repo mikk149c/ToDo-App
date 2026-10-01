@@ -43,7 +43,7 @@ public class ToDoBoard
         StatusColumns[columnIndex].Title = columnTitle;
     }
 
-    public (int columnIndex, int noteIndex)? GetNotePositionFromId(Guid id)
+    public (int columnIndex, int noteIndex) GetNotePositionFromId(Guid id)
     {
         for (int col = 0; col < StatusColumns.Count; col++)
         {
@@ -56,7 +56,7 @@ public class ToDoBoard
             }
         }
 
-        return null;
+        return (-1,-1);
     }
 
     public void AddNote(int columnIndex, string title)
@@ -96,6 +96,22 @@ public class ToDoBoard
             
         }
         StatusColumns[fromColumnIndex].Notes.RemoveAt(deletePos);
+    }
+
+    public void MoveNoteDown(Guid noteId)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        var startColumn = notePosTuple.columnIndex;
+        var startPos = notePosTuple.noteIndex;
+        MoveNote(startColumn, startPos, startColumn, startPos + 1);
+    }
+    
+    public void MoveNoteUp(Guid noteId)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        var startColumn = notePosTuple.columnIndex;
+        var startPos = notePosTuple.noteIndex;
+        MoveNote(startColumn, startPos, startColumn, startPos - 1);
     }
 
     public void SetNoteContent(int columnIndex, int noteIndex, string content)
