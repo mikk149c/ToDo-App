@@ -17,8 +17,47 @@ public class ToDoBoard
 
     public void RemoveColumn(int index)
     {
-        // TODO: handle invalid index
         StatusColumns.RemoveAt(index);
+    }
+
+    public void MoveColumn(int fromColumnIndex, int toColumnIndex)
+    {
+        if(fromColumnIndex == toColumnIndex)
+        {
+            return; //skip if it is the same index
+        }
+
+        StatusColumn column = StatusColumns[fromColumnIndex];
+        StatusColumns.Insert(toColumnIndex, column);
+
+        int deletePos = fromColumnIndex;
+        if (toColumnIndex < fromColumnIndex)
+        { 
+            deletePos++; //handle change in the original column position, if the column is moved further left in the same list
+        }
+        StatusColumns.RemoveAt(deletePos);
+    }
+
+    public void SetColumnTitle(int columnIndex, string columnTitle)
+    {
+        StatusColumns[columnIndex].Title = columnTitle;
+    }
+
+    public void AddNote(int columnIndex, string title)
+    {
+        var note = new ToDoNote(title);
+        StatusColumns[columnIndex].AddNote(note);
+    }
+
+    public void InsertNote(int columnIndex, int noteIndex, string title)
+    {
+        var note = new ToDoNote(title);
+        StatusColumns[columnIndex].InsertNote(noteIndex, note);
+    }
+
+    public void RemoveNote(int columnIndex, int noteIndex)
+    {
+        StatusColumns[columnIndex].RemoveNote(noteIndex);
     }
 
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
@@ -41,5 +80,10 @@ public class ToDoBoard
             
         }
         StatusColumns[fromColumnIndex].Notes.RemoveAt(deletePos);
+    }
+
+    public void SetNoteContent(int columnIndex, int noteIndex, string content)
+    {
+        StatusColumns[columnIndex].Notes[noteIndex].Content = content;
     }
 }

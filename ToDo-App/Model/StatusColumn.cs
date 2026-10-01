@@ -3,7 +3,7 @@
 public class StatusColumn
 {
     public string Title { get; set; }
-    public List<ToDoNote> Notes { get; set; }
+    public List<ToDoNote> Notes { get;}
 
     public StatusColumn(string title)
     {
@@ -18,7 +18,11 @@ public class StatusColumn
 
     public void InsertNote(int index, ToDoNote note)
     {
-        //TO DO: handle list out of bounds
         Notes.Insert(index, note);
+    }
+
+    public void RemoveNote(int index)
+    {
+        Notes.RemoveAt(index);
     }
 }
