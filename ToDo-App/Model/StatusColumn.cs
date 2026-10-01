@@ -18,7 +18,6 @@ public class StatusColumn
 
     public void InsertNote(int index, ToDoNote note)
     {
-        //TO DO: handle list out of bounds
         Notes.Insert(index, note);
     }
 
