@@ -17,7 +17,6 @@ public class ToDoBoard
 
     public void RemoveColumn(int index)
     {
-        // TODO: handle invalid index
         StatusColumns.RemoveAt(index);
     }
 
@@ -41,27 +40,23 @@ public class ToDoBoard
 
     public void SetColumnTitle(int columnIndex, string columnTitle)
     {
-        // TODO: handle invalid index
         StatusColumns[columnIndex].Title = columnTitle;
     }
 
     public void AddNote(int columnIndex, string title)
     {
-        // TODO: handle invalid index
         var note = new ToDoNote(title);
         StatusColumns[columnIndex].AddNote(note);
     }
 
     public void InsertNote(int columnIndex, int noteIndex, string title)
     {
-        // TODO: handle invalid index
         var note = new ToDoNote(title);
         StatusColumns[columnIndex].InsertNote(noteIndex, note);
     }
 
     public void RemoveNote(int columnIndex, int noteIndex)
     {
-        // TODO: handle invalid index
         StatusColumns[columnIndex].RemoveNote(noteIndex);
     }
 
@@ -89,7 +84,6 @@ public class ToDoBoard
 
     public void SetNoteContent(int columnIndex, int noteIndex, string content)
     {
-        // TODO: handle invalid index
         StatusColumns[columnIndex].Notes[noteIndex].Content = content;
     }
 }
