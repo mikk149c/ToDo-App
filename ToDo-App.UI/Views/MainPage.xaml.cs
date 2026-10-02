@@ -16,11 +16,23 @@ namespace ToDo_App.UI.Views
             var card = new Border
             {
                 Style = (Style)Resources["TodoCard"],
-                Child = new TextBlock
+                Child = new StackPanel
                 {
-                    Style = (Style)Resources["TodoTitle"],
-                    Text = $"New ToDo {PlannedItems.Children.Count + 1}",
-                },
+                    Spacing = 4,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Style = (Style)Resources["TodoTitle"],
+                            Text = $"New ToDo {PlannedItems.Children.Count + 1}",
+                        },
+                        new TextBlock
+                        {
+                            Style = (Style)Resources["TodoDescription"],
+                            Text = "This is a placeholder description for the new ToDo item.",
+                        }
+                    }
+                }
             };
 
             PlannedItems.Children.Add(card);
