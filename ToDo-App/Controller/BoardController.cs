@@ -38,6 +38,12 @@ public class BoardController : ITodoBoard
         throw new Exception($"Column '{columnName}' does not exist");
     }
 
+    public void CreateColumn(string name)
+    {
+        //TO DO block duplicate names at creation?
+        _board.CreateColumn(name);
+    }
+
     public void MoveColumnLeft(string name)
     {
         throw new NotImplementedException();
@@ -48,24 +54,19 @@ public class BoardController : ITodoBoard
         throw new NotImplementedException();
     }
 
-    public void CreateColumn(string name)
-    {
-        _board.CreateColumn(name);
-    }
-
-    int GetColumnIndexFromName(string columnName)
+    int GetColumnIndexFromId(Guid columnId)
     {
         for (int i = 0; i < _board.StatusColumns.Count; i++)
         {
-            if (_board.StatusColumns[i].Title == columnName)
+            if (_board.StatusColumns[i].Id == columnId)
                 return i;
         }
-        throw new Exception($"Column '{columnName}' does not exist");
+        throw new Exception($"Column id '{columnId}' does not exist");
     }
 
-    public void CreateNote(string columnName, string content)
+    public void CreateNote(Guid columnId, string content)
     {
-        _board.AddNote(GetColumnIndexFromName(columnName), content);
+        _board.AddNote(columnId, new ToDoNote(content));
     }
 
     ToDoNote GetNoteFromGuid(Guid id)
@@ -84,7 +85,36 @@ public class BoardController : ITodoBoard
 
     public void SetNoteContent(Guid id, string newContent)
     {
-        var note = GetNoteFromGuid(id);
-        note.Content = newContent;
+        //TODO handle exception
+        _board.SetNoteContent(id, newContent);
+    }
+
+    public void MoveNoteDown(Guid noteId)
+    {
+        //TODO handle exception
+        _board.MoveNoteDown(noteId);
+    }
+
+    public void MoveNoteUp(Guid noteId)
+    {
+        //TODO handle exception
+        _board.MoveNoteUp(noteId);
+    }
+
+    public void MoveNoteRight(Guid noteId)
+    {
+        //TODO handle exception
+        _board.MoveNoteRight(noteId);
+    }
+
+    public void MoveNoteLeft(Guid noteId)
+    {
+        //TODO handle exception
+        _board.MoveNoteLeft(noteId);
+    }
+
+    public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
+    {
+        _board.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos);
     }
 }

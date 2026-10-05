@@ -12,7 +12,17 @@ public interface ITodoBoard
 
     public void MoveColumnRight(string right);
 
-    public void CreateNote(string columnName, string content);
+    public void CreateNote(Guid columnId, string content);
 
     public void SetNoteContent(Guid id, string newContent);
+
+    public void MoveNoteDown(Guid noteId);
+
+    public void MoveNoteUp(Guid noteId);
+
+    public void MoveNoteRight(Guid noteId);
+
+    public void MoveNoteLeft(Guid noteId);
+
+    public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos);
 }
