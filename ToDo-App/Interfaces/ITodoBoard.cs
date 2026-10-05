@@ -2,7 +2,9 @@
 
 public interface ITodoBoard
 {
-    public List<(Guid, String)> GetStatusColumnIdsandNames();
+    public List<Guid> GetStatusColumnIds();
+
+    public String getStatusColumnName(Guid columnId);
 
     public List<ToDoNote> GetNotesInColumn(Guid columnId);
 

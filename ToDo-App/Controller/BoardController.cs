@@ -11,18 +11,8 @@ public class BoardController : ITodoBoard
         //TODO: read from json
         _board = new ToDoBoard();
     }
-
-    public List<(Guid, String)> GetStatusColumnIdsandNames()
-    {
-        var IdsAndNames = new List<(Guid, String)>();
-        foreach (var column in _board.StatusColumns)
-        {
-            IdsAndNames.Add((column.Id, column.Title));
-        }
-
-        return IdsAndNames;
-    }
-    public List<Guid> GetStatusColumnIds() //POTENTIALLY NOT USED
+    
+    public List<Guid> GetStatusColumnIds()
     {
         var Ids = new List<Guid>();
         foreach (var column in _board.StatusColumns)
@@ -33,7 +23,7 @@ public class BoardController : ITodoBoard
         return Ids;
     }
 
-    public String getStatusColumnName(Guid columnId) //POTENTIALLY NOT USED
+    public String getStatusColumnName(Guid columnId)
     {
         int columnIndex = _board.GetColumnIndexFromId(columnId);
         return _board.StatusColumns[columnIndex].Title;
