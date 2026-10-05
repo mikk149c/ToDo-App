@@ -55,7 +55,7 @@
                 Style="{StaticResource PrimaryAction}" />
 
             <!-- Board columns (stub data) -->
-            <Grid Grid.Row="1" ColumnSpacing="16">
+            <Grid x:Name="ColumnsPanel" Grid.Row="1" ColumnSpacing="16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
