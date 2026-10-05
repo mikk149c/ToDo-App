@@ -87,6 +87,8 @@ namespace ToDo_App.UI.Views
             (Guid, String) firstColumn = columnTitles[0];
             Guid columnId = firstColumn.Item1;
             boardController.CreateNote(columnId, "New ToDo", "This is a new ToDo item.");
+
+            //ToDo replace with event handeling
             clearColumnItems(firstColumn);
             populateStatus(firstColumn);
         }
