@@ -2,19 +2,21 @@
 
 public interface ITodoBoard
 {
-    public List<string> GetStatusColumnNames();
+    public List<(Guid, String)> GetStatusColumnIdsandNames();
 
-    public List<ToDoNote> GetNotesInColumn(string columnName);
+    public List<ToDoNote> GetNotesInColumn(Guid columnId);
 
-    public void CreateColumn(string name);
+    public Guid CreateColumn(string name);
 
-    public void MoveColumnLeft(string name);
+    public void MoveColumnLeft(Guid columnId);
 
-    public void MoveColumnRight(string right);
+    public void MoveColumnRight(Guid columnId);
 
-    public void CreateNote(Guid columnId, string content);
+    public Guid CreateNote(Guid columnId, string title, string content);
 
     public void SetNoteContent(Guid id, string newContent);
+
+    public void SetNoteTitle(Guid id, string newTitle);
 
     public void MoveNoteDown(Guid noteId);
 

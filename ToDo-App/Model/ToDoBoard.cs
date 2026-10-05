@@ -22,7 +22,7 @@ public class ToDoBoard
         StatusColumns.RemoveAt(index);
     }
 
-    public void MoveColumn(int fromColumnIndex, int toColumnIndex)
+    public void MoveColumn(int fromColumnIndex, int toColumnIndex) //TO DO, discuss if the gui can handle specific column/note indexes
     {
         if(fromColumnIndex == toColumnIndex)
         {
@@ -46,7 +46,7 @@ public class ToDoBoard
         StatusColumns[columnIndex].Title = columnTitle;
     }
 
-    public (int columnIndex, int noteIndex) GetNotePositionFromId(Guid id)
+    (int columnIndex, int noteIndex) GetNotePositionFromId(Guid id)
     {
         for (int col = 0; col < StatusColumns.Count; col++)
         {
@@ -62,7 +62,7 @@ public class ToDoBoard
         throw new KeyNotFoundException($"Note id '{id}' does not exist");
     }
 
-    int GetColumnIndexFromId(Guid columnId)
+    internal int GetColumnIndexFromId(Guid columnId)
     {
         for (int i = 0; i < StatusColumns.Count; i++)
         {
@@ -79,9 +79,9 @@ public class ToDoBoard
         return note.Id;
     }
 
-    public void InsertNote(int columnIndex, int noteIndex, string title)
+    public void InsertNote(int columnIndex, int noteIndex, string title, string content) //TO DO discuss if GUI knows specific column/note indexes
     {
-        var note = new ToDoNote(title);
+        var note = new ToDoNote(title, content);
         StatusColumns[columnIndex].InsertNote(noteIndex, note);
     }
 
@@ -153,5 +153,13 @@ public class ToDoBoard
         int columnIndex = notePosTuple.columnIndex;
         int noteIndex = notePosTuple.noteIndex;
         StatusColumns[columnIndex].Notes[noteIndex].Content = content;
+    }
+
+    public void SetNoteTitle(Guid noteId, string title)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int columnIndex = notePosTuple.columnIndex;
+        int noteIndex = notePosTuple.noteIndex;
+        StatusColumns[columnIndex].Notes[noteIndex].Title = title;
     }
 }

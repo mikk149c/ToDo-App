@@ -11,62 +11,58 @@ public class BoardController : ITodoBoard
         //TODO: read from json
         _board = new ToDoBoard();
     }
-    
-    public List<String> GetStatusColumnNames()
+
+    public List<(Guid, String)> GetStatusColumnIdsandNames()
     {
-        var names = new List<string>();
+        var IdsAndNames = new List<(Guid, String)>();
         foreach (var column in _board.StatusColumns)
         {
-            names.Add(column.Title);
+            IdsAndNames.Add((column.Id, column.Title));
         }
 
-        return names;
+        return IdsAndNames;
     }
-
-    public List<ToDoNote> GetNotesInColumn(string columnName)
+    public List<Guid> GetStatusColumnIds() //POTENTIALLY NOT USED
     {
-        //TODO: handle duplicate names
-        
+        var Ids = new List<Guid>();
         foreach (var column in _board.StatusColumns)
         {
-            if (column.Title == columnName)
-            {
-                return column.Notes;
-            }
+            Ids.Add(column.Id);
         }
 
-        throw new Exception($"Column '{columnName}' does not exist");
+        return Ids;
     }
 
-    public void CreateColumn(string name)
+    public String getStatusColumnName(Guid columnId) //POTENTIALLY NOT USED
     {
-        //TO DO block duplicate names at creation?
-        _board.CreateColumn(name);
+        int columnIndex = _board.GetColumnIndexFromId(columnId);
+        return _board.StatusColumns[columnIndex].Title;
     }
 
-    public void MoveColumnLeft(string name)
+    public List<ToDoNote> GetNotesInColumn(Guid columnId)
+    {
+        int columnIndex = _board.GetColumnIndexFromId(columnId);
+        return _board.StatusColumns[columnIndex].Notes;
+    }
+
+    public Guid CreateColumn(string name)
+    {
+        return _board.CreateColumn(name);
+    }
+
+    public void MoveColumnLeft(Guid columnId)
     {
         throw new NotImplementedException();
     }
 
-    public void MoveColumnRight(string right)
+    public void MoveColumnRight(Guid columnId)
     {
         throw new NotImplementedException();
     }
 
-    int GetColumnIndexFromId(Guid columnId)
+    public Guid CreateNote(Guid columnId, string title, string content)
     {
-        for (int i = 0; i < _board.StatusColumns.Count; i++)
-        {
-            if (_board.StatusColumns[i].Id == columnId)
-                return i;
-        }
-        throw new Exception($"Column id '{columnId}' does not exist");
-    }
-
-    public void CreateNote(Guid columnId, string content)
-    {
-        _board.AddNote(columnId, new ToDoNote(content));
+        return _board.AddNote(columnId, new ToDoNote(title, content));
     }
 
     ToDoNote GetNoteFromGuid(Guid id)
@@ -87,6 +83,12 @@ public class BoardController : ITodoBoard
     {
         //TODO handle exception
         _board.SetNoteContent(id, newContent);
+    }
+
+    public void SetNoteTitle(Guid id, string newTitle)
+    {
+        //TODO handle exception
+        _board.SetNoteTitle(id, newTitle);
     }
 
     public void MoveNoteDown(Guid noteId)
