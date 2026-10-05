@@ -1,3 +1,7 @@
+using ToDo_App;
+using ToDo_App.Controller;
+using ToDo_App.Interfaces;
+
 namespace ToDo_App.UI.Views
 {
     /// <summary>
@@ -5,19 +9,36 @@ namespace ToDo_App.UI.Views
     /// </summary>
     public partial class MainPage : Page
     {
+        ITodoBoard boardController = new BoardController();
         public MainPage()
         {
             this.InitializeComponent();
+            boardController.CreateColumn("Planned");
             List<string> columnTitles = InitializeColumns();
-            
+            foreach (string title in columnTitles)
+            {
+                populateStatus(title);
+            }
 
-                ColumnsPanel.Children.Add(column);
+        }
+
+        private void populateStatus(string title)
+        {
+            List<ToDoNote> items = boardController.GetNotesInColumn(title);
+            StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName($"{title.Replace(" ", "")}Items");
+            if (columnPanel != null)
+            {
+                foreach (ToDoNote item in items)
+                {
+                    Border card = buildToDoCard(item.Id.ToString(), item.Content);
+                    columnPanel.Children.Add(card);
+                }
             }
         }
 
         private List<string> InitializeColumns()
         {
-            
+            List<string> columnTitles = boardController.GetStatusColumnNames();
             foreach (string title in columnTitles)
             {
                 var column = new Border
@@ -49,10 +70,18 @@ namespace ToDo_App.UI.Views
                         }
                     }
                 };
+                ColumnsPanel.Children.Add(column);
+            }
+            return columnTitles;
         }
 
         // Stub: adds a placeholder card to "Planned" until the real models and "new ToDo" flow exist.
         private void OnAddTodoClicked(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException("Add ToDo flow not implemented yet.");
+        }
+
+        private Border buildToDoCard(string title, string description)
         {
             var card = new Border
             {
@@ -65,18 +94,18 @@ namespace ToDo_App.UI.Views
                         new TextBlock
                         {
                             Style = (Style)Resources["TodoTitle"],
-                            Text = $"New ToDo {PlannedItems.Children.Count + 1}",
+                            Text = title,
                         },
                         new TextBlock
                         {
                             Style = (Style)Resources["TodoDescription"],
-                            Text = "This is a placeholder description for the new ToDo item.",
+                            Text = description,
                         }
                     }
                 }
             };
 
-            PlannedItems.Children.Add(card);
+            return card;
         }
     }
 }
