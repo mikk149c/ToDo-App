@@ -2,11 +2,13 @@
 
 public class StatusColumn
 {
+    public Guid Id { get; set; }
     public string Title { get; set; }
     public List<ToDoNote> Notes { get; set; }
 
     public StatusColumn(string title)
     {
+        this.Id = Guid.NewGuid();
         Title = title;
         Notes = new List<ToDoNote>();
     }
