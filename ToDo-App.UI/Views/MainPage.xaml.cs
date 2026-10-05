@@ -10,24 +10,25 @@ namespace ToDo_App.UI.Views
     public partial class MainPage : Page
     {
         ITodoBoard boardController = new BoardController();
+        List<(Guid, String)>columnTitles = new List<(Guid, String)>();
         public MainPage()
         {
             boardController.CreateColumn("Planned");
             boardController.CreateColumn("In Progress");
             boardController.CreateColumn("Completed");
             this.InitializeComponent();
-            List<string> columnTitles = InitializeColumns();
-            foreach (string title in columnTitles)
+            InitializeColumns();
+            foreach ((Guid, String) title in columnTitles)
             {
                 populateStatus(title);
             }
 
         }
 
-        private void populateStatus(string title)
+        private void populateStatus((Guid, String) column)
         {
-            List<ToDoNote> items = boardController.GetNotesInColumn(title);
-            StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName($"{title.Replace(" ", "")}Items");
+            List<ToDoNote> items = boardController.GetNotesInColumn(column.Item1);
+            StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName($"{column.Item2.Replace(" ", "")}Items");
             if (columnPanel != null)
             {
                 foreach (ToDoNote item in items)
@@ -38,10 +39,10 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        private List<string> InitializeColumns()
+        private void InitializeColumns()
         {
-            List<string> columnTitles = boardController.GetStatusColumnNames();
-            foreach (string title in columnTitles)
+            columnTitles = boardController.GetStatusColumnIdsandNames();
+            foreach ((Guid, String) title in columnTitles)
             {
                 var column = new Border
                 {
@@ -58,14 +59,14 @@ namespace ToDo_App.UI.Views
                             new TextBlock
                             {
                                 Style = (Style)Resources["BoardColumnHeader"],
-                                Text = title,
+                                Text = title.Item2,
                                 Margin = new Thickness(0, 0, 0, 8)
                             },
                             new ScrollViewer
                             {
                                 Content = new StackPanel
                                 {
-                                    Name = $"{title.Replace(" ", "")}Items",
+                                    Name = $"{title.Item2.Replace(" ", "")}Items",
                                     Spacing = 8
                                 }
                             }
@@ -75,13 +76,25 @@ namespace ToDo_App.UI.Views
                 ColumnsPanel.Children.Add(column);
                 Grid.SetColumn(column, columnTitles.IndexOf(title));
             }
-            return columnTitles;
         }
 
         // Stub: adds a placeholder card to "Planned" until the real models and "new ToDo" flow exist.
         private void OnAddTodoClicked(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException("Add ToDo flow not implemented yet.");
+            (Guid, String) firstColumn = columnTitles[0];
+            Guid columnId = firstColumn.Item1;
+            boardController.CreateNote(columnId, "New ToDo", "This is a new ToDo item.");
+            clearColumnItems(firstColumn);
+            populateStatus(firstColumn);
+        }
+
+        private void clearColumnItems((Guid, string) firstColumn)
+        {
+            StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName($"{firstColumn.Item2.Replace(" ", "")}Items");
+            if (columnPanel != null)
+            {
+                columnPanel.Children.Clear();
+            }
         }
 
         private Border buildToDoCard(string title, string description)
