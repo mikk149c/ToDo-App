@@ -12,8 +12,10 @@ namespace ToDo_App.UI.Views
         ITodoBoard boardController = new BoardController();
         public MainPage()
         {
-            this.InitializeComponent();
             boardController.CreateColumn("Planned");
+            boardController.CreateColumn("In Progress");
+            boardController.CreateColumn("Completed");
+            this.InitializeComponent();
             List<string> columnTitles = InitializeColumns();
             foreach (string title in columnTitles)
             {
@@ -71,6 +73,7 @@ namespace ToDo_App.UI.Views
                     }
                 };
                 ColumnsPanel.Children.Add(column);
+                Grid.SetColumn(column, columnTitles.IndexOf(title));
             }
             return columnTitles;
         }
