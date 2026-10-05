@@ -24,12 +24,12 @@ public class Tests
     [Test]
     public void TestInsertNotes()
     {
-        String firstContent = "Køb bananer\nÆbler\nCitroner";
-        var ShoppingNote = new ToDoNote(firstContent);
-        String secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
-        var ProgrammingLanguageNote = new ToDoNote(secondContent);
-        String thirdContent = "Australia\nJapan\nDenmark";
-        var VacationNote = new ToDoNote(thirdContent);
+        String title1 = "First note", firstContent = "Køb bananer\nÆbler\nCitroner";
+        var ShoppingNote = new ToDoNote(title1, firstContent);
+        String title2 = "Second note", secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
+        var ProgrammingLanguageNote = new ToDoNote(title2, secondContent);
+        String title3 = "Third note", thirdContent = "Australia\nJapan\nDenmark";
+        var VacationNote = new ToDoNote(title3, thirdContent);
 
         board.CreateColumn("Planned");
         board.StatusColumns[0].AddNote(ShoppingNote);
@@ -46,14 +46,14 @@ public class Tests
     [Test]
     public void TestMoveNoteInSameColumn()
     {
-        String firstContent = "Køb bananer\nÆbler\nCitroner";
-        var ShoppingNote = new ToDoNote(firstContent);
-        String secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
-        var ProgrammingLanguageNote = new ToDoNote(secondContent);
-        String thirdContent = "Australia\nJapan\nDenmark";
-        var VacationNote = new ToDoNote(thirdContent);
-        String fourthContent = "Test moving notes";
-        var TestMoveNotesNote = new ToDoNote(fourthContent);
+        String title1 = "First note", firstContent = "Køb bananer\nÆbler\nCitroner";
+        var ShoppingNote = new ToDoNote(title1, firstContent);
+        String title2 = "Second note", secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
+        var ProgrammingLanguageNote = new ToDoNote(title2, secondContent);
+        String title3 = "Third note", thirdContent = "Australia\nJapan\nDenmark";
+        var VacationNote = new ToDoNote(title3, thirdContent);
+        String title4 = "Fourth note", fourthContent = "Test moving notes";
+        var TestMoveNotesNote = new ToDoNote(title4, fourthContent);
 
         board.CreateColumn("Planned");
         board.StatusColumns[0].AddNote(ShoppingNote);
@@ -72,14 +72,14 @@ public class Tests
     [Test]
     public void TestMoveNoteToDifferentColumn()
     {
-        String firstContent = "Køb bananer\nÆbler\nCitroner";
-        var ShoppingNote = new ToDoNote(firstContent);
-        String secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
-        var ProgrammingLanguageNote = new ToDoNote(secondContent);
-        String thirdContent = "Australia\nJapan\nDenmark";
-        var VacationNote = new ToDoNote(thirdContent);
-        String fourthContent = "Test moving notes";
-        var TestMoveNotesNote = new ToDoNote(fourthContent);
+        String title1 = "First note", firstContent = "Køb bananer\nÆbler\nCitroner";
+        var ShoppingNote = new ToDoNote(title1, firstContent);
+        String title2 = "Second note", secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
+        var ProgrammingLanguageNote = new ToDoNote(title2, secondContent);
+        String title3 = "Third note", thirdContent = "Australia\nJapan\nDenmark";
+        var VacationNote = new ToDoNote(title3, thirdContent);
+        String title4 = "Fourth note", fourthContent = "Test moving notes";
+        var TestMoveNotesNote = new ToDoNote(title4, fourthContent);
 
         board.CreateColumn("Planned");
         board.StatusColumns[0].AddNote(ShoppingNote);
@@ -122,12 +122,12 @@ public class Tests
     [Test]
     public void InsertNoteAtEndWorks()
     {
-        String firstContent = "Køb bananer\nÆbler\nCitroner";
-        var ShoppingNote = new ToDoNote(firstContent);
-        String secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
-        var ProgrammingLanguageNote = new ToDoNote(secondContent);
-        String thirdContent = "Australia\nJapan\nDenmark";
-        var VacationNote = new ToDoNote(thirdContent);
+        String title1 = "First note", firstContent = "Køb bananer\nÆbler\nCitroner";
+        var ShoppingNote = new ToDoNote(title1, firstContent);
+        String title2 = "Second note", secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
+        var ProgrammingLanguageNote = new ToDoNote(title2, secondContent);
+        String title3 = "Third note", thirdContent = "Australia\nJapan\nDenmark";
+        var VacationNote = new ToDoNote(title3, thirdContent);
 
         board.CreateColumn("Planned");
         board.StatusColumns[0].AddNote(ShoppingNote);
@@ -143,18 +143,18 @@ public class Tests
     [Test]
     public void TestSeveralFunctions_AddNote_MoveNote_RemoveNote_and_RemoveColumn()
     {
-        String firstContent = "Køb bananer\nÆbler\nCitroner";
-        var ShoppingNote = new ToDoNote(firstContent);
-        String secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
-        var ProgrammingLanguageNote = new ToDoNote(secondContent);
-        String thirdContent = "Australia\nJapan\nDenmark";
-        var VacationNote = new ToDoNote(thirdContent);
-        String fourthContent = "Den bedste sodavand\nFanta\nCola\nSprite";
-        var DenBedsteSodavandNote = new ToDoNote(fourthContent);
-        String fifthContent = "T-shirt størrelser\nXL\nL\nM\nS";
-        var TshirtStørrelserNote = new ToDoNote(fifthContent);
-        String sixthContent = "Nyt keyboard\n Wired eller trådløs?";
-        var NytKeyboardNote = new ToDoNote(sixthContent);
+        String title1 = "First note", firstContent = "Køb bananer\nÆbler\nCitroner";
+        var ShoppingNote = new ToDoNote(title1, firstContent);
+        String title2 = "Second note", secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
+        var ProgrammingLanguageNote = new ToDoNote(title2, secondContent);
+        String title3 = "Third note", thirdContent = "Australia\nJapan\nDenmark";
+        var VacationNote = new ToDoNote(title3, thirdContent);
+        String title4 = "Fourth note", fourthContent = "Den bedste sodavand\nFanta\nCola\nSprite";
+        var DenBedsteSodavandNote = new ToDoNote(title4, fourthContent);
+        String title5 = "Fifth note", fifthContent = "T-shirt størrelser\nXL\nL\nM\nS";
+        var TshirtStørrelserNote = new ToDoNote(title5, fifthContent);
+        String title6 = "Sixth note", sixthContent = "Nyt keyboard\n Wired eller trådløs?";
+        var NytKeyboardNote = new ToDoNote(title6, sixthContent);
 
         Guid plannedColumnId = board.CreateColumn("Planned");
         board.StatusColumns[0].AddNote(ShoppingNote);
@@ -205,10 +205,10 @@ public class Tests
     [Test]
     public void TestMoveNoteRightAndLeft()
     {
-        String firstContent = "Køb bananer\nÆbler\nCitroner";
-        var ShoppingNote = new ToDoNote(firstContent);
-        String secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
-        var ProgrammingLanguageNote = new ToDoNote(secondContent);
+        String title1 = "First note", firstContent = "Køb bananer\nÆbler\nCitroner";
+        var ShoppingNote = new ToDoNote(title1, firstContent);
+        String title2 = "Second note", secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
+        var ProgrammingLanguageNote = new ToDoNote(title2, secondContent);
 
         board.CreateColumn("Planned");
         board.StatusColumns[0].AddNote(ShoppingNote);
