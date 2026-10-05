@@ -55,7 +55,7 @@ namespace ToDo_App.UI.Views
                         {
                             new TextBlock
                             {
-                                Style = (Style)Resources["ColumnHeader"],
+                                Style = (Style)Resources["BoardColumnHeader"],
                                 Text = title,
                                 Margin = new Thickness(0, 0, 0, 8)
                             },
