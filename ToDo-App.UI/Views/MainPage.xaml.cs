@@ -44,6 +44,16 @@ namespace ToDo_App.UI.Views
             columnTitles = boardController.GetStatusColumnIdsandNames();
             foreach ((Guid, String) title in columnTitles)
             {
+                ScrollViewer scrollViewer = new ScrollViewer
+                {
+                    Content = new StackPanel
+                    {
+                        Name = $"{title.Item2.Replace(" ", "")}Items",
+                        Spacing = 8
+                    }
+                };
+                Grid.SetRow(scrollViewer, 1);
+
                 var column = new Border
                 {
                     Style = (Style)Resources["BoardColumn"],
@@ -62,14 +72,7 @@ namespace ToDo_App.UI.Views
                                 Text = title.Item2,
                                 Margin = new Thickness(0, 0, 0, 8)
                             },
-                            new ScrollViewer
-                            {
-                                Content = new StackPanel
-                                {
-                                    Name = $"{title.Item2.Replace(" ", "")}Items",
-                                    Spacing = 8
-                                }
-                            }
+                            scrollViewer
                         }
                     }
                 };
