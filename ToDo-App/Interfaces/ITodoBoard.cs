@@ -2,9 +2,14 @@
 
 public interface ITodoBoard
 {
+    public event EventHandler ColumnCreated;
+    public event EventHandler ColumnNameChanged;
+    public event EventHandler ColumnContentChanged;
+    
     public List<Guid> GetStatusColumnIds();
 
     public String GetStatusColumnName(Guid columnId);
+    public void SetStatusColumnName(Guid columnId, string newName);
 
     public List<ToDoNote> GetNotesInColumn(Guid columnId);
 
@@ -29,4 +34,6 @@ public interface ITodoBoard
     public void MoveNoteLeft(Guid noteId);
 
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos);
+
+    public void RemoveNote(Guid noteId);
 }

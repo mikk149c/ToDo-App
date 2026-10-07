@@ -1,5 +1,7 @@
 ﻿namespace ToDo_App;
 
+using System.Linq;
+
 public class ToDoBoard
 {
     public List<StatusColumn> StatusColumns { get; set; }
@@ -24,7 +26,7 @@ public class ToDoBoard
 
     public void MoveColumn(int fromColumnIndex, int toColumnIndex) //TO DO, discuss if the gui can handle specific column/note indexes
     {
-        if(fromColumnIndex == toColumnIndex)
+        if (fromColumnIndex == toColumnIndex)
         {
             return; //skip if it is the same index
         }
@@ -34,7 +36,7 @@ public class ToDoBoard
 
         int deletePos = fromColumnIndex;
         if (toColumnIndex < fromColumnIndex)
-        { 
+        {
             deletePos++; //handle change in the original column position, if the column is moved further left in the same list
         }
         StatusColumns.RemoveAt(deletePos);
@@ -95,7 +97,7 @@ public class ToDoBoard
 
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
     {
-        if(fromColumnIndex == toColumnIndex && fromPos == toPos)
+        if (fromColumnIndex == toColumnIndex && fromPos == toPos)
         {
             return; //skip since it would land at the same position and column
         }
@@ -107,10 +109,10 @@ public class ToDoBoard
         if (fromColumnIndex == toColumnIndex)
         {
             if (toPos < fromPos)
-            { 
+            {
                 deletePos++; //handle change in the original notes position, if the note is moved further up in the same list
             }
-            
+
         }
         StatusColumns[fromColumnIndex].Notes.RemoveAt(deletePos);
     }
@@ -122,7 +124,7 @@ public class ToDoBoard
         int startPos = notePosTuple.noteIndex;
         MoveNote(startColumn, startPos, startColumn, startPos + 1);
     }
-    
+
     public void MoveNoteUp(Guid noteId)
     {
         var notePosTuple = GetNotePositionFromId(noteId);
@@ -130,7 +132,7 @@ public class ToDoBoard
         int startPos = notePosTuple.noteIndex;
         MoveNote(startColumn, startPos, startColumn, startPos - 1);
     }
-    
+
     public void MoveNoteRight(Guid noteId)
     {
         var notePosTuple = GetNotePositionFromId(noteId);
@@ -138,7 +140,7 @@ public class ToDoBoard
         int startPos = notePosTuple.noteIndex;
         MoveNote(startColumn, startPos, startColumn + 1, 0);
     }
-    
+
     public void MoveNoteLeft(Guid noteId)
     {
         var notePosTuple = GetNotePositionFromId(noteId);
@@ -146,7 +148,7 @@ public class ToDoBoard
         int startPos = notePosTuple.noteIndex;
         MoveNote(startColumn, startPos, startColumn - 1, 0);
     }
-    
+
     public void SetNoteContent(Guid noteId, string content)
     {
         var notePosTuple = GetNotePositionFromId(noteId);
@@ -161,5 +163,11 @@ public class ToDoBoard
         int columnIndex = notePosTuple.columnIndex;
         int noteIndex = notePosTuple.noteIndex;
         StatusColumns[columnIndex].Notes[noteIndex].Title = title;
+    }
+
+    internal Guid GetColumnIdFromNoteId(Guid noteId)
+    {
+        Guid columnId = StatusColumns.Find(column => column.Notes.Exists(note => note.Id == noteId)).Id;
+        return columnId;
     }
 }
