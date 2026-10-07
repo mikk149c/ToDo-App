@@ -44,6 +44,33 @@ namespace ToDo_App.UI.Views
             columns = boardController.GetStatusColumnIds();
             foreach (Guid columnId in columns)
             {
+
+                var column = new Border();
+
+                column.Style = (Style)Resources["BoardColumn"];
+
+                Grid columnGrid = new Grid();
+                columnGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                columnGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+                columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+
+                Button editButton = new Button
+                {
+                    Content = "Edit"
+                };
+                columnGrid.Children.Add(editButton);
+
+                TextBlock header = new TextBlock
+                {
+                    Style = (Style)Resources["BoardColumnHeader"],
+                    Text = boardController.GetStatusColumnName(columnId),
+                    Margin = new Thickness(0, 0, 0, 8)
+                };
+                Grid.SetColumn(header, 1);
+                columnGrid.Children.Add(header);
+                
                 ScrollViewer scrollViewer = new ScrollViewer
                 {
                     Content = new StackPanel
@@ -53,29 +80,11 @@ namespace ToDo_App.UI.Views
                     }
                 };
                 Grid.SetRow(scrollViewer, 1);
+                Grid.SetColumnSpan(scrollViewer, 2);
+                columnGrid.Children.Add(scrollViewer);
 
-                var column = new Border
-                {
-                    Style = (Style)Resources["BoardColumn"],
-                    Child = new Grid
-                    {
-                        RowDefinitions =
-                        {
-                            new RowDefinition { Height = GridLength.Auto },
-                            new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }
-                        },
-                        Children =
-                        {
-                            new TextBlock
-                            {
-                                Style = (Style)Resources["BoardColumnHeader"],
-                                Text = boardController.GetStatusColumnName(columnId),
-                                Margin = new Thickness(0, 0, 0, 8)
-                            },
-                            scrollViewer
-                        }
-                    }
-                };
+                column.Child = columnGrid;
+
                 ColumnsPanel.Children.Add(column);
                 Grid.SetColumn(column, columns.IndexOf(columnId));
             }
