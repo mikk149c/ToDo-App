@@ -13,18 +13,18 @@ public class JsonTests
     public void TestSerializeAndDeserializeJson()
     {
         var board = new ToDoBoard();
-        String firstContent = "Køb bananer\nÆbler\nCitroner";
-        var ShoppingNote = new ToDoNote(firstContent);
-        String secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
-        var ProgrammingLanguageNote = new ToDoNote(secondContent);
-        String thirdContent = "Australia\nJapan\nDenmark";
-        var VacationNote = new ToDoNote(thirdContent);
-        String fourthContent = "Den bedste sodavand\nFanta\nCola\nSprite";
-        var DenBedsteSodavandNote = new ToDoNote(fourthContent);
-        String fifthContent = "T-shirt størrelser\nXL\nL\nM\nS";
-        var TshirtStørrelserNote = new ToDoNote(fifthContent);
-        String sixthContent = "Nyt keyboard\n Wired eller trådløs?";
-        var NytKeyboardNote = new ToDoNote(sixthContent);
+        String title1 = "First note", firstContent = "Køb bananer\nÆbler\nCitroner";
+        var ShoppingNote = new ToDoNote(title1, firstContent);
+        String title2 = "Second note", secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
+        var ProgrammingLanguageNote = new ToDoNote(title2, secondContent);
+        String title3 = "Third note", thirdContent = "Australia\nJapan\nDenmark";
+        var VacationNote = new ToDoNote(title3, thirdContent);
+        String title4 = "Fourth note", fourthContent = "Den bedste sodavand\nFanta\nCola\nSprite";
+        var DenBedsteSodavandNote = new ToDoNote(title4, fourthContent);
+        String title5 = "Fifth note", fifthContent = "T-shirt størrelser\nXL\nL\nM\nS";
+        var TshirtStørrelserNote = new ToDoNote(title5, fifthContent);
+        String title6 = "Sixth note", sixthContent = "Nyt keyboard\n Wired eller trådløs?";
+        var NytKeyboardNote = new ToDoNote(title6, sixthContent);
 
         board.CreateColumn("Planned");
         board.StatusColumns[0].AddNote(ShoppingNote);

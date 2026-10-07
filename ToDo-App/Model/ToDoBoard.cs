@@ -9,18 +9,20 @@ public class ToDoBoard
         StatusColumns = new List<StatusColumn>();
     }
 
-    public void CreateColumn(string title)
+    public Guid CreateColumn(string title)
     {
         var newColumn = new StatusColumn(title);
         StatusColumns.Add(newColumn);
+        return newColumn.Id;
     }
 
-    public void RemoveColumn(int index)
+    public void RemoveColumn(Guid id)
     {
+        int index = GetColumnIndexFromId(id);
         StatusColumns.RemoveAt(index);
     }
 
-    public void MoveColumn(int fromColumnIndex, int toColumnIndex)
+    public void MoveColumn(int fromColumnIndex, int toColumnIndex) //TO DO, discuss if the gui can handle specific column/note indexes
     {
         if(fromColumnIndex == toColumnIndex)
         {
@@ -38,25 +40,56 @@ public class ToDoBoard
         StatusColumns.RemoveAt(deletePos);
     }
 
-    public void SetColumnTitle(int columnIndex, string columnTitle)
+    public void SetColumnTitle(Guid columnId, string columnTitle)
     {
+        int columnIndex = GetColumnIndexFromId(columnId);
         StatusColumns[columnIndex].Title = columnTitle;
     }
 
-    public void AddNote(int columnIndex, string title)
+    (int columnIndex, int noteIndex) GetNotePositionFromId(Guid id)
     {
-        var note = new ToDoNote(title);
-        StatusColumns[columnIndex].AddNote(note);
+        for (int col = 0; col < StatusColumns.Count; col++)
+        {
+            for (int pos = 0; pos < StatusColumns[col].Notes.Count; pos++)
+            {
+                if (StatusColumns[col].Notes[pos].Id == id)
+                {
+                    return (col, pos);
+                }
+            }
+        }
+
+        throw new KeyNotFoundException($"Note id '{id}' does not exist");
     }
 
-    public void InsertNote(int columnIndex, int noteIndex, string title)
+    internal int GetColumnIndexFromId(Guid columnId)
     {
-        var note = new ToDoNote(title);
+        for (int i = 0; i < StatusColumns.Count; i++)
+        {
+            if (StatusColumns[i].Id == columnId)
+                return i;
+        }
+        throw new KeyNotFoundException($"Column id '{columnId}' does not exist");
+    }
+
+    public Guid AddNote(Guid columnId, ToDoNote note)
+    {
+        int columnIndex = GetColumnIndexFromId(columnId);
+        StatusColumns[columnIndex].AddNote(note);
+        return note.Id;
+    }
+
+    public void InsertNote(int columnIndex, int noteIndex, string title, string content) //TO DO discuss if GUI knows specific column/note indexes
+    {
+        var note = new ToDoNote(title, content);
         StatusColumns[columnIndex].InsertNote(noteIndex, note);
     }
 
-    public void RemoveNote(int columnIndex, int noteIndex)
+    public void RemoveNote(Guid noteId)
     {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int columnIndex = notePosTuple.columnIndex;
+        int noteIndex = notePosTuple.noteIndex;
         StatusColumns[columnIndex].RemoveNote(noteIndex);
     }
 
@@ -82,8 +115,51 @@ public class ToDoBoard
         StatusColumns[fromColumnIndex].Notes.RemoveAt(deletePos);
     }
 
-    public void SetNoteContent(int columnIndex, int noteIndex, string content)
+    public void MoveNoteDown(Guid noteId)
     {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int startColumn = notePosTuple.columnIndex;
+        int startPos = notePosTuple.noteIndex;
+        MoveNote(startColumn, startPos, startColumn, startPos + 1);
+    }
+    
+    public void MoveNoteUp(Guid noteId)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int startColumn = notePosTuple.columnIndex;
+        int startPos = notePosTuple.noteIndex;
+        MoveNote(startColumn, startPos, startColumn, startPos - 1);
+    }
+    
+    public void MoveNoteRight(Guid noteId)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int startColumn = notePosTuple.columnIndex;
+        int startPos = notePosTuple.noteIndex;
+        MoveNote(startColumn, startPos, startColumn + 1, 0);
+    }
+    
+    public void MoveNoteLeft(Guid noteId)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int startColumn = notePosTuple.columnIndex;
+        int startPos = notePosTuple.noteIndex;
+        MoveNote(startColumn, startPos, startColumn - 1, 0);
+    }
+    
+    public void SetNoteContent(Guid noteId, string content)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int columnIndex = notePosTuple.columnIndex;
+        int noteIndex = notePosTuple.noteIndex;
         StatusColumns[columnIndex].Notes[noteIndex].Content = content;
+    }
+
+    public void SetNoteTitle(Guid noteId, string title)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int columnIndex = notePosTuple.columnIndex;
+        int noteIndex = notePosTuple.noteIndex;
+        StatusColumns[columnIndex].Notes[noteIndex].Title = title;
     }
 }
