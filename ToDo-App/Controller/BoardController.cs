@@ -36,6 +36,7 @@ public class BoardController : ITodoBoard
     {
         int columnIndex = _board.GetColumnIndexFromId(columnId);
         _board.StatusColumns[columnIndex].Title = newName;
+        onColumnNameChanged(new ColumnNameChangedEventArgs(columnId, GetStatusColumnName(columnId)));
     }
     
     public List<Guid> GetStatusColumnIds()

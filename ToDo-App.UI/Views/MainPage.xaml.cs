@@ -37,17 +37,6 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        private void initializeColumns()
-        {
-            columns = boardController.GetStatusColumnIds();
-            foreach (Guid columnId in columns)
-            {
-                var column = buildColumn(columnId, boardController.GetStatusColumnName(columnId));
-                ColumnsPanel.Children.Add(column);
-                Grid.SetColumn(column, columns.IndexOf(columnId));
-            }
-        }
-
         private void OnAddTodoClicked(object sender, RoutedEventArgs e)
         {
             Guid firstColumn = columns[0];
@@ -60,12 +49,11 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
-            
+
             var column = buildColumn(args.ColumnId, args.Name);
-            ColumnsPanel.Children.Add(column);
-            
             columns.Add(args.ColumnId);
             Grid.SetColumn(column, columns.IndexOf(args.ColumnId));
+            ColumnsPanel.Children.Add(column);
         }
 
         private void onColumnNameChanged(object? sender, EventArgs eventArgs)
@@ -75,7 +63,11 @@ namespace ToDo_App.UI.Views
                 throw new ArgumentException("Wrong EventArgs type");
             }
             
-            //TODO: update column text
+            removeColumn(args.ColumnId);
+            var column = buildColumn(args.ColumnId, args.NewName);
+            Grid.SetColumn(column, columns.IndexOf(args.ColumnId));
+            ColumnsPanel.Children.Add(column);
+            populateStatusColumn(args.ColumnId);
         }
 
         private void onColumnContentChanged(object? sender, EventArgs eventArgs)
@@ -99,47 +91,6 @@ namespace ToDo_App.UI.Views
         }
 
         private Border buildColumn(Guid columnId, string columnName)
-        {
-            ScrollViewer scrollViewer = new ScrollViewer
-            {
-                Content = new StackPanel
-                {
-                    Name = columnId.ToString(),
-                    Spacing = 8
-                }
-            };
-            Grid.SetRow(scrollViewer, 1);
-            
-            var column = new Border
-            {
-                Style = (Style)Resources["BoardColumn"],
-                Child = new Grid
-                {
-                    RowDefinitions =
-                    {
-                        new RowDefinition { Height = GridLength.Auto },
-                        new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }
-                    },
-                    Children =
-                    {
-                        new TextBlock
-                        {
-                            Style = (Style)Resources["BoardColumnHeader"],
-                            Text = columnName,
-                            Margin = new Thickness(0, 0, 0, 8)
-                        },
-                        scrollViewer
-                    }
-                }
-            };
-
-            return column;
-            {
-                createColumn(columnId);
-            }
-        }
-
-        private void createColumn(Guid columnId)
         {
             var column = new Border();
             
@@ -165,7 +116,7 @@ namespace ToDo_App.UI.Views
             TextBlock header = new TextBlock
             {
                 Style = (Style)Resources["BoardColumnHeader"],
-                Text = boardController.GetStatusColumnName(columnId),
+                Text = columnName,
                 VerticalAlignment = VerticalAlignment.Center
             };
             Grid.SetColumn(header, 1);
@@ -185,8 +136,7 @@ namespace ToDo_App.UI.Views
 
             column.Child = columnGrid;
 
-            ColumnsPanel.Children.Add(column);
-            Grid.SetColumn(column, columns.IndexOf(columnId));
+            return column;
         }
 
         private async void onEditColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
@@ -210,10 +160,6 @@ namespace ToDo_App.UI.Views
             if (result == ContentDialogResult.Primary)
             {
                 boardController.SetStatusColumnName(columnId, nameBox.Text);
-                //ToDo replace with event handeling
-                removeColumn(columnId);
-                createColumn(columnId);
-                populateStatus(columnId);
             }
         }
 
@@ -223,26 +169,6 @@ namespace ToDo_App.UI.Views
             if (columnToRemove != null)
             {
                 ColumnsPanel.Children.Remove(columnToRemove);
-            }
-        }
-
-        // Stub: adds a placeholder card to "Planned" until the real models and "new ToDo" flow exist.
-        private void OnAddTodoClicked(object sender, RoutedEventArgs e)
-        {
-            Guid firstColumn = columns[0];
-            boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
-
-            //ToDo replace with event handeling
-            clearColumnItems(firstColumn);
-            populateStatus(firstColumn);
-        }
-
-        private void clearColumnItems(Guid column)
-        {
-            StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName(column.ToString());
-            if (columnPanel != null)
-            {
-                columnPanel.Children.Clear();
             }
         }
 
