@@ -33,7 +33,7 @@ namespace ToDo_App.UI.Views
             {
                 foreach (ToDoNote item in items)
                 {
-                    Border card = buildToDoCard(item.Id.ToString(), item.Content);
+                    Border card = buildToDoCard(item, column);
                     columnPanel.Children.Add(card);
                 }
             }
@@ -101,8 +101,127 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        private Border buildToDoCard(string title, string description)
+        private async void onDeleteTodoClicked(ToDoNote note, Guid columnId)
         {
+            var dialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Title = "Delete Note?",
+                PrimaryButtonText = "Delete",
+                CloseButtonText = "Cancel",
+                Content = $"Delete \"{note.Title}\"? This can't be undone.",
+                DefaultButton = ContentDialogButton.Primary,
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                boardController.RemoveNote(note.Id);
+                clearColumnItems(columnId);
+                populateStatus(columnId);
+            }
+        }
+
+        private async void onEditTodoClicked(ToDoNote note, Guid columnId)
+        {
+            var titleBox = new TextBox
+            {
+                Header = "Title",
+                Text = note.Title
+            };
+
+            var contentBox = new TextBox
+            {
+                Header = "Description",
+                Text = note.Content,
+                AcceptsReturn = true,
+                TextWrapping = TextWrapping.Wrap,
+                MinHeight = 100
+            };
+
+            var dialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Title = "Edit note",
+                PrimaryButtonText = "Save",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                Content = new StackPanel
+                {
+                    Spacing = 8,
+                    Children = { titleBox, contentBox }
+                }
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                boardController.SetNoteTitle(note.Id, titleBox.Text);
+                boardController.SetNoteContent(note.Id, contentBox.Text);
+
+                clearColumnItems(columnId);
+                populateStatus(columnId);
+            }
+        }
+
+        private Border buildToDoCard(ToDoNote note, Guid columnId)
+        {
+            var titleText = new TextBlock
+            {
+                Style = (Style)Resources["TodoTitle"],
+                Text = note.Title,
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+
+            var editButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Edit),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            ToolTipService.SetToolTip(editButton, "Edit");
+            editButton.Click += (s, e) => onEditTodoClicked(note, columnId);
+
+            var titleRow = new Grid
+            {
+                ColumnSpacing = 8,
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = GridLength.Auto }
+                },
+                Children = { titleText, editButton }
+            };
+            Grid.SetColumn(editButton, 1);
+
+            var descriptionText = new TextBlock
+            {
+                Style = (Style)Resources["TodoDescription"],
+                Text = note.Content,
+                TextWrapping = TextWrapping.Wrap
+            };
+        
+            var deleteButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Delete),
+                VerticalAlignment = VerticalAlignment.Bottom
+            };
+            ToolTipService.SetToolTip(deleteButton, "Delete");
+            deleteButton.Click += (s, e) => onDeleteTodoClicked(note, columnId);
+        
+            var descriptionRow = new Grid
+            {
+                ColumnSpacing = 8,
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = GridLength.Auto }
+                },
+                Children = { descriptionText, deleteButton }
+            };
+            Grid.SetColumn(deleteButton, 1);
+
             var card = new Border
             {
                 Style = (Style)Resources["TodoCard"],
@@ -111,16 +230,8 @@ namespace ToDo_App.UI.Views
                     Spacing = 4,
                     Children =
                     {
-                        new TextBlock
-                        {
-                            Style = (Style)Resources["TodoTitle"],
-                            Text = title,
-                        },
-                        new TextBlock
-                        {
-                            Style = (Style)Resources["TodoDescription"],
-                            Text = description,
-                        }
+                        titleRow,
+                        descriptionRow
                     }
                 }
             };

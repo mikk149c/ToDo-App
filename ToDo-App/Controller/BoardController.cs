@@ -109,4 +109,10 @@ public class BoardController : ITodoBoard
     {
         _board.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos);
     }
+
+    public void RemoveNote(Guid noteId)
+    {
+        //TODO handle exception
+        _board.RemoveNote(noteId);
+    }
 }
