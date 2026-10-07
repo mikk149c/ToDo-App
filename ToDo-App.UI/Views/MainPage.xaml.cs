@@ -49,7 +49,7 @@ namespace ToDo_App.UI.Views
 
                 column.Style = (Style)Resources["BoardColumn"];
 
-                Grid columnGrid = new Grid();
+                Grid columnGrid = new Grid { RowSpacing = 8 };
                 columnGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 columnGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
                 columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -58,7 +58,9 @@ namespace ToDo_App.UI.Views
 
                 Button editButton = new Button
                 {
-                    Content = "Edit"
+                    Content = "Edit",
+                    Style = (Style)Application.Current.Resources["PrimaryAction"],
+                    Margin = new Thickness(0, 0, 8, 0)
                 };
                 columnGrid.Children.Add(editButton);
 
@@ -66,7 +68,7 @@ namespace ToDo_App.UI.Views
                 {
                     Style = (Style)Resources["BoardColumnHeader"],
                     Text = boardController.GetStatusColumnName(columnId),
-                    Margin = new Thickness(0, 0, 0, 8)
+                    VerticalAlignment = VerticalAlignment.Center
                 };
                 Grid.SetColumn(header, 1);
                 columnGrid.Children.Add(header);
