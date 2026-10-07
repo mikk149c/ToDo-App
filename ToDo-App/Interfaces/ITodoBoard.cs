@@ -2,6 +2,7 @@
 
 public interface ITodoBoard
 {
+    public event EventHandler ColumnCreated;
     public event EventHandler ColumnNameChanged;
     public event EventHandler ColumnContentChanged;
     

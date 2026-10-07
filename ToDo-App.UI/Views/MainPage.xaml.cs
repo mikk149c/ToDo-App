@@ -81,7 +81,6 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        // Stub: adds a placeholder card to "Planned" until the real models and "new ToDo" flow exist.
         private void OnAddTodoClicked(object sender, RoutedEventArgs e)
         {
             Guid firstColumn = columns[0];

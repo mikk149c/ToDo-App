@@ -12,8 +12,14 @@ public class BoardController : ITodoBoard
         _board = new ToDoBoard();
     }
 
+    public event EventHandler? ColumnCreated;
     public event EventHandler? ColumnNameChanged;
     public event EventHandler? ColumnContentChanged;
+    
+    private void onColumnCreated(ColumnCreatedEventArgs e)
+    {
+        ColumnCreated?.Invoke(this, e);
+    }
     
     private void onColumnNameChanged(ColumnNameChangedEventArgs e)
     {
@@ -50,7 +56,9 @@ public class BoardController : ITodoBoard
 
     public Guid CreateColumn(string name)
     {
-        return _board.CreateColumn(name);
+        var columnId = _board.CreateColumn(name);
+        onColumnCreated(new ColumnCreatedEventArgs(columnId, GetStatusColumnName(columnId), GetNotesInColumn(columnId)));
+        return columnId;
     }
 
     public void MoveColumnLeft(Guid columnId)
@@ -67,8 +75,6 @@ public class BoardController : ITodoBoard
     {
         var noteId = _board.AddNote(columnId, new ToDoNote(title, content));
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
-        
-        onColumnNameChanged(new ColumnNameChangedEventArgs(columnId, title));
         return noteId;
     }
 
