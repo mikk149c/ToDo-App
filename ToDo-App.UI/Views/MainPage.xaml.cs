@@ -1,6 +1,7 @@
 using ToDo_App;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
+using System.Diagnostics;
 
 namespace ToDo_App.UI.Views
 {
@@ -33,7 +34,7 @@ namespace ToDo_App.UI.Views
             {
                 foreach (ToDoNote item in items)
                 {
-                    Border card = buildToDoCard(item.Id.ToString(), item.Content);
+                    Border card = buildToDoCard(item.Title, item.Content);
                     columnPanel.Children.Add(card);
                 }
             }
@@ -42,47 +43,57 @@ namespace ToDo_App.UI.Views
         private void initializeColumns()
         {
             columns = boardController.GetStatusColumnIds();
+
             foreach (Guid columnId in columns)
             {
-                ScrollViewer scrollViewer = new ScrollViewer
-                {
-                    Content = new StackPanel
-                    {
-                        Name = columnId.ToString(),
-                        Spacing = 8
-                    }
-                };
-                Grid.SetRow(scrollViewer, 1);
-
-                var column = new Border
-                {
-                    Style = (Style)Resources["BoardColumn"],
-                    Child = new Grid
-                    {
-                        RowDefinitions =
-                        {
-                            new RowDefinition { Height = GridLength.Auto },
-                            new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }
-                        },
-                        Children =
-                        {
-                            new TextBlock
-                            {
-                                Style = (Style)Resources["BoardColumnHeader"],
-                                Text = boardController.GetStatusColumnName(columnId),
-                                Margin = new Thickness(0, 0, 0, 8)
-                            },
-                            scrollViewer
-                        }
-                    }
-                };
-                ColumnsPanel.Children.Add(column);
-                Grid.SetColumn(column, columns.IndexOf(columnId));
+                AddColumnToUI(columnId);
             }
         }
 
+        private void AddColumnToUI(Guid columnId)
+        {
+            ScrollViewer scrollViewer = new ScrollViewer
+            {
+                Content = new StackPanel
+                {
+                    Name = columnId.ToString(),
+                    Spacing = 8
+                }
+            };
+
+            Grid.SetRow(scrollViewer, 1);
+
+            var column = new Border
+            {
+                Style = (Style)Resources["BoardColumn"],
+                Child = new Grid
+                {
+                    RowDefinitions =
+                    {
+                        new RowDefinition { Height = GridLength.Auto },
+                        new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }
+                    },
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Style = (Style)Resources["BoardColumnHeader"],
+                            Text = boardController.GetStatusColumnName(columnId),
+                            Margin = new Thickness(0, 0, 0, 8)
+                        },
+                        scrollViewer
+                    }
+                }
+            };
+
+            ColumnsPanel.Children.Add(column);
+            Grid.SetColumn(column, columns.IndexOf(columnId));
+
+            populateStatus(columnId);
+        }
+
         // Stub: adds a placeholder card to "Planned" until the real models and "new ToDo" flow exist.
-        private void OnAddTodoClicked(object sender, RoutedEventArgs e)
+        private void OnAddTodoClickedTest(object sender, RoutedEventArgs e)
         {
             Guid firstColumn = columns[0];
             boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
@@ -90,6 +101,40 @@ namespace ToDo_App.UI.Views
             //ToDo replace with event handeling
             clearColumnItems(firstColumn);
             populateStatus(firstColumn);
+        }
+
+        private async void OnClickAddColumn(object sender, RoutedEventArgs e)
+        {
+            TextBox columnNameBox = new TextBox
+            {
+                PlaceholderText = "Column name"
+            };
+
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = "Create new column",
+                Content = columnNameBox,
+                PrimaryButtonText = "Done",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.Content.XamlRoot
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                string columnName = columnNameBox.Text;
+
+                Guid newColumn = boardController.CreateColumn(columnName);
+                columns.Add(newColumn);
+
+                ColumnsPanel.ColumnDefinitions.Add(
+                    new ColumnDefinition {Width = (GridLength)Resources["BoardColumnWidth"]}
+                );
+
+                AddColumnToUI(newColumn);
+            }
         }
 
         private void clearColumnItems(Guid column)
