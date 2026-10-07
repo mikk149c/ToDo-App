@@ -55,14 +55,14 @@
                 Spacing="12">
 
                 <Button
-                    Click="OnAddTodoClickedTest"
-                    Content="Add new ToDo"
-                    Style="{StaticResource PrimaryAction}" />
+                    Click="OnClickAddColumn"
+                    Content="Add Column"
+                    Style="{StaticResource Button_AddColumn}" />
 
                 <Button
-                    Click="OnClickAddColumn"
-                    Content="Add new column"
-                    Style="{StaticResource Button_AddColumn}" />
+                    Click="OnAddTodoClicked"
+                    Content="Add new ToDo"
+                    Style="{StaticResource PrimaryAction}" />
 
             </StackPanel>
 

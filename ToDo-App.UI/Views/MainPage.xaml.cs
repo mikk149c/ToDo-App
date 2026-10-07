@@ -43,11 +43,7 @@ namespace ToDo_App.UI.Views
         private void initializeColumns()
         {
             columns = boardController.GetStatusColumnIds();
-
-            foreach (Guid columnId in columns)
-            {
-                AddColumnToUI(columnId);
-            }
+            foreach (Guid columnId in columns) { AddColumnToUI(columnId); }
         }
 
         private void AddColumnToUI(Guid columnId)
@@ -94,57 +90,10 @@ namespace ToDo_App.UI.Views
             populateStatus(columnId);
         }
 
-        // Stub: adds a placeholder card to "Planned" until the real models and "new ToDo" flow exist.
-        private void OnAddTodoClickedTest(object sender, RoutedEventArgs e)
-        {
-            Guid firstColumn = columns[0];
-            boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
-
-            //ToDo replace with event handeling
-            clearColumnItems(firstColumn);
-            populateStatus(firstColumn);
-        }
-
-        private async void OnClickAddColumn(object sender, RoutedEventArgs e)
-        {
-            TextBox columnNameBox = new TextBox
-            {
-                PlaceholderText = "Column name"
-            };
-
-            ContentDialog dialog = new ContentDialog
-            {
-                Title = "Create new column",
-                Content = columnNameBox,
-                PrimaryButtonText = "Done",
-                CloseButtonText = "Cancel",
-                DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = this.Content.XamlRoot
-            };
-
-            ContentDialogResult result = await dialog.ShowAsync();
-
-            if (result == ContentDialogResult.Primary)
-            {
-                string columnName = columnNameBox.Text;
-
-                Guid newColumn = boardController.CreateColumn(columnName);
-                columns.Add(newColumn);
-
-                ColumnsPanel.ColumnDefinitions.Add(
-                    new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)}
-                );
-                AddColumnToUI(newColumn);
-            }
-        }
-
         private void clearColumnItems(Guid column)
         {
             StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName(column.ToString());
-            if (columnPanel != null)
-            {
-                columnPanel.Children.Clear();
-            }
+            if (columnPanel != null){ columnPanel.Children.Clear(); }
         }
 
         private Border buildToDoCard(string title, string description)
@@ -172,6 +121,50 @@ namespace ToDo_App.UI.Views
             };
 
             return card;
+        }
+
+        private async void OnClickAddColumn(object sender, RoutedEventArgs e)
+        {  //Button to add new columns to the board
+            TextBox columnNameBox = new TextBox
+            {
+                PlaceholderText = "Column name"
+            };
+
+            ContentDialog dialog = new ContentDialog //Enter column name
+            {
+                Title = "Create new column",
+                Content = columnNameBox,
+                PrimaryButtonText = "Done",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.Content.XamlRoot
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                string columnName = columnNameBox.Text;
+
+                Guid newColumn = boardController.CreateColumn(columnName);
+                columns.Add(newColumn);
+
+                ColumnsPanel.ColumnDefinitions.Add(
+                    new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)}
+                );
+                AddColumnToUI(newColumn);
+            }
+        }
+
+        // Stub: adds a placeholder card to "Planned" until the real models and "new ToDo" flow exist.
+        private void OnAddTodoClicked(object sender, RoutedEventArgs e)
+        {
+            Guid firstColumn = columns[0];
+            boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
+
+            //ToDo replace with event handeling
+            clearColumnItems(firstColumn);
+            populateStatus(firstColumn);
         }
     }
 }
