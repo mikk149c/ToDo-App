@@ -34,4 +34,6 @@ public interface ITodoBoard
     public void MoveNoteLeft(Guid noteId);
 
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos);
+
+    public void RemoveNote(Guid noteId);
 }
