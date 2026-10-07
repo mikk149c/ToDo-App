@@ -10,25 +10,25 @@ namespace ToDo_App.UI.Views
     public partial class MainPage : Page
     {
         ITodoBoard boardController = new BoardController();
-        List<(Guid, String)>columnTitles = new List<(Guid, String)>();
+        List<Guid>columns = new List<Guid>();
         public MainPage()
         {
             boardController.CreateColumn("Planned");
             boardController.CreateColumn("In Progress");
             boardController.CreateColumn("Completed");
             this.InitializeComponent();
-            InitializeColumns();
-            foreach ((Guid, String) title in columnTitles)
+            initializeColumns();
+            foreach (Guid guid in columns)
             {
-                populateStatus(title);
+                populateStatus((guid));
             }
 
         }
 
-        private void populateStatus((Guid, String) column)
+        private void populateStatus(Guid column)
         {
-            List<ToDoNote> items = boardController.GetNotesInColumn(column.Item1);
-            StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName($"{column.Item2.Replace(" ", "")}Items");
+            List<ToDoNote> items = boardController.GetNotesInColumn(column);
+            StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName(column.ToString());
             if (columnPanel != null)
             {
                 foreach (ToDoNote item in items)
@@ -39,16 +39,16 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        private void InitializeColumns()
+        private void initializeColumns()
         {
-            columnTitles = boardController.GetStatusColumnIdsandNames();
-            foreach ((Guid, String) title in columnTitles)
+            columns = boardController.GetStatusColumnIds();
+            foreach (Guid columnId in columns)
             {
                 ScrollViewer scrollViewer = new ScrollViewer
                 {
                     Content = new StackPanel
                     {
-                        Name = $"{title.Item2.Replace(" ", "")}Items",
+                        Name = columnId.ToString(),
                         Spacing = 8
                     }
                 };
@@ -69,7 +69,7 @@ namespace ToDo_App.UI.Views
                             new TextBlock
                             {
                                 Style = (Style)Resources["BoardColumnHeader"],
-                                Text = title.Item2,
+                                Text = boardController.GetStatusColumnName(columnId),
                                 Margin = new Thickness(0, 0, 0, 8)
                             },
                             scrollViewer
@@ -77,25 +77,24 @@ namespace ToDo_App.UI.Views
                     }
                 };
                 ColumnsPanel.Children.Add(column);
-                Grid.SetColumn(column, columnTitles.IndexOf(title));
+                Grid.SetColumn(column, columns.IndexOf(columnId));
             }
         }
 
         // Stub: adds a placeholder card to "Planned" until the real models and "new ToDo" flow exist.
         private void OnAddTodoClicked(object sender, RoutedEventArgs e)
         {
-            (Guid, String) firstColumn = columnTitles[0];
-            Guid columnId = firstColumn.Item1;
-            boardController.CreateNote(columnId, "New ToDo", "This is a new ToDo item.");
+            Guid firstColumn = columns[0];
+            boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
 
             //ToDo replace with event handeling
             clearColumnItems(firstColumn);
             populateStatus(firstColumn);
         }
 
-        private void clearColumnItems((Guid, string) firstColumn)
+        private void clearColumnItems(Guid column)
         {
-            StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName($"{firstColumn.Item2.Replace(" ", "")}Items");
+            StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName(column.ToString());
             if (columnPanel != null)
             {
                 columnPanel.Children.Clear();
