@@ -10,6 +10,7 @@ namespace ToDo_App.UI.Views
         List<Guid> columns = new List<Guid>();
         public MainPage()
         {
+            boardController.ColumnNameChanged += onColumnNameChanged;
             boardController.ColumnContentChanged += onColumnContentChanged;
             
             boardController.CreateColumn("Planned");
@@ -85,6 +86,16 @@ namespace ToDo_App.UI.Views
         {
             Guid firstColumn = columns[0];
             boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
+        }
+
+        private void onColumnNameChanged(object? sender, EventArgs eventArgs)
+        {
+            if (eventArgs is not ColumnNameChangedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+            
+            //TODO: update column text
         }
 
         private void onColumnContentChanged(object? sender, EventArgs eventArgs)

@@ -14,6 +14,16 @@ public class BoardController : ITodoBoard
 
     public event EventHandler? ColumnNameChanged;
     public event EventHandler? ColumnContentChanged;
+    
+    private void onColumnNameChanged(ColumnNameChangedEventArgs e)
+    {
+        ColumnNameChanged?.Invoke(this, e);
+    }
+    
+    private void onColumnContentChanged(ColumnContentChangedEventArgs e)
+    {
+        ColumnContentChanged?.Invoke(this, e);
+    }
 
     public List<Guid> GetStatusColumnIds()
     {
@@ -56,7 +66,9 @@ public class BoardController : ITodoBoard
     public Guid CreateNote(Guid columnId, string title, string content)
     {
         var noteId = _board.AddNote(columnId, new ToDoNote(title, content));
-        ColumnContentChanged?.Invoke(this, new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        
+        onColumnNameChanged(new ColumnNameChangedEventArgs(columnId, title));
         return noteId;
     }
 
