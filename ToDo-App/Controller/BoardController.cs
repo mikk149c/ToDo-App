@@ -104,12 +104,17 @@ public class BoardController : ITodoBoard
     {
         //TODO handle exception
         _board.SetNoteContent(id, newContent);
+        //TODO: remove column ID from arguments, as it can be derived from the note ID
+        Guid columnId = _board.GetColumnIdFromNoteId(id);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
     }
 
     public void SetNoteTitle(Guid id, string newTitle)
     {
         //TODO handle exception
         _board.SetNoteTitle(id, newTitle);
+        Guid columnId = _board.GetColumnIdFromNoteId(id);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
     }
 
     public void MoveNoteDown(Guid noteId)
@@ -144,6 +149,8 @@ public class BoardController : ITodoBoard
     public void RemoveNote(Guid noteId)
     {
         //TODO handle exception
+        Guid columnId = _board.GetColumnIdFromNoteId(noteId);
         _board.RemoveNote(noteId);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
     }
 }

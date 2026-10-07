@@ -189,8 +189,6 @@ namespace ToDo_App.UI.Views
             if (result == ContentDialogResult.Primary)
             {
                 boardController.RemoveNote(note.Id);
-                clearColumnItems(columnId);
-                populateStatus(columnId);
             }
         }
 
@@ -231,9 +229,6 @@ namespace ToDo_App.UI.Views
             {
                 boardController.SetNoteTitle(note.Id, titleBox.Text);
                 boardController.SetNoteContent(note.Id, contentBox.Text);
-
-                clearColumnItems(columnId);
-                populateStatus(columnId);
             }
         }
 
