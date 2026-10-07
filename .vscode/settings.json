@@ -1,5 +1,6 @@
 {
     "csharp-dev-tools.solutionViewer.selectedWorkspaceSolutions": [
         "ToDo-App.slnx"
-    ]
+    ],
+    "dotnet.defaultSolution": "ToDo-App.slnx"
 }

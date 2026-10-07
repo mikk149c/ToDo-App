@@ -55,92 +55,14 @@
                 Style="{StaticResource PrimaryAction}" />
 
             <!-- Board columns (stub data) -->
-            <Grid Grid.Row="1" ColumnSpacing="16">
+            <Grid x:Name="ColumnsPanel" Grid.Row="1" ColumnSpacing="16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Planned -->
-                <Border Grid.Column="0" Style="{StaticResource BoardColumn}">
-                    <Grid RowSpacing="12">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Style="{StaticResource BoardColumnHeader}" Text="Planned" />
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                            <StackPanel x:Name="PlannedItems" Spacing="8">
-                                <Border Style="{StaticResource TodoCard}">
-                                    <StackPanel Spacing="4">
-                                        <TextBlock Style="{StaticResource TodoTitle}" Text="Design data model" />
-                                        <TextBlock Style="{StaticResource TodoDescription}" Text="Decide which fields a ToDo needs." />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource TodoCard}">
-                                    <StackPanel Spacing="4">
-                                        <TextBlock Style="{StaticResource TodoTitle}" Text="Add persistence" />
-                                        <TextBlock Style="{StaticResource TodoDescription}" Text="Store ToDos between app launches." />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource TodoCard}">
-                                    <StackPanel Spacing="4">
-                                        <TextBlock Style="{StaticResource TodoTitle}" Text="Drag and drop" />
-                                        <TextBlock Style="{StaticResource TodoDescription}" Text="Move cards between columns." />
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
-
-                <!-- In progress -->
-                <Border Grid.Column="1" Style="{StaticResource BoardColumn}">
-                    <Grid RowSpacing="12">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Style="{StaticResource BoardColumnHeader}" Text="In progress" />
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                            <StackPanel Spacing="8">
-                                <Border Style="{StaticResource TodoCard}">
-                                    <StackPanel Spacing="4">
-                                        <TextBlock Style="{StaticResource TodoTitle}" Text="Kanban board layout" />
-                                        <TextBlock Style="{StaticResource TodoDescription}" Text="Three columns with an add button." />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource TodoCard}">
-                                    <StackPanel Spacing="4">
-                                        <TextBlock Style="{StaticResource TodoTitle}" Text="Style the cards" />
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
-
-                <!-- Done -->
-                <Border Grid.Column="2" Style="{StaticResource BoardColumn}">
-                    <Grid RowSpacing="12">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Style="{StaticResource BoardColumnHeader}" Text="Done" />
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                            <StackPanel Spacing="8">
-                                <Border Style="{StaticResource TodoCard}">
-                                    <StackPanel Spacing="4">
-                                        <TextBlock Style="{StaticResource TodoTitle}" Text="WinUI 3 setup" />
-                                        <TextBlock Style="{StaticResource TodoDescription}" Text="Create the ToDo-App.UI project." />
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
+                
             </Grid>
         </Grid>
     </Page.Content>

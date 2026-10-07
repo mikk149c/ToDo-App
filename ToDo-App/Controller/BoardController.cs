@@ -23,7 +23,7 @@ public class BoardController : ITodoBoard
         return Ids;
     }
 
-    public String getStatusColumnName(Guid columnId)
+    public String GetStatusColumnName(Guid columnId)
     {
         int columnIndex = _board.GetColumnIndexFromId(columnId);
         return _board.StatusColumns[columnIndex].Title;
