@@ -66,6 +66,8 @@ namespace ToDo_App.UI.Views
             var column = new Border
             {
                 Style = (Style)Resources["BoardColumn"],
+                MinWidth = (double)Resources["BoardColumnMinWidth"],
+
                 Child = new Grid
                 {
                     RowDefinitions =
@@ -130,9 +132,8 @@ namespace ToDo_App.UI.Views
                 columns.Add(newColumn);
 
                 ColumnsPanel.ColumnDefinitions.Add(
-                    new ColumnDefinition {Width = (GridLength)Resources["BoardColumnWidth"]}
+                    new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)}
                 );
-
                 AddColumnToUI(newColumn);
             }
         }
