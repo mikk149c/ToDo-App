@@ -106,7 +106,7 @@ namespace ToDo_App.UI.Views
 
             Button editButton = new Button
             {
-                Content = "Edit",
+                Content = new SymbolIcon(Symbol.Edit),
                 Style = (Style)Application.Current.Resources["PrimaryAction"],
                 Margin = new Thickness(0, 0, 8, 0)
             };
