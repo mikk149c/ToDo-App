@@ -2,6 +2,10 @@
 
 public interface ITodoBoard
 {
+    public event EventHandler ColumnCreated;
+    public event EventHandler ColumnNameChanged;
+    public event EventHandler ColumnContentChanged;
+    
     public List<Guid> GetStatusColumnIds();
 
     public String GetStatusColumnName(Guid columnId);

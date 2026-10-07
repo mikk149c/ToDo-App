@@ -1,31 +1,29 @@
-using ToDo_App;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 
 namespace ToDo_App.UI.Views
 {
-    /// <summary>
-    /// Kanban-style board mockup showing ToDos grouped into columns.
-    /// </summary>
     public partial class MainPage : Page
     {
         ITodoBoard boardController = new BoardController();
-        List<Guid>columns = new List<Guid>();
+        
+        List<Guid> columns = new List<Guid>();
+        
         public MainPage()
         {
+            InitializeComponent();
+            
+            boardController.ColumnCreated += onColumnCreated;
+            boardController.ColumnNameChanged += onColumnNameChanged;
+            boardController.ColumnContentChanged += onColumnContentChanged;
+            
+            //TODO: load from json
             boardController.CreateColumn("Planned");
             boardController.CreateColumn("In Progress");
             boardController.CreateColumn("Completed");
-            this.InitializeComponent();
-            initializeColumns();
-            foreach (Guid guid in columns)
-            {
-                populateStatus((guid));
-            }
-
         }
 
-        private void populateStatus(Guid column)
+        private void populateStatusColumn(Guid column)
         {
             List<ToDoNote> items = boardController.GetNotesInColumn(column);
             StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName(column.ToString());
@@ -43,6 +41,99 @@ namespace ToDo_App.UI.Views
         {
             columns = boardController.GetStatusColumnIds();
             foreach (Guid columnId in columns)
+            {
+                var column = buildColumn(columnId, boardController.GetStatusColumnName(columnId));
+                ColumnsPanel.Children.Add(column);
+                Grid.SetColumn(column, columns.IndexOf(columnId));
+            }
+        }
+
+        private void OnAddTodoClicked(object sender, RoutedEventArgs e)
+        {
+            Guid firstColumn = columns[0];
+            boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
+        }
+
+        private void onColumnCreated(object? sender, EventArgs eventArgs)
+        {
+            if (eventArgs is not ColumnCreatedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+            
+            var column = buildColumn(args.ColumnId, args.Name);
+            ColumnsPanel.Children.Add(column);
+            
+            columns.Add(args.ColumnId);
+            Grid.SetColumn(column, columns.IndexOf(args.ColumnId));
+        }
+
+        private void onColumnNameChanged(object? sender, EventArgs eventArgs)
+        {
+            if (eventArgs is not ColumnNameChangedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+            
+            //TODO: update column text
+        }
+
+        private void onColumnContentChanged(object? sender, EventArgs eventArgs)
+        {
+            if (eventArgs is not ColumnContentChangedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+            
+            clearColumnItems(args.ColumnId);
+            populateStatusColumn(args.ColumnId);
+        }
+
+        private void clearColumnItems(Guid column)
+        {
+            StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName(column.ToString());
+            if (columnPanel != null)
+            {
+                columnPanel.Children.Clear();
+            }
+        }
+
+        private Border buildColumn(Guid columnId, string columnName)
+        {
+            ScrollViewer scrollViewer = new ScrollViewer
+            {
+                Content = new StackPanel
+                {
+                    Name = columnId.ToString(),
+                    Spacing = 8
+                }
+            };
+            Grid.SetRow(scrollViewer, 1);
+            
+            var column = new Border
+            {
+                Style = (Style)Resources["BoardColumn"],
+                Child = new Grid
+                {
+                    RowDefinitions =
+                    {
+                        new RowDefinition { Height = GridLength.Auto },
+                        new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }
+                    },
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Style = (Style)Resources["BoardColumnHeader"],
+                            Text = columnName,
+                            Margin = new Thickness(0, 0, 0, 8)
+                        },
+                        scrollViewer
+                    }
+                }
+            };
+
+            return column;
             {
                 createColumn(columnId);
             }
