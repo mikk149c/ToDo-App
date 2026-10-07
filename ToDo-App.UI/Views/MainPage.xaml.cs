@@ -1,18 +1,17 @@
-using ToDo_App;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 
 namespace ToDo_App.UI.Views
 {
-    /// <summary>
-    /// Kanban-style board mockup showing ToDos grouped into columns.
-    /// </summary>
     public partial class MainPage : Page
     {
         ITodoBoard boardController = new BoardController();
-        List<Guid>columns = new List<Guid>();
+        
+        List<Guid> columns = new List<Guid>();
         public MainPage()
         {
+            boardController.ColumnContentChanged += onColumnContentChanged;
+            
             boardController.CreateColumn("Planned");
             boardController.CreateColumn("In Progress");
             boardController.CreateColumn("Completed");
@@ -86,10 +85,17 @@ namespace ToDo_App.UI.Views
         {
             Guid firstColumn = columns[0];
             boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
+        }
 
-            //ToDo replace with event handeling
-            clearColumnItems(firstColumn);
-            populateStatus(firstColumn);
+        private void onColumnContentChanged(object? sender, EventArgs eventArgs)
+        {
+            if (eventArgs is not ColumnContentChangedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+            
+            clearColumnItems(args.ColumnId);
+            populateStatus(args.ColumnId);
         }
 
         private void clearColumnItems(Guid column)

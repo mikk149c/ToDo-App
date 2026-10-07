@@ -11,7 +11,10 @@ public class BoardController : ITodoBoard
         //TODO: read from json
         _board = new ToDoBoard();
     }
-    
+
+    public event EventHandler? ColumnNameChanged;
+    public event EventHandler? ColumnContentChanged;
+
     public List<Guid> GetStatusColumnIds()
     {
         var Ids = new List<Guid>();
@@ -52,7 +55,9 @@ public class BoardController : ITodoBoard
 
     public Guid CreateNote(Guid columnId, string title, string content)
     {
-        return _board.AddNote(columnId, new ToDoNote(title, content));
+        var noteId = _board.AddNote(columnId, new ToDoNote(title, content));
+        ColumnContentChanged?.Invoke(this, new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        return noteId;
     }
 
     ToDoNote GetNoteFromGuid(Guid id)
