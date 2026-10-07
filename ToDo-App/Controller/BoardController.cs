@@ -11,6 +11,12 @@ public class BoardController : ITodoBoard
         //TODO: read from json
         _board = new ToDoBoard();
     }
+
+    public void SetStatusColumnName(Guid columnId, string newName)
+    {
+        int columnIndex = _board.GetColumnIndexFromId(columnId);
+        _board.StatusColumns[columnIndex].Title = newName;
+    }
     
     public List<Guid> GetStatusColumnIds()
     {
