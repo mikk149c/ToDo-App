@@ -14,6 +14,7 @@ public class BoardController : ITodoBoard
 
     public event EventHandler? ColumnCreated;
     public event EventHandler? ColumnNameChanged;
+    public event EventHandler? ColumnRemoved;
     public event EventHandler? ColumnContentChanged;
     
     private void onColumnCreated(ColumnCreatedEventArgs e)
@@ -24,6 +25,11 @@ public class BoardController : ITodoBoard
     private void onColumnNameChanged(ColumnNameChangedEventArgs e)
     {
         ColumnNameChanged?.Invoke(this, e);
+    }
+    
+    private void onColumnRemoved(ColumnRemovedEventArgs e)
+    {
+        ColumnRemoved?.Invoke(this, e);
     }
     
     private void onColumnContentChanged(ColumnContentChangedEventArgs e)
@@ -67,6 +73,24 @@ public class BoardController : ITodoBoard
         var columnId = _board.CreateColumn(name);
         onColumnCreated(new ColumnCreatedEventArgs(columnId, GetStatusColumnName(columnId), GetNotesInColumn(columnId)));
         return columnId;
+    }
+
+    public void RemoveColumn(Guid columnId)
+    {
+        _board.RemoveColumn(columnId);
+        onColumnRemoved(new ColumnRemovedEventArgs(columnId));
+    }
+
+    public void RemoveColumn(Guid columnId, Guid moveNotesToColumnId)
+    {
+        if (columnId == moveNotesToColumnId)
+        {
+            throw new ArgumentException("Notes cannot be moved to the column that is being removed");
+        }
+
+        _board.MoveAllNotes(columnId, moveNotesToColumnId);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(moveNotesToColumnId, GetNotesInColumn(moveNotesToColumnId)));
+        RemoveColumn(columnId);
     }
 
     public void MoveColumnLeft(Guid columnId)

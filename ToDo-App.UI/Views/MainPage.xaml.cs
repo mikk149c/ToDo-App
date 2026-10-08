@@ -15,6 +15,7 @@ namespace ToDo_App.UI.Views
             
             boardController.ColumnCreated += onColumnCreated;
             boardController.ColumnNameChanged += onColumnNameChanged;
+            boardController.ColumnRemoved += onColumnRemoved;
             boardController.ColumnContentChanged += onColumnContentChanged;
             
             //TODO: load from json
@@ -39,6 +40,11 @@ namespace ToDo_App.UI.Views
 
         private void OnAddTodoClicked(object sender, RoutedEventArgs e)
         {
+            if (columns.Count == 0)
+            {
+                return;
+            }
+
             Guid firstColumn = columns[0];
             boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
         }
@@ -64,6 +70,26 @@ namespace ToDo_App.UI.Views
             removeColumn(args.ColumnId);
             var column = buildColumn(args.ColumnId, args.NewName);
             AddColumnToUI(column, args.ColumnId);
+        }
+
+        private void onColumnRemoved(object? sender, EventArgs eventArgs)
+        {
+            if (eventArgs is not ColumnRemovedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+
+            removeColumn(args.ColumnId);
+            columns.Remove(args.ColumnId);
+
+            foreach (Guid columnId in columns)
+            {
+                Border column = (Border)ColumnsPanel.FindName($"ROOT{columnId.ToString()}");
+                if (column != null)
+                {
+                    Grid.SetColumn(column, columns.IndexOf(columnId));
+                }
+            }
         }
 
         private void onColumnContentChanged(object? sender, EventArgs eventArgs)
@@ -95,7 +121,7 @@ namespace ToDo_App.UI.Views
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
+            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
             Button editButton = new Button
             {
@@ -115,6 +141,16 @@ namespace ToDo_App.UI.Views
             Grid.SetColumn(header, 1);
             columnGrid.Children.Add(header);
 
+            Button deleteButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Delete),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            ToolTipService.SetToolTip(deleteButton, "Delete column");
+            deleteButton.Click += (sender, e) => onDeleteColumnClicked(sender, e, columnId);
+            Grid.SetColumn(deleteButton, 2);
+            columnGrid.Children.Add(deleteButton);
+
             ScrollViewer scrollViewer = new ScrollViewer
             {
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
@@ -127,7 +163,7 @@ namespace ToDo_App.UI.Views
                 }
             };
             Grid.SetRow(scrollViewer, 1);
-            Grid.SetColumnSpan(scrollViewer, 2);
+            Grid.SetColumnSpan(scrollViewer, 3);
             columnGrid.Children.Add(scrollViewer);
 
             column.Child = columnGrid;
@@ -137,8 +173,11 @@ namespace ToDo_App.UI.Views
         
         private void AddColumnToUI(Border column, Guid columnId)
         {
-            columns.Add(columnId);
-
+            if (!columns.Contains(columnId))
+            {
+                columns.Add(columnId);
+            }
+            
             ColumnsPanel.Children.Add(column);
             Grid.SetColumn(column, columns.IndexOf(columnId));
 
@@ -181,6 +220,74 @@ namespace ToDo_App.UI.Views
             if (result == ContentDialogResult.Primary)
             {
                 boardController.SetStatusColumnName(columnId, nameBox.Text);
+            }
+        }
+
+        private async void onDeleteColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
+        {
+            string columnName = boardController.GetStatusColumnName(columnId);
+            int noteCount = boardController.GetNotesInColumn(columnId).Count;
+            List<Guid> otherColumns = boardController.GetStatusColumnIds().FindAll(id => id != columnId);
+
+            TextBlock message = new TextBlock
+            {
+                Text = $"Delete \"{columnName}\"? This can't be undone.",
+                TextWrapping = TextWrapping.Wrap
+            };
+
+            // Only ask what to do with the ToDos when there are some, and somewhere to move them
+            ComboBox? todoActionBox = null;
+            if (noteCount > 0 && otherColumns.Count > 0)
+            {
+                todoActionBox = new ComboBox
+                {
+                    Header = $"What should happen to the {noteCount} ToDo(s) in this column?",
+                    HorizontalAlignment = HorizontalAlignment.Stretch
+                };
+                foreach (Guid otherColumn in otherColumns)
+                {
+                    todoActionBox.Items.Add(new ComboBoxItem
+                    {
+                        Content = $"Move to \"{boardController.GetStatusColumnName(otherColumn)}\"",
+                        Tag = otherColumn
+                    });
+                }
+                todoActionBox.Items.Add(new ComboBoxItem { Content = "Delete the ToDo(s)" });
+                todoActionBox.SelectedIndex = 0;
+            }
+            else if (noteCount > 0)
+            {
+                message.Text = $"Delete \"{columnName}\" and the {noteCount} ToDo(s) in it? This can't be undone.";
+            }
+
+            StackPanel content = new StackPanel { Spacing = 12 };
+            content.Children.Add(message);
+            if (todoActionBox != null)
+            {
+                content.Children.Add(todoActionBox);
+            }
+
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = "Delete column?",
+                Content = content,
+                PrimaryButtonText = "Delete",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                if (todoActionBox?.SelectedItem is ComboBoxItem { Tag: Guid moveToColumn })
+                {
+                    boardController.RemoveColumn(columnId, moveToColumn);
+                }
+                else
+                {
+                    boardController.RemoveColumn(columnId);
+                }
             }
         }
 
