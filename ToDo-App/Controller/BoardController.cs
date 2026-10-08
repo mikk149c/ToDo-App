@@ -87,6 +87,7 @@ public class BoardController : ITodoBoard
     {
         _board.RemoveColumn(columnId);
         onColumnRemoved(new ColumnRemovedEventArgs(columnId));
+        onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
     public void RemoveColumn(Guid columnId, Guid moveNotesToColumnId)
