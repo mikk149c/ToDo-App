@@ -18,3 +18,8 @@ public class ColumnContentChangedEventArgs(Guid columnId, List<ToDoNote> newNote
     public Guid ColumnId = columnId;
     public List<ToDoNote> NewNotes = newNotes;
 }
+
+public class BoardChangedEventArgs(ToDoBoard board) : EventArgs
+{
+    public ToDoBoard Board = board;
+}

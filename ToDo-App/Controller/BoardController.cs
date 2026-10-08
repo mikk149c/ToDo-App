@@ -15,6 +15,7 @@ public class BoardController : ITodoBoard
     public event EventHandler? ColumnCreated;
     public event EventHandler? ColumnNameChanged;
     public event EventHandler? ColumnContentChanged;
+    public event EventHandler? BoardChanged;
     
     private void onColumnCreated(ColumnCreatedEventArgs e)
     {
@@ -30,6 +31,11 @@ public class BoardController : ITodoBoard
     {
         ColumnContentChanged?.Invoke(this, e);
     }
+    
+    private void onBoardChanged(BoardChangedEventArgs e)
+    {
+        BoardChanged?.Invoke(this, e);
+    }
 
 
     public void SetStatusColumnName(Guid columnId, string newName)
@@ -37,6 +43,7 @@ public class BoardController : ITodoBoard
         int columnIndex = _board.GetColumnIndexFromId(columnId);
         _board.StatusColumns[columnIndex].Title = newName;
         onColumnNameChanged(new ColumnNameChangedEventArgs(columnId, GetStatusColumnName(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
     }
     
     public List<Guid> GetStatusColumnIds()
@@ -66,6 +73,7 @@ public class BoardController : ITodoBoard
     {
         var columnId = _board.CreateColumn(name);
         onColumnCreated(new ColumnCreatedEventArgs(columnId, GetStatusColumnName(columnId), GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
         return columnId;
     }
 
@@ -83,6 +91,7 @@ public class BoardController : ITodoBoard
     {
         var noteId = _board.AddNote(columnId, new ToDoNote(title, content));
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
         return noteId;
     }
 
@@ -107,6 +116,7 @@ public class BoardController : ITodoBoard
         //TODO: remove column ID from arguments, as it can be derived from the note ID
         Guid columnId = _board.GetColumnIdFromNoteId(id);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
     public void SetNoteTitle(Guid id, string newTitle)
@@ -115,6 +125,7 @@ public class BoardController : ITodoBoard
         _board.SetNoteTitle(id, newTitle);
         Guid columnId = _board.GetColumnIdFromNoteId(id);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
     public void MoveNoteDown(Guid noteId)
@@ -152,5 +163,12 @@ public class BoardController : ITodoBoard
         Guid columnId = _board.GetColumnIdFromNoteId(noteId);
         _board.RemoveNote(noteId);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void SaveBoardToJson(string jsonPath)
+    {
+        var storeJson = new StoreJson<ToDoBoard>(jsonPath);
+        storeJson.Save(_board);
     }
 }

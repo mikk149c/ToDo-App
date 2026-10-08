@@ -5,6 +5,9 @@ namespace ToDo_App.UI.Views
 {
     public partial class MainPage : Page
     {
+        private const string DefaultJsonPath = "default_board.json";
+        private const string UserJsonPath = "board.json";
+        
         ITodoBoard boardController = new BoardController();
         
         List<Guid> columns = new List<Guid>();
@@ -16,7 +19,13 @@ namespace ToDo_App.UI.Views
             boardController.ColumnCreated += onColumnCreated;
             boardController.ColumnNameChanged += onColumnNameChanged;
             boardController.ColumnContentChanged += onColumnContentChanged;
+            boardController.BoardChanged += onBoardChanged;
             
+            this.Loaded += onPageInitialized;
+        }
+
+        private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
+        {
             //TODO: load from json
             boardController.CreateColumn("Planned");
             boardController.CreateColumn("In Progress");
@@ -75,6 +84,31 @@ namespace ToDo_App.UI.Views
             
             clearColumnItems(args.ColumnId);
             populateStatusColumn(args.ColumnId);
+        }
+
+        private async void onBoardChanged(object? sender, EventArgs eventArgs)
+        {
+            if (eventArgs is not BoardChangedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+
+            try
+            {
+                boardController.SaveBoardToJson(AppContext.BaseDirectory + UserJsonPath);
+            }
+            catch (Exception e)
+            {
+                var dialog = new ContentDialog()
+                {
+                    XamlRoot = this.Content.XamlRoot,
+                    Title = "Failed to save the board",
+                    Content = e.Message,
+                    CloseButtonText = "Ok"
+                };
+
+                var result = await dialog.ShowAsync();
+            }
         }
 
         private void clearColumnItems(Guid column)
