@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Page.Resources>
+        <x:Double x:Key="BoardColumnMinWidth">200</x:Double>
         <Style x:Key="BoardColumn" TargetType="Border">
             <Setter Property="Padding" Value="12" />
             <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
@@ -47,23 +48,35 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Toolbar above the columns -->
-            <Button
+            <!-- Toolbar above the columns -->          
+            <StackPanel
                 Grid.Row="0"
-                Click="OnAddTodoClicked"
-                Content="Add new ToDo"
-                Style="{StaticResource PrimaryAction}" />
+                Orientation="Horizontal"
+                Spacing="12">
+
+                <Button
+                    Click="OnClickAddColumn"
+                    Content="Add Column"
+                    Style="{StaticResource Button_AddColumn}" />
+
+                <Button
+                    Click="OnAddTodoClicked"
+                    Content="Add new ToDo"
+                    Style="{StaticResource PrimaryAction}" />
+
+            </StackPanel>
 
             <!-- Board columns (stub data) -->
-            <Grid x:Name="ColumnsPanel" Grid.Row="1" ColumnSpacing="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <ScrollViewer
+                Grid.Row="1"
+                HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Disabled">
 
-                
-            </Grid>
+                <Grid x:Name="ColumnsPanel" ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                    </Grid.ColumnDefinitions>
+                </Grid>
+            </ScrollViewer>
         </Grid>
     </Page.Content>
 </Page>

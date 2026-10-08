@@ -51,9 +51,7 @@ namespace ToDo_App.UI.Views
             }
 
             var column = buildColumn(args.ColumnId, args.Name);
-            columns.Add(args.ColumnId);
-            Grid.SetColumn(column, columns.IndexOf(args.ColumnId));
-            ColumnsPanel.Children.Add(column);
+            AddColumnToUI(column, args.ColumnId);
         }
 
         private void onColumnNameChanged(object? sender, EventArgs eventArgs)
@@ -65,9 +63,7 @@ namespace ToDo_App.UI.Views
             
             removeColumn(args.ColumnId);
             var column = buildColumn(args.ColumnId, args.NewName);
-            Grid.SetColumn(column, columns.IndexOf(args.ColumnId));
-            ColumnsPanel.Children.Add(column);
-            populateStatusColumn(args.ColumnId);
+            AddColumnToUI(column, args.ColumnId);
         }
 
         private void onColumnContentChanged(object? sender, EventArgs eventArgs)
@@ -84,10 +80,7 @@ namespace ToDo_App.UI.Views
         private void clearColumnItems(Guid column)
         {
             StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName(column.ToString());
-            if (columnPanel != null)
-            {
-                columnPanel.Children.Clear();
-            }
+            if (columnPanel != null){ columnPanel.Children.Clear(); }
         }
 
         private Border buildColumn(Guid columnId, string columnName)
@@ -138,6 +131,20 @@ namespace ToDo_App.UI.Views
 
             return column;
         }
+        
+        private void AddColumnToUI(Border column, Guid columnId)
+        {
+            columns.Add(columnId);
+            
+            ColumnsPanel.Children.Add(column);
+            Grid.SetColumn(column, columns.IndexOf(columnId));
+
+            ColumnsPanel.ColumnDefinitions.Add(
+                new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)}
+            );
+
+            populateStatusColumn(columnId);
+        }
 
         private async void onEditColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
         {
@@ -170,6 +177,8 @@ namespace ToDo_App.UI.Views
             {
                 ColumnsPanel.Children.Remove(columnToRemove);
             }
+            
+            ColumnsPanel.ColumnDefinitions.RemoveAt(0); //TODO: remove specific column instead of index 0
         }
 
         private async void onDeleteTodoClicked(ToDoNote note, Guid columnId)
@@ -303,6 +312,33 @@ namespace ToDo_App.UI.Views
             };
 
             return card;
+        }
+
+        private async void OnClickAddColumn(object sender, RoutedEventArgs e)
+        {  //Button to add new columns to the board
+            TextBox columnNameBox = new TextBox
+            {
+                PlaceholderText = "Column name"
+            };
+
+            ContentDialog dialog = new ContentDialog //Enter column name
+            {
+                Title = "Create new column",
+                Content = columnNameBox,
+                PrimaryButtonText = "Done",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.Content.XamlRoot
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                string columnName = columnNameBox.Text;
+
+                Guid newColumn = boardController.CreateColumn(columnName);
+            }
         }
     }
 }
