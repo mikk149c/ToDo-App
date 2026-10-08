@@ -117,6 +117,9 @@ namespace ToDo_App.UI.Views
 
             ScrollViewer scrollViewer = new ScrollViewer
             {
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+
                 Content = new StackPanel
                 {
                     Name = columnId.ToString(),
@@ -135,13 +138,24 @@ namespace ToDo_App.UI.Views
         private void AddColumnToUI(Border column, Guid columnId)
         {
             columns.Add(columnId);
-            
+
             ColumnsPanel.Children.Add(column);
             Grid.SetColumn(column, columns.IndexOf(columnId));
 
             ColumnsPanel.ColumnDefinitions.Add(
-                new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)}
+                new ColumnDefinition
+                {
+                    Width = new GridLength(1, GridUnitType.Star),
+                    MinWidth = (double)Resources["BoardColumnMinWidth"]
+                }
             );
+
+            double columnMinWidth = (double)Resources["BoardColumnMinWidth"];
+            double spacing = ColumnsPanel.ColumnSpacing;
+
+            ColumnsPanel.MinWidth =
+                columns.Count * columnMinWidth +
+                (columns.Count - 1) * spacing;
 
             populateStatusColumn(columnId);
         }
