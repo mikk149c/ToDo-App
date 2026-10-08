@@ -74,9 +74,6 @@
 
                 <Grid x:Name="ColumnsPanel" ColumnSpacing="16">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                 </Grid>
             </ScrollViewer>

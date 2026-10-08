@@ -11,6 +11,33 @@ public class BoardController : ITodoBoard
         //TODO: read from json
         _board = new ToDoBoard();
     }
+
+    public event EventHandler? ColumnCreated;
+    public event EventHandler? ColumnNameChanged;
+    public event EventHandler? ColumnContentChanged;
+    
+    private void onColumnCreated(ColumnCreatedEventArgs e)
+    {
+        ColumnCreated?.Invoke(this, e);
+    }
+    
+    private void onColumnNameChanged(ColumnNameChangedEventArgs e)
+    {
+        ColumnNameChanged?.Invoke(this, e);
+    }
+    
+    private void onColumnContentChanged(ColumnContentChangedEventArgs e)
+    {
+        ColumnContentChanged?.Invoke(this, e);
+    }
+
+
+    public void SetStatusColumnName(Guid columnId, string newName)
+    {
+        int columnIndex = _board.GetColumnIndexFromId(columnId);
+        _board.StatusColumns[columnIndex].Title = newName;
+        onColumnNameChanged(new ColumnNameChangedEventArgs(columnId, GetStatusColumnName(columnId)));
+    }
     
     public List<Guid> GetStatusColumnIds()
     {
@@ -37,7 +64,9 @@ public class BoardController : ITodoBoard
 
     public Guid CreateColumn(string name)
     {
-        return _board.CreateColumn(name);
+        var columnId = _board.CreateColumn(name);
+        onColumnCreated(new ColumnCreatedEventArgs(columnId, GetStatusColumnName(columnId), GetNotesInColumn(columnId)));
+        return columnId;
     }
 
     public void MoveColumnLeft(Guid columnId)
@@ -52,7 +81,9 @@ public class BoardController : ITodoBoard
 
     public Guid CreateNote(Guid columnId, string title, string content)
     {
-        return _board.AddNote(columnId, new ToDoNote(title, content));
+        var noteId = _board.AddNote(columnId, new ToDoNote(title, content));
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        return noteId;
     }
 
     ToDoNote GetNoteFromGuid(Guid id)
@@ -73,12 +104,17 @@ public class BoardController : ITodoBoard
     {
         //TODO handle exception
         _board.SetNoteContent(id, newContent);
+        //TODO: remove column ID from arguments, as it can be derived from the note ID
+        Guid columnId = _board.GetColumnIdFromNoteId(id);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
     }
 
     public void SetNoteTitle(Guid id, string newTitle)
     {
         //TODO handle exception
         _board.SetNoteTitle(id, newTitle);
+        Guid columnId = _board.GetColumnIdFromNoteId(id);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
     }
 
     public void MoveNoteDown(Guid noteId)
@@ -108,5 +144,13 @@ public class BoardController : ITodoBoard
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
     {
         _board.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos);
+    }
+
+    public void RemoveNote(Guid noteId)
+    {
+        //TODO handle exception
+        Guid columnId = _board.GetColumnIdFromNoteId(noteId);
+        _board.RemoveNote(noteId);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
     }
 }

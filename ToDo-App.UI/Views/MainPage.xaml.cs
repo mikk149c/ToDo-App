@@ -1,32 +1,29 @@
-using ToDo_App;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
-using System.Diagnostics;
 
 namespace ToDo_App.UI.Views
 {
-    /// <summary>
-    /// Kanban-style board mockup showing ToDos grouped into columns.
-    /// </summary>
     public partial class MainPage : Page
     {
         ITodoBoard boardController = new BoardController();
-        List<Guid>columns = new List<Guid>();
+        
+        List<Guid> columns = new List<Guid>();
+        
         public MainPage()
         {
+            InitializeComponent();
+            
+            boardController.ColumnCreated += onColumnCreated;
+            boardController.ColumnNameChanged += onColumnNameChanged;
+            boardController.ColumnContentChanged += onColumnContentChanged;
+            
+            //TODO: load from json
             boardController.CreateColumn("Planned");
             boardController.CreateColumn("In Progress");
             boardController.CreateColumn("Completed");
-            this.InitializeComponent();
-            initializeColumns();
-            foreach (Guid guid in columns)
-            {
-                populateStatus((guid));
-            }
-
         }
 
-        private void populateStatus(Guid column)
+        private void populateStatusColumn(Guid column)
         {
             List<ToDoNote> items = boardController.GetNotesInColumn(column);
             StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName(column.ToString());
@@ -34,60 +31,50 @@ namespace ToDo_App.UI.Views
             {
                 foreach (ToDoNote item in items)
                 {
-                    Border card = buildToDoCard(item.Title, item.Content);
+                    Border card = buildToDoCard(item, column);
                     columnPanel.Children.Add(card);
                 }
             }
         }
 
-        private void initializeColumns()
+        private void OnAddTodoClicked(object sender, RoutedEventArgs e)
         {
-            columns = boardController.GetStatusColumnIds();
-            foreach (Guid columnId in columns) { AddColumnToUI(columnId); }
+            Guid firstColumn = columns[0];
+            boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
         }
 
-        private void AddColumnToUI(Guid columnId)
+        private void onColumnCreated(object? sender, EventArgs eventArgs)
         {
-            ScrollViewer scrollViewer = new ScrollViewer
+            if (eventArgs is not ColumnCreatedEventArgs args)
             {
-                Content = new StackPanel
-                {
-                    Name = columnId.ToString(),
-                    Spacing = 8
-                }
-            };
+                throw new ArgumentException("Wrong EventArgs type");
+            }
 
-            Grid.SetRow(scrollViewer, 1);
+            var column = buildColumn(args.ColumnId, args.Name);
+            AddColumnToUI(column, args.ColumnId);
+        }
 
-            var column = new Border
+        private void onColumnNameChanged(object? sender, EventArgs eventArgs)
+        {
+            if (eventArgs is not ColumnNameChangedEventArgs args)
             {
-                Style = (Style)Resources["BoardColumn"],
-                MinWidth = (double)Resources["BoardColumnMinWidth"],
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+            
+            removeColumn(args.ColumnId);
+            var column = buildColumn(args.ColumnId, args.NewName);
+            AddColumnToUI(column, args.ColumnId);
+        }
 
-                Child = new Grid
-                {
-                    RowDefinitions =
-                    {
-                        new RowDefinition { Height = GridLength.Auto },
-                        new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }
-                    },
-                    Children =
-                    {
-                        new TextBlock
-                        {
-                            Style = (Style)Resources["BoardColumnHeader"],
-                            Text = boardController.GetStatusColumnName(columnId),
-                            Margin = new Thickness(0, 0, 0, 8)
-                        },
-                        scrollViewer
-                    }
-                }
-            };
-
-            ColumnsPanel.Children.Add(column);
-            Grid.SetColumn(column, columns.IndexOf(columnId));
-
-            populateStatus(columnId);
+        private void onColumnContentChanged(object? sender, EventArgs eventArgs)
+        {
+            if (eventArgs is not ColumnContentChangedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+            
+            clearColumnItems(args.ColumnId);
+            populateStatusColumn(args.ColumnId);
         }
 
         private void clearColumnItems(Guid column)
@@ -96,8 +83,220 @@ namespace ToDo_App.UI.Views
             if (columnPanel != null){ columnPanel.Children.Clear(); }
         }
 
-        private Border buildToDoCard(string title, string description)
+        private Border buildColumn(Guid columnId, string columnName)
         {
+            var column = new Border();
+            
+            column.Name = $"ROOT{columnId.ToString()}";
+            column.Style = (Style)Resources["BoardColumn"];
+
+            Grid columnGrid = new Grid { RowSpacing = 8 };
+            columnGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            columnGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+
+            Button editButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Edit),
+                Style = (Style)Application.Current.Resources["PrimaryAction"],
+                Margin = new Thickness(0, 0, 8, 0)
+            };
+            editButton.Click += (sender, e) => onEditColumnClicked(sender, e, columnId);
+            columnGrid.Children.Add(editButton);
+
+            TextBlock header = new TextBlock
+            {
+                Style = (Style)Resources["BoardColumnHeader"],
+                Text = columnName,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            Grid.SetColumn(header, 1);
+            columnGrid.Children.Add(header);
+
+            ScrollViewer scrollViewer = new ScrollViewer
+            {
+                Content = new StackPanel
+                {
+                    Name = columnId.ToString(),
+                    Spacing = 8
+                }
+            };
+            Grid.SetRow(scrollViewer, 1);
+            Grid.SetColumnSpan(scrollViewer, 2);
+            columnGrid.Children.Add(scrollViewer);
+
+            column.Child = columnGrid;
+
+            return column;
+        }
+        
+        private void AddColumnToUI(Border column, Guid columnId)
+        {
+            columns.Add(columnId);
+            
+            ColumnsPanel.Children.Add(column);
+            Grid.SetColumn(column, columns.IndexOf(columnId));
+
+            ColumnsPanel.ColumnDefinitions.Add(
+                new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)}
+            );
+
+            populateStatusColumn(columnId);
+        }
+
+        private async void onEditColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
+        {
+            TextBox nameBox = new TextBox
+            {
+                Text = boardController.GetStatusColumnName(columnId)
+            };
+
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = "Edit column",
+                Content = nameBox,
+                PrimaryButtonText = "Save",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                boardController.SetStatusColumnName(columnId, nameBox.Text);
+            }
+        }
+
+        private void removeColumn(Guid columnId)
+        {
+            Border columnToRemove = (Border)ColumnsPanel.FindName($"ROOT{columnId.ToString()}");
+            if (columnToRemove != null)
+            {
+                ColumnsPanel.Children.Remove(columnToRemove);
+            }
+            
+            ColumnsPanel.ColumnDefinitions.RemoveAt(0); //TODO: remove specific column instead of index 0
+        }
+
+        private async void onDeleteTodoClicked(ToDoNote note, Guid columnId)
+        {
+            var dialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Title = "Delete Note?",
+                PrimaryButtonText = "Delete",
+                CloseButtonText = "Cancel",
+                Content = $"Delete \"{note.Title}\"? This can't be undone.",
+                DefaultButton = ContentDialogButton.Primary,
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                boardController.RemoveNote(note.Id);
+            }
+        }
+
+        private async void onEditTodoClicked(ToDoNote note, Guid columnId)
+        {
+            var titleBox = new TextBox
+            {
+                Header = "Title",
+                Text = note.Title
+            };
+
+            var contentBox = new TextBox
+            {
+                Header = "Description",
+                Text = note.Content,
+                AcceptsReturn = true,
+                TextWrapping = TextWrapping.Wrap,
+                MinHeight = 100
+            };
+
+            var dialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Title = "Edit note",
+                PrimaryButtonText = "Save",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                Content = new StackPanel
+                {
+                    Spacing = 8,
+                    Children = { titleBox, contentBox }
+                }
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                boardController.SetNoteTitle(note.Id, titleBox.Text);
+                boardController.SetNoteContent(note.Id, contentBox.Text);
+            }
+        }
+
+        private Border buildToDoCard(ToDoNote note, Guid columnId)
+        {
+            var titleText = new TextBlock
+            {
+                Style = (Style)Resources["TodoTitle"],
+                Text = note.Title,
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+
+            var editButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Edit),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            ToolTipService.SetToolTip(editButton, "Edit");
+            editButton.Click += (s, e) => onEditTodoClicked(note, columnId);
+
+            var titleRow = new Grid
+            {
+                ColumnSpacing = 8,
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = GridLength.Auto }
+                },
+                Children = { titleText, editButton }
+            };
+            Grid.SetColumn(editButton, 1);
+
+            var descriptionText = new TextBlock
+            {
+                Style = (Style)Resources["TodoDescription"],
+                Text = note.Content,
+                TextWrapping = TextWrapping.Wrap
+            };
+        
+            var deleteButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Delete),
+                VerticalAlignment = VerticalAlignment.Bottom
+            };
+            ToolTipService.SetToolTip(deleteButton, "Delete");
+            deleteButton.Click += (s, e) => onDeleteTodoClicked(note, columnId);
+        
+            var descriptionRow = new Grid
+            {
+                ColumnSpacing = 8,
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = GridLength.Auto }
+                },
+                Children = { descriptionText, deleteButton }
+            };
+            Grid.SetColumn(deleteButton, 1);
+
             var card = new Border
             {
                 Style = (Style)Resources["TodoCard"],
@@ -106,16 +305,8 @@ namespace ToDo_App.UI.Views
                     Spacing = 4,
                     Children =
                     {
-                        new TextBlock
-                        {
-                            Style = (Style)Resources["TodoTitle"],
-                            Text = title,
-                        },
-                        new TextBlock
-                        {
-                            Style = (Style)Resources["TodoDescription"],
-                            Text = description,
-                        }
+                        titleRow,
+                        descriptionRow
                     }
                 }
             };
@@ -147,24 +338,7 @@ namespace ToDo_App.UI.Views
                 string columnName = columnNameBox.Text;
 
                 Guid newColumn = boardController.CreateColumn(columnName);
-                columns.Add(newColumn);
-
-                ColumnsPanel.ColumnDefinitions.Add(
-                    new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)}
-                );
-                AddColumnToUI(newColumn);
             }
-        }
-
-        // Stub: adds a placeholder card to "Planned" until the real models and "new ToDo" flow exist.
-        private void OnAddTodoClicked(object sender, RoutedEventArgs e)
-        {
-            Guid firstColumn = columns[0];
-            boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
-
-            //ToDo replace with event handeling
-            clearColumnItems(firstColumn);
-            populateStatus(firstColumn);
         }
     }
 }

@@ -112,6 +112,28 @@ public class Tests
     }
     
     [Test]
+    public void SetColumnTitleChangesOnlyTargetColumn()
+    {
+        Guid plannedId = board.CreateColumn("Planned");
+        board.CreateColumn("In Progress");
+
+        board.SetColumnTitle(plannedId, "Backlog");
+
+        Assert.That(board.StatusColumns[0].Title, Is.EqualTo("Backlog"));
+        Assert.That(board.StatusColumns[1].Title, Is.EqualTo("In Progress"));
+    }
+
+    [Test]
+    public void SetColumnTitleOnInvalidColumnThrowsException()
+    {
+        board.CreateColumn("Planned");
+        Guid wrongId = Guid.NewGuid();
+
+        Assert.Throws<KeyNotFoundException>(() => board.SetColumnTitle(wrongId, "Backlog"));
+        Assert.That(board.StatusColumns[0].Title, Is.EqualTo("Planned"));
+    }
+
+    [Test]
     public void RemoveInvalidNoteThrowsException()
     {
         board.CreateColumn("test");
