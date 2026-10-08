@@ -4,6 +4,7 @@ public interface ITodoBoard
 {
     public event EventHandler ColumnCreated;
     public event EventHandler ColumnNameChanged;
+    public event EventHandler ColumnRemoved;
     public event EventHandler ColumnContentChanged;
     
     public List<Guid> GetStatusColumnIds();
@@ -14,6 +15,10 @@ public interface ITodoBoard
     public List<ToDoNote> GetNotesInColumn(Guid columnId);
 
     public Guid CreateColumn(string name);
+
+    public void RemoveColumn(Guid columnId);
+
+    public void RemoveColumn(Guid columnId, Guid moveNotesToColumnId);
 
     public void MoveColumnLeft(Guid columnId);
 
