@@ -24,6 +24,19 @@ public class ToDoBoard
         StatusColumns.RemoveAt(index);
     }
 
+    public void MoveAllNotes(Guid fromColumnId, Guid toColumnId)
+    {
+        int fromColumnIndex = GetColumnIndexFromId(fromColumnId);
+        int toColumnIndex = GetColumnIndexFromId(toColumnId);
+        if (fromColumnIndex == toColumnIndex)
+        {
+            return; //skip since the notes are already in the column
+        }
+
+        StatusColumns[toColumnIndex].Notes.AddRange(StatusColumns[fromColumnIndex].Notes);
+        StatusColumns[fromColumnIndex].Notes.Clear();
+    }
+
     public void MoveColumn(int fromColumnIndex, int toColumnIndex) //TO DO, discuss if the gui can handle specific column/note indexes
     {
         if (fromColumnIndex == toColumnIndex)
