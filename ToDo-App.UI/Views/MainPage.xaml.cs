@@ -5,7 +5,7 @@ namespace ToDo_App.UI.Views
 {
     public partial class MainPage : Page
     {
-        private const string DefaultJsonPath = "default_board.json";
+        private const string DefaultJsonPath = "Assets/default_board.json";
         private const string UserJsonPath = "board.json";
         
         ITodoBoard boardController = new BoardController();
@@ -26,10 +26,35 @@ namespace ToDo_App.UI.Views
 
         private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
         {
-            //TODO: load from json
-            boardController.CreateColumn("Planned");
-            boardController.CreateColumn("In Progress");
-            boardController.CreateColumn("Completed");
+            loadBoard();
+        }
+
+        private async void loadBoard()
+        {
+            try
+            {
+                boardController.LoadBoardFromJson(AppContext.BaseDirectory + UserJsonPath);
+            }
+            catch (Exception userFileException)
+            {
+                // If user board can't be loaded, load the default board instead
+                try
+                {
+                    boardController.LoadBoardFromJson(AppContext.BaseDirectory + DefaultJsonPath);
+                }
+                catch (Exception defaultFileException)
+                {
+                    var dialog = new ContentDialog()
+                    {
+                        XamlRoot = this.Content.XamlRoot,
+                        Title = "Failed to load the board",
+                        Content = defaultFileException.Message,
+                        CloseButtonText = "Ok"
+                    };
+
+                    var result = await dialog.ShowAsync();
+                }
+            }
         }
 
         private void populateStatusColumn(Guid column)

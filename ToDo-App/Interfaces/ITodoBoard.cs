@@ -39,4 +39,5 @@ public interface ITodoBoard
     public void RemoveNote(Guid noteId);
 
     public void SaveBoardToJson(string jsonPath);
+    public void LoadBoardFromJson(string jsonPath);
 }

@@ -171,4 +171,14 @@ public class BoardController : ITodoBoard
         var storeJson = new StoreJson<ToDoBoard>(jsonPath);
         storeJson.Save(_board);
     }
+
+    public void LoadBoardFromJson(string jsonPath)
+    {
+        var storeJson = new StoreJson<ToDoBoard>(jsonPath);
+        _board = storeJson.Load();
+        foreach (var column in _board.StatusColumns)
+        {
+            onColumnCreated(new ColumnCreatedEventArgs(column.Id, column.Title, column.Notes));
+        }
+    }
 }
