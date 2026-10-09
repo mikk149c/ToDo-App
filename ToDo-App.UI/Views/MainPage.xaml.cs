@@ -178,37 +178,68 @@ namespace ToDo_App.UI.Views
             Grid columnGrid = new Grid { RowSpacing = 8 };
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            columnGrid.ColumnDefinitions.Add( new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            columnGrid.ColumnDefinitions.Add( new ColumnDefinition { Width = GridLength.Auto });
 
+            // Small edit button
             Button editButton = new Button
             {
                 Content = new SymbolIcon(Symbol.Edit),
-                Style = (Style)Application.Current.Resources["PrimaryAction"],
-                Margin = new Thickness(0, 0, 8, 0)
+                Padding = new Thickness(6),
+                VerticalAlignment = VerticalAlignment.Center
             };
+            ToolTipService.SetToolTip(editButton, "Edit column title");
             editButton.Click += (sender, e) => onEditColumnClicked(sender, e, columnId);
-            columnGrid.Children.Add(editButton);
 
+            // Small delete button
+            Button deleteButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Delete),
+                Padding = new Thickness(6),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            ToolTipService.SetToolTip(deleteButton, "Delete column");
+            deleteButton.Click += (sender, e) => onDeleteColumnClicked(sender, e, columnId);
+
+            // Regular add button
+            Button addTodoToColumnButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Add),
+                Style = (Style)Application.Current.Resources["PrimaryAction"],
+                Margin = new Thickness(0, 0, 8, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            ToolTipService.SetToolTip(addTodoToColumnButton, "Add a new note");
+            addTodoToColumnButton.Click += (sender, e) => onAddTodoToColumnClicked(sender, e, columnId);
+
+            // Column name
             TextBlock header = new TextBlock
             {
                 Style = (Style)Resources["BoardColumnHeader"],
                 Text = columnName,
                 VerticalAlignment = VerticalAlignment.Center
             };
-            Grid.SetColumn(header, 1);
-            columnGrid.Children.Add(header);
 
-            Button deleteButton = new Button
+            // Stack the edit and delete buttons vertically
+            StackPanel columnActions = new StackPanel
             {
-                Content = new SymbolIcon(Symbol.Delete),
-                VerticalAlignment = VerticalAlignment.Center
+                Spacing = 4,
+                VerticalAlignment = VerticalAlignment.Center,
+                Children = { editButton, deleteButton }
             };
-            ToolTipService.SetToolTip(deleteButton, "Delete column");
-            deleteButton.Click += (sender, e) => onDeleteColumnClicked(sender, e, columnId);
-            Grid.SetColumn(deleteButton, 2);
-            columnGrid.Children.Add(deleteButton);
+
+            // Left-hand section: stacked buttons and name
+            Grid headerLeft = new Grid
+            {
+                ColumnSpacing = 8,
+                VerticalAlignment = VerticalAlignment.Center,
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = GridLength.Auto },
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                },
+                Children = { columnActions, header  }
+            };
 
             ScrollViewer scrollViewer = new ScrollViewer
             {
@@ -221,8 +252,16 @@ namespace ToDo_App.UI.Views
                     Spacing = 8
                 }
             };
+
+            Grid.SetColumn(columnActions, 0);
+            Grid.SetColumn(header, 1);
+            Grid.SetColumn(addTodoToColumnButton, 1);
+
             Grid.SetRow(scrollViewer, 1);
-            Grid.SetColumnSpan(scrollViewer, 3);
+            Grid.SetColumnSpan(scrollViewer, 2);
+
+            columnGrid.Children.Add(headerLeft);
+            columnGrid.Children.Add(addTodoToColumnButton);
             columnGrid.Children.Add(scrollViewer);
 
             column.Child = columnGrid;
@@ -259,6 +298,43 @@ namespace ToDo_App.UI.Views
             double newMinWidth = columns.Count * columnMinWidth + (columns.Count - 1) * spacing;
             if(newMinWidth < 0) { newMinWidth = 0; }
             ColumnsPanel.MinWidth = newMinWidth;
+        }
+
+        private async void onAddTodoToColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
+        {
+            var titleBox = new TextBox
+            {
+                Header = "Title",
+                Text = "New ToDo"
+            };
+
+            var contentBox = new TextBox
+            {
+                Header = "Description",
+                Text = "This is a new ToDo item.",
+                AcceptsReturn = true,
+                TextWrapping = TextWrapping.Wrap,
+                MinHeight = 100
+            };
+
+            var dialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Title = "Add a new note",
+                PrimaryButtonText = "Save",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                Content = new StackPanel
+                {
+                    Spacing = 8,
+                    Children = { titleBox, contentBox }
+                }
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary) { 
+                boardController.CreateNote(columnId, titleBox.Text, contentBox.Text); 
+            }
         }
 
         private async void onEditColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
