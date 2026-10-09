@@ -1,0 +1,25 @@
+{
+  "StatusColumns": [
+    {
+      "Id": "b2695ea1-7185-4d42-b670-2a89150f900c",
+      "Title": "Planned",
+      "Notes": [
+        {
+          "Id": "e0cafc66-22a5-4df8-8efc-ce3bfa56f666",
+          "Title": "Write your first ToDo",
+          "Content": "Click the edit button and start writing!"
+        }
+      ]
+    },
+    {
+      "Id": "35177631-0c10-4bd5-8638-03ce853a4b26",
+      "Title": "In Progress",
+      "Notes": []
+    },
+    {
+      "Id": "f1d74e0b-687f-45e3-b7c1-b6ff4c1eddc0",
+      "Title": "Completed",
+      "Notes": []
+    }
+  ]
+}
