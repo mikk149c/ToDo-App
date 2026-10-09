@@ -25,11 +25,15 @@ public interface ITodoBoard
 
     public void MoveColumnRight(Guid columnId);
 
-    public Guid CreateNote(Guid columnId, string title, string content);
+    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null);
 
     public void SetNoteContent(Guid id, string newContent);
 
     public void SetNoteTitle(Guid id, string newTitle);
+
+    public void SetNoteFileAttachment(Guid id, string newFilePath);
+
+    public void RemoveNoteFileAttachment(Guid id);
 
     public void MoveNoteDown(Guid noteId);
 
