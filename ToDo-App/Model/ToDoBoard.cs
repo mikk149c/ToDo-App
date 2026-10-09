@@ -94,12 +94,6 @@ public class ToDoBoard
         return note.Id;
     }
 
-    public void InsertNote(int columnIndex, int noteIndex, string title, string content) //TO DO discuss if GUI knows specific column/note indexes
-    {
-        var note = new ToDoNote(title, content);
-        StatusColumns[columnIndex].InsertNote(noteIndex, note);
-    }
-
     public void RemoveNote(Guid noteId)
     {
         var notePosTuple = GetNotePositionFromId(noteId);

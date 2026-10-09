@@ -111,9 +111,9 @@ public class BoardController : ITodoBoard
         throw new NotImplementedException();
     }
 
-    public Guid CreateNote(Guid columnId, string title, string content)
+    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null)
     {
-        var noteId = _board.AddNote(columnId, new ToDoNote(title, content));
+        var noteId = _board.AddNote(columnId, new ToDoNote(title, content, file));
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
         return noteId;
@@ -150,6 +150,11 @@ public class BoardController : ITodoBoard
         Guid columnId = _board.GetColumnIdFromNoteId(id);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void SetNoteFileAttachment(Guid id, string newFilePath)
+    {
+        throw new NotImplementedException();
     }
 
     public void MoveNoteDown(Guid noteId)

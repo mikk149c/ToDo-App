@@ -54,6 +54,16 @@
                 <Setter Property="Foreground"
                         Value="{StaticResource WhiteBrush}" />
             </Style>
+            <Style x:Key="AttachedFile"
+                   TargetType="Button"
+                   BasedOn="{StaticResource Action}">
+                <Setter Property="Background"
+                        Value="{StaticResource PrimaryBrush}" />
+                <Setter Property="CornerRadius"
+                        Value="8" />
+                <Setter Property="Foreground"
+                        Value="{StaticResource WhiteBrush}" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
