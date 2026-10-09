@@ -33,6 +33,8 @@ public interface ITodoBoard
 
     public void SetNoteFileAttachment(Guid id, string newFilePath);
 
+    public void RemoveNoteFileAttachment(Guid id);
+
     public void MoveNoteDown(Guid noteId);
 
     public void MoveNoteUp(Guid noteId);

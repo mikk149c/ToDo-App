@@ -164,7 +164,7 @@ public class ToDoBoard
         StatusColumns[columnIndex].Notes[noteIndex].Content = content;
     }
 
-    public void SetNoteFile(Guid noteId, AttachedFile file)
+    public void SetNoteFile(Guid noteId, AttachedFile? file)
     {
         var notePosTuple = GetNotePositionFromId(noteId);
         int columnIndex = notePosTuple.columnIndex;

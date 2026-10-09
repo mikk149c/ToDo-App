@@ -61,6 +61,8 @@
                         Value="{StaticResource PrimaryBrush}" />
                 <Setter Property="CornerRadius"
                         Value="8" />
+                <Setter Property="Padding"
+                        Value="8,5,8,5" />
                 <Setter Property="Foreground"
                         Value="{StaticResource WhiteBrush}" />
             </Style>

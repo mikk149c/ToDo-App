@@ -447,8 +447,11 @@ namespace ToDo_App.UI.Views
                 {
                     boardController.SetNoteFileAttachment(note.Id, file.Path);
                 }
-                
-                button.IsEnabled = true;
+                else
+                {
+                    // Re-enable button if no file was selected
+                    button.IsEnabled = true;
+                }
             }
             catch (Exception e)
             {
@@ -478,6 +481,26 @@ namespace ToDo_App.UI.Views
                 {
                     XamlRoot = this.Content.XamlRoot,
                     Title = "Failed to open attached file",
+                    Content = e.Message,
+                    CloseButtonText = "Ok"
+                };
+
+                await dialog.ShowAsync();
+            }
+        }
+
+        private async void onRemoveAttachmentClicked(ToDoNote note)
+        {
+            try
+            {
+                boardController.RemoveNoteFileAttachment(note.Id);
+            }
+            catch (Exception e)
+            {
+                var dialog = new ContentDialog()
+                {
+                    XamlRoot = this.Content.XamlRoot,
+                    Title = "Failed remove attached file",
                     Content = e.Message,
                     CloseButtonText = "Ok"
                 };
@@ -553,6 +576,8 @@ namespace ToDo_App.UI.Views
             Grid attachmentRow;
             if (note.File != null)
             {
+                attachButton.IsEnabled = false;
+                
                 var attachedFileButton = new Button
                 {
                     Style = (Style)Application.Current.Resources["AttachedFile"],
@@ -568,16 +593,27 @@ namespace ToDo_App.UI.Views
                 };
                 attachedFileButton.Click += (s, e) => onAttachmentClicked(note);
                 
+                var removeAttachmentButton = new Button
+                {
+                    Content = new SymbolIcon(Symbol.Remove),
+                    VerticalAlignment = VerticalAlignment.Bottom
+                };
+                ToolTipService.SetToolTip(attachButton, "Remove attached file");
+                removeAttachmentButton.Click += (s, e) => onRemoveAttachmentClicked(note);
+                
                 attachmentRow = new Grid
                 {
                     ColumnSpacing = 8,
                     ColumnDefinitions =
                     {
                         new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
                         new ColumnDefinition { Width = GridLength.Auto }
                     },
-                    Children =  { attachedFileButton, deleteButton }
+                    Children =  { attachedFileButton, removeAttachmentButton, deleteButton }
                 };
+                Grid.SetColumn(removeAttachmentButton, 1);
+                Grid.SetColumn(deleteButton, 2);
             }
             else
             {
@@ -591,8 +627,8 @@ namespace ToDo_App.UI.Views
                     },
                     Children =  { deleteButton }
                 };
+                Grid.SetColumn(deleteButton, 1);
             }
-            Grid.SetColumn(deleteButton, 1);
 
             var card = new Border
             {

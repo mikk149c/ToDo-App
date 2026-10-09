@@ -164,6 +164,15 @@ public class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
+    public void RemoveNoteFileAttachment(Guid id)
+    {
+        //TODO handle exception
+        _board.SetNoteFile(id, null);
+        Guid columnId = _board.GetColumnIdFromNoteId(id);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
     public void MoveNoteDown(Guid noteId)
     {
         //TODO handle exception
