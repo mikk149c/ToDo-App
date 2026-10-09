@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Windows.Storage.Pickers;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
@@ -467,15 +468,22 @@ namespace ToDo_App.UI.Views
 
         private async void onAttachmentClicked(ToDoNote note)
         {
-            var dialog = new ContentDialog()
+            try
             {
-                XamlRoot = this.Content.XamlRoot,
-                Title = $"Opening {note.File.Name}",
-                Content = note.File.FullPath,
-                CloseButtonText = "Ok"
-            };
+                Process.Start("explorer", $"\"{note.File.FullPath}\"");
+            }
+            catch (Exception e)
+            {
+                var dialog = new ContentDialog()
+                {
+                    XamlRoot = this.Content.XamlRoot,
+                    Title = "Failed to open attached file",
+                    Content = e.Message,
+                    CloseButtonText = "Ok"
+                };
 
-            var result = await dialog.ShowAsync();
+                await dialog.ShowAsync();
+            }
         }
 
         private Border buildToDoCard(ToDoNote note, Guid columnId)
