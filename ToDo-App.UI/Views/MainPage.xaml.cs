@@ -1,3 +1,4 @@
+using Microsoft.Windows.Storage.Pickers;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 
@@ -427,33 +428,37 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        private async void onAttachFileClicked(ToDoNote note)
+        private async void onAttachFileClicked(ToDoNote note, Button button)
         {
-            var filePathBox = new TextBox
+            try
             {
-                Header = "File",
-                Text = "FILE PATH HERE"
-            };
-
-            var dialog = new ContentDialog
-            {
-                XamlRoot = this.XamlRoot,
-                Title = "Attach file",
-                PrimaryButtonText = "Save",
-                CloseButtonText = "Cancel",
-                DefaultButton = ContentDialogButton.Primary,
-                Content = new StackPanel
+                // Disable the button to avoid double-clicking
+                button.IsEnabled = false;
+            
+                var picker = new FileOpenPicker(button.XamlRoot.ContentIslandEnvironment.AppWindowId)
                 {
-                    Spacing = 8,
-                    Children = { filePathBox }
-                }
-            };
-
-            ContentDialogResult result = await dialog.ShowAsync();
-
-            if (result == ContentDialogResult.Primary)
+                    CommitButtonText = "Attach file",
+                    SuggestedStartLocation = PickerLocationId.Desktop
+                };
+            
+                var file = await picker.PickSingleFileAsync();
+                boardController.SetNoteFileAttachment(note.Id, file.Path);
+                
+                button.IsEnabled = true;
+            }
+            catch (Exception e)
             {
-                boardController.SetNoteFileAttachment(note.Id, filePathBox.Text);
+                var dialog = new ContentDialog()
+                {
+                    XamlRoot = this.Content.XamlRoot,
+                    Title = "Failed to attach file",
+                    Content = e.Message,
+                    CloseButtonText = "Ok"
+                };
+
+                await dialog.ShowAsync();
+                
+                button.IsEnabled = true;
             }
         }
 
@@ -500,7 +505,7 @@ namespace ToDo_App.UI.Views
                 VerticalAlignment = VerticalAlignment.Bottom
             };
             ToolTipService.SetToolTip(attachButton, "Attach file");
-            attachButton.Click += (s, e) => onAttachFileClicked(note);
+            attachButton.Click += (s, e) => onAttachFileClicked(note, attachButton);
         
             var deleteButton = new Button
             {
