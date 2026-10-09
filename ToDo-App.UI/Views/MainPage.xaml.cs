@@ -196,12 +196,10 @@ namespace ToDo_App.UI.Views
 
         private void recalculateColumnsPanelMinWidth()
         {  //Used when columns are added or deleted as elements like note content needs a defined min width to work with
-            double columnMinWidth = (double)Resources["BoardColumnMinWidth"];
-            double spacing = ColumnsPanel.ColumnSpacing;
-
-            ColumnsPanel.MinWidth =
-                columns.Count * columnMinWidth +
-                (columns.Count - 1) * spacing;
+            double columnMinWidth = (double)Resources["BoardColumnMinWidth"], spacing = ColumnsPanel.ColumnSpacing;
+            double newMinWidth = columns.Count * columnMinWidth + (columns.Count - 1) * spacing;
+            if(newMinWidth < 0) { newMinWidth = 0; }
+            ColumnsPanel.MinWidth = newMinWidth;
         }
 
         private async void onEditColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
