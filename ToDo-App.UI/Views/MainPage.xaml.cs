@@ -140,7 +140,10 @@ namespace ToDo_App.UI.Views
                 };
                 
                 var file = await picker.PickSaveFileAsync();
-                boardController.SaveBoardToJson(file.Path);
+                if (file != null)
+                {
+                    boardController.SaveBoardToJson(file.Path);
+                }
             }
             catch (Exception exception)
             {
