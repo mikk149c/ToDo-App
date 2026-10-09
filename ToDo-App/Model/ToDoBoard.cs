@@ -135,7 +135,7 @@ public class ToDoBoard
         var notePosTuple = GetNotePositionFromId(noteId);
         int startColumn = notePosTuple.columnIndex;
         int startPos = notePosTuple.noteIndex;
-        MoveNote(startColumn, startPos, startColumn, startPos + 1);
+        MoveNote(startColumn, startPos, startColumn, startPos + 2);
     }
 
     public void MoveNoteUp(Guid noteId)

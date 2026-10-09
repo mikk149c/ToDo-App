@@ -12,9 +12,6 @@ public class StoreJson<T> where T : new()
 
     public T Load()
     {
-        if (!File.Exists(_path))
-            return new T();
-
         string json = File.ReadAllText(_path);
         return JsonSerializer.Deserialize<T>(json, Options) ?? new T();
     }
