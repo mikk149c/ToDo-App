@@ -157,7 +157,6 @@ public class BoardController : ITodoBoard
         var fileInfo = new FileInfo(newFilePath);
         var attachedFile = new AttachedFile(fileInfo.Name, newFilePath);
         
-        //TODO handle exception
         _board.SetNoteFile(id, attachedFile);
         Guid columnId = _board.GetColumnIdFromNoteId(id);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
@@ -166,7 +165,6 @@ public class BoardController : ITodoBoard
 
     public void RemoveNoteFileAttachment(Guid id)
     {
-        //TODO handle exception
         _board.SetNoteFile(id, null);
         Guid columnId = _board.GetColumnIdFromNoteId(id);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
