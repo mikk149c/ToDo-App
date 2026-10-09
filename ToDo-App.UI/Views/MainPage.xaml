@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Page.Resources>
-        <x:Double x:Key="BoardColumnMinWidth">200</x:Double>
+        <x:Double x:Key="BoardColumnMinWidth">300</x:Double>
         <Style x:Key="BoardColumn" TargetType="Border">
             <Setter Property="Padding" Value="12" />
             <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
@@ -68,11 +68,15 @@
 
             <!-- Board columns (stub data) -->
             <ScrollViewer
+                x:Name="BoardScrollViewer"
                 Grid.Row="1"
                 HorizontalScrollBarVisibility="Auto"
                 VerticalScrollBarVisibility="Disabled">
 
-                <Grid x:Name="ColumnsPanel" ColumnSpacing="16">
+                <Grid
+                    x:Name="ColumnsPanel"
+                    Width="{Binding ViewportWidth, ElementName=BoardScrollViewer}"
+                    ColumnSpacing="16"> 
                     <Grid.ColumnDefinitions>
                     </Grid.ColumnDefinitions>
                 </Grid>

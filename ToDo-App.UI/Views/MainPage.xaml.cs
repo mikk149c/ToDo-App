@@ -153,6 +153,9 @@ namespace ToDo_App.UI.Views
 
             ScrollViewer scrollViewer = new ScrollViewer
             {
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+
                 Content = new StackPanel
                 {
                     Name = columnId.ToString(),
@@ -179,10 +182,26 @@ namespace ToDo_App.UI.Views
             Grid.SetColumn(column, columns.IndexOf(columnId));
 
             ColumnsPanel.ColumnDefinitions.Add(
-                new ColumnDefinition{Width = new GridLength(1, GridUnitType.Star)}
+                new ColumnDefinition
+                {
+                    Width = new GridLength(1, GridUnitType.Star),
+                    MinWidth = (double)Resources["BoardColumnMinWidth"]
+                }
             );
 
+
+            recalculateColumnsPanelMinWidth();
             populateStatusColumn(columnId);
+        }
+
+        private void recalculateColumnsPanelMinWidth()
+        {  //Used when columns are added or deleted as elements like note content needs a defined min width to work with
+            double columnMinWidth = (double)Resources["BoardColumnMinWidth"];
+            double spacing = ColumnsPanel.ColumnSpacing;
+
+            ColumnsPanel.MinWidth =
+                columns.Count * columnMinWidth +
+                (columns.Count - 1) * spacing;
         }
 
         private async void onEditColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
@@ -274,6 +293,7 @@ namespace ToDo_App.UI.Views
                 {
                     boardController.RemoveColumn(columnId);
                 }
+                recalculateColumnsPanelMinWidth();
             }
         }
 
