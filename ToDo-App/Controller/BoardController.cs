@@ -8,7 +8,6 @@ public class BoardController : ITodoBoard
 
     public BoardController()
     {
-        //TODO: read from json
         _board = new ToDoBoard();
     }
 
