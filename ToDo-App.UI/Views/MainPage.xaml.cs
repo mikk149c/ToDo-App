@@ -584,6 +584,7 @@ namespace ToDo_App.UI.Views
                     Content = new StackPanel
                     {
                         Orientation = Orientation.Horizontal,
+                        Spacing = 8,
                         Children =
                         {
                             new SymbolIcon(Symbol.Attach),
@@ -595,11 +596,22 @@ namespace ToDo_App.UI.Views
                 
                 var removeAttachmentButton = new Button
                 {
-                    Content = new SymbolIcon(Symbol.Remove),
+                    Content = new SymbolIcon(Symbol.Cancel),
                     VerticalAlignment = VerticalAlignment.Bottom
                 };
                 ToolTipService.SetToolTip(attachButton, "Remove attached file");
                 removeAttachmentButton.Click += (s, e) => onRemoveAttachmentClicked(note);
+
+                var attachmentButtonsStack = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 4,
+                    Children =
+                    {
+                        attachedFileButton,
+                        removeAttachmentButton
+                    }
+                };
                 
                 attachmentRow = new Grid
                 {
@@ -607,13 +619,10 @@ namespace ToDo_App.UI.Views
                     ColumnDefinitions =
                     {
                         new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
                         new ColumnDefinition { Width = GridLength.Auto }
                     },
-                    Children =  { attachedFileButton, removeAttachmentButton, deleteButton }
+                    Children =  { attachmentButtonsStack, deleteButton }
                 };
-                Grid.SetColumn(removeAttachmentButton, 1);
-                Grid.SetColumn(deleteButton, 2);
             }
             else
             {
@@ -627,8 +636,8 @@ namespace ToDo_App.UI.Views
                     },
                     Children =  { deleteButton }
                 };
-                Grid.SetColumn(deleteButton, 1);
             }
+            Grid.SetColumn(deleteButton, 1);
 
             var card = new Border
             {
