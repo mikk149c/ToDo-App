@@ -168,6 +168,11 @@ namespace ToDo_App.UI.Views
             if (columnPanel != null){ columnPanel.Children.Clear(); }
         }
 
+        private void onAddTodoToColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
+        {
+            boardController.CreateNote(columnId, "New ToDo", "This is a new ToDo item.");
+        }
+
         private Border buildColumn(Guid columnId, string columnName)
         {
             var column = new Border();
@@ -178,9 +183,21 @@ namespace ToDo_App.UI.Views
             Grid columnGrid = new Grid { RowSpacing = 8 };
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // Add
+            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // Edit
+            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); // Header
+            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // Delete
+
+            Button addTodoToColumnButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Add),
+                Style = (Style)Application.Current.Resources["PrimaryAction"],
+                Margin = new Thickness(0, 0, 8, 0)
+            };
+            ToolTipService.SetToolTip(addTodoToColumnButton, "Add ToDo");
+            addTodoToColumnButton.Click += (sender, e) => onAddTodoToColumnClicked(sender, e, columnId);
+            Grid.SetColumn(addTodoToColumnButton, 0);
+            columnGrid.Children.Add(addTodoToColumnButton);
 
             Button editButton = new Button
             {
@@ -188,7 +205,9 @@ namespace ToDo_App.UI.Views
                 Style = (Style)Application.Current.Resources["PrimaryAction"],
                 Margin = new Thickness(0, 0, 8, 0)
             };
+            ToolTipService.SetToolTip(editButton, "Edit Column Title");
             editButton.Click += (sender, e) => onEditColumnClicked(sender, e, columnId);
+            Grid.SetColumn(editButton, 1);
             columnGrid.Children.Add(editButton);
 
             TextBlock header = new TextBlock
@@ -197,7 +216,7 @@ namespace ToDo_App.UI.Views
                 Text = columnName,
                 VerticalAlignment = VerticalAlignment.Center
             };
-            Grid.SetColumn(header, 1);
+            Grid.SetColumn(header, 2);
             columnGrid.Children.Add(header);
 
             Button deleteButton = new Button
@@ -207,7 +226,7 @@ namespace ToDo_App.UI.Views
             };
             ToolTipService.SetToolTip(deleteButton, "Delete column");
             deleteButton.Click += (sender, e) => onDeleteColumnClicked(sender, e, columnId);
-            Grid.SetColumn(deleteButton, 2);
+            Grid.SetColumn(deleteButton, 3);
             columnGrid.Children.Add(deleteButton);
 
             ScrollViewer scrollViewer = new ScrollViewer
@@ -222,7 +241,7 @@ namespace ToDo_App.UI.Views
                 }
             };
             Grid.SetRow(scrollViewer, 1);
-            Grid.SetColumnSpan(scrollViewer, 3);
+            Grid.SetColumnSpan(scrollViewer, 4);
             columnGrid.Children.Add(scrollViewer);
 
             column.Child = columnGrid;
