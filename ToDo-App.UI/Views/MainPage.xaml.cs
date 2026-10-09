@@ -442,7 +442,10 @@ namespace ToDo_App.UI.Views
                 };
             
                 var file = await picker.PickSingleFileAsync();
-                boardController.SetNoteFileAttachment(note.Id, file.Path);
+                if (file != null)
+                {
+                    boardController.SetNoteFileAttachment(note.Id, file.Path);
+                }
                 
                 button.IsEnabled = true;
             }
@@ -467,8 +470,8 @@ namespace ToDo_App.UI.Views
             var dialog = new ContentDialog()
             {
                 XamlRoot = this.Content.XamlRoot,
-                Title = "Opening file",
-                Content = "...",
+                Title = $"Opening {note.File.Name}",
+                Content = note.File.FullPath,
                 CloseButtonText = "Ok"
             };
 

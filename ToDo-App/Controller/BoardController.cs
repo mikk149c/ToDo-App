@@ -154,7 +154,14 @@ public class BoardController : ITodoBoard
 
     public void SetNoteFileAttachment(Guid id, string newFilePath)
     {
-        throw new NotImplementedException();
+        var fileInfo = new FileInfo(newFilePath);
+        var attachedFile = new AttachedFile(fileInfo.Name, newFilePath);
+        
+        //TODO handle exception
+        _board.SetNoteFile(id, attachedFile);
+        Guid columnId = _board.GetColumnIdFromNoteId(id);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
     public void MoveNoteDown(Guid noteId)
