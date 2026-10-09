@@ -183,51 +183,68 @@ namespace ToDo_App.UI.Views
             Grid columnGrid = new Grid { RowSpacing = 8 };
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // Add
-            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // Edit
-            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); // Header
-            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // Delete
+            columnGrid.ColumnDefinitions.Add( new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            columnGrid.ColumnDefinitions.Add( new ColumnDefinition { Width = GridLength.Auto });
 
+            // Small edit button
+            Button editButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Edit),
+                Padding = new Thickness(6),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            ToolTipService.SetToolTip(editButton, "Edit column title");
+            editButton.Click += (sender, e) => onEditColumnClicked(sender, e, columnId);
+
+            // Small delete button
+            Button deleteButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Delete),
+                Padding = new Thickness(6),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            ToolTipService.SetToolTip(deleteButton, "Delete column");
+            deleteButton.Click += (sender, e) => onDeleteColumnClicked(sender, e, columnId);
+
+            // Regular add button
             Button addTodoToColumnButton = new Button
             {
                 Content = new SymbolIcon(Symbol.Add),
                 Style = (Style)Application.Current.Resources["PrimaryAction"],
-                Margin = new Thickness(0, 0, 8, 0)
+                Margin = new Thickness(0, 0, 8, 0),
+                VerticalAlignment = VerticalAlignment.Center
             };
             ToolTipService.SetToolTip(addTodoToColumnButton, "Add ToDo");
             addTodoToColumnButton.Click += (sender, e) => onAddTodoToColumnClicked(sender, e, columnId);
-            Grid.SetColumn(addTodoToColumnButton, 0);
-            columnGrid.Children.Add(addTodoToColumnButton);
 
-            Button editButton = new Button
-            {
-                Content = new SymbolIcon(Symbol.Edit),
-                Style = (Style)Application.Current.Resources["PrimaryAction"],
-                Margin = new Thickness(0, 0, 8, 0)
-            };
-            ToolTipService.SetToolTip(editButton, "Edit Column Title");
-            editButton.Click += (sender, e) => onEditColumnClicked(sender, e, columnId);
-            Grid.SetColumn(editButton, 1);
-            columnGrid.Children.Add(editButton);
-
+            // Column name
             TextBlock header = new TextBlock
             {
                 Style = (Style)Resources["BoardColumnHeader"],
                 Text = columnName,
                 VerticalAlignment = VerticalAlignment.Center
             };
-            Grid.SetColumn(header, 2);
-            columnGrid.Children.Add(header);
 
-            Button deleteButton = new Button
+            // Stack the edit and delete buttons vertically
+            StackPanel columnActions = new StackPanel
             {
-                Content = new SymbolIcon(Symbol.Delete),
-                VerticalAlignment = VerticalAlignment.Center
+                Spacing = 4,
+                VerticalAlignment = VerticalAlignment.Center,
+                Children = { editButton, deleteButton }
             };
-            ToolTipService.SetToolTip(deleteButton, "Delete column");
-            deleteButton.Click += (sender, e) => onDeleteColumnClicked(sender, e, columnId);
-            Grid.SetColumn(deleteButton, 3);
-            columnGrid.Children.Add(deleteButton);
+
+            // Left-hand section: stacked buttons and name
+            Grid headerLeft = new Grid
+            {
+                ColumnSpacing = 8,
+                VerticalAlignment = VerticalAlignment.Center,
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = GridLength.Auto },
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                },
+                Children = { columnActions, header  }
+            };
 
             ScrollViewer scrollViewer = new ScrollViewer
             {
@@ -240,8 +257,16 @@ namespace ToDo_App.UI.Views
                     Spacing = 8
                 }
             };
+
+            Grid.SetColumn(columnActions, 0);
+            Grid.SetColumn(header, 1);
+            Grid.SetColumn(addTodoToColumnButton, 1);
+
             Grid.SetRow(scrollViewer, 1);
-            Grid.SetColumnSpan(scrollViewer, 4);
+            Grid.SetColumnSpan(scrollViewer, 2);
+
+            columnGrid.Children.Add(headerLeft);
+            columnGrid.Children.Add(addTodoToColumnButton);
             columnGrid.Children.Add(scrollViewer);
 
             column.Child = columnGrid;
