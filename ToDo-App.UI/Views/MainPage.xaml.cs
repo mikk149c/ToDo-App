@@ -1,3 +1,4 @@
+using Microsoft.Windows.Storage.Pickers;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 
@@ -81,6 +82,72 @@ namespace ToDo_App.UI.Views
 
             Guid firstColumn = columns[0];
             boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
+        }
+
+        private async void onImportBoardClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Disable the button to avoid double-clicking
+                ImportButton.IsEnabled = false;
+                
+                var picker = new FileOpenPicker(ExportButton.XamlRoot.ContentIslandEnvironment.AppWindowId)
+                {
+                    CommitButtonText = "Export board",
+                    SuggestedStartLocation = PickerLocationId.Desktop,
+                    FileTypeFilter = { ".json" }
+                };
+                
+                var file = await picker.PickSingleFileAsync();
+                boardController.LoadBoardFromJson(file.Path);
+            }
+            catch (Exception exception)
+            {
+                var dialog = new ContentDialog()
+                {
+                    XamlRoot = this.Content.XamlRoot,
+                    Title = "Failed to import board from file",
+                    Content = exception.Message,
+                    CloseButtonText = "Ok"
+                };
+
+                await dialog.ShowAsync();
+            }
+            
+            ImportButton.IsEnabled = true;
+        }
+
+        private async void onExportBoardClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Disable the button to avoid double-clicking
+                ExportButton.IsEnabled = false;
+                
+                var picker = new FileSavePicker(ExportButton.XamlRoot.ContentIslandEnvironment.AppWindowId)
+                {
+                    CommitButtonText = "Export board",
+                    SuggestedStartLocation = PickerLocationId.Desktop,
+                    FileTypeChoices = {{"JSON Files", new List<string> { ".json" }}}
+                };
+                
+                var file = await picker.PickSaveFileAsync();
+                boardController.SaveBoardToJson(file.Path);
+            }
+            catch (Exception exception)
+            {
+                var dialog = new ContentDialog()
+                {
+                    XamlRoot = this.Content.XamlRoot,
+                    Title = "Failed to export board to file",
+                    Content = exception.Message,
+                    CloseButtonText = "Ok"
+                };
+
+                await dialog.ShowAsync();
+            }
+            
+            ExportButton.IsEnabled = true;
         }
 
         private void onColumnCreated(object? sender, EventArgs eventArgs)
