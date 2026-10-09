@@ -93,7 +93,7 @@ namespace ToDo_App.UI.Views
                 
                 var picker = new FileOpenPicker(ExportButton.XamlRoot.ContentIslandEnvironment.AppWindowId)
                 {
-                    CommitButtonText = "Export board",
+                    CommitButtonText = "Import board",
                     SuggestedStartLocation = PickerLocationId.Desktop,
                     FileTypeFilter = { ".json" }
                 };
