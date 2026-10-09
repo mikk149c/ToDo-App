@@ -168,11 +168,6 @@ namespace ToDo_App.UI.Views
             if (columnPanel != null){ columnPanel.Children.Clear(); }
         }
 
-        private void onAddTodoToColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
-        {
-            boardController.CreateNote(columnId, "New ToDo", "This is a new ToDo item.");
-        }
-
         private Border buildColumn(Guid columnId, string columnName)
         {
             var column = new Border();
@@ -214,7 +209,7 @@ namespace ToDo_App.UI.Views
                 Margin = new Thickness(0, 0, 8, 0),
                 VerticalAlignment = VerticalAlignment.Center
             };
-            ToolTipService.SetToolTip(addTodoToColumnButton, "Add ToDo");
+            ToolTipService.SetToolTip(addTodoToColumnButton, "Add a new note");
             addTodoToColumnButton.Click += (sender, e) => onAddTodoToColumnClicked(sender, e, columnId);
 
             // Column name
@@ -303,6 +298,43 @@ namespace ToDo_App.UI.Views
             double newMinWidth = columns.Count * columnMinWidth + (columns.Count - 1) * spacing;
             if(newMinWidth < 0) { newMinWidth = 0; }
             ColumnsPanel.MinWidth = newMinWidth;
+        }
+
+        private async void onAddTodoToColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
+        {
+            var titleBox = new TextBox
+            {
+                Header = "Title",
+                Text = "New ToDo"
+            };
+
+            var contentBox = new TextBox
+            {
+                Header = "Description",
+                Text = "This is a new ToDo item.",
+                AcceptsReturn = true,
+                TextWrapping = TextWrapping.Wrap,
+                MinHeight = 100
+            };
+
+            var dialog = new ContentDialog
+            {
+                XamlRoot = this.XamlRoot,
+                Title = "Add a new note",
+                PrimaryButtonText = "Save",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Primary,
+                Content = new StackPanel
+                {
+                    Spacing = 8,
+                    Children = { titleBox, contentBox }
+                }
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary) { 
+                boardController.CreateNote(columnId, titleBox.Text, contentBox.Text); 
+            }
         }
 
         private async void onEditColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
