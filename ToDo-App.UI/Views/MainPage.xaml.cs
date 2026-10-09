@@ -28,10 +28,10 @@ namespace ToDo_App.UI.Views
 
         private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
         {
-            loadBoard();
+            loadInitialBoard();
         }
 
-        private async void loadBoard()
+        private async void loadInitialBoard()
         {
             try
             {
@@ -99,7 +99,15 @@ namespace ToDo_App.UI.Views
                 };
                 
                 var file = await picker.PickSingleFileAsync();
-                boardController.LoadBoardFromJson(file.Path);
+                if (file != null)
+                {
+                    // Remove existing board first
+                    columns.Clear();
+                    ColumnsPanel.Children.Clear();
+                    ColumnsPanel.ColumnDefinitions.Clear();
+                    
+                    boardController.LoadBoardFromJson(file.Path);
+                }
             }
             catch (Exception exception)
             {
