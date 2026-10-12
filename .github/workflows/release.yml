@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      # Temporary: lets the pipeline be tested before it is merged. Remove before merging to main.
-      - feature/release-pipeline
 
 permissions:
   contents: write
