@@ -111,9 +111,9 @@ public class BoardController : ITodoBoard
         throw new NotImplementedException();
     }
 
-    public Guid CreateNote(Guid columnId, string title, string content)
+    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null)
     {
-        var noteId = _board.AddNote(columnId, new ToDoNote(title, content));
+        var noteId = _board.AddNote(columnId, new ToDoNote(title, content, file));
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
         return noteId;
@@ -147,6 +147,25 @@ public class BoardController : ITodoBoard
     {
         //TODO handle exception
         _board.SetNoteTitle(id, newTitle);
+        Guid columnId = _board.GetColumnIdFromNoteId(id);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void SetNoteFileAttachment(Guid id, string newFilePath)
+    {
+        var fileInfo = new FileInfo(newFilePath);
+        var attachedFile = new AttachedFile(fileInfo.Name, newFilePath);
+        
+        _board.SetNoteFile(id, attachedFile);
+        Guid columnId = _board.GetColumnIdFromNoteId(id);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void RemoveNoteFileAttachment(Guid id)
+    {
+        _board.SetNoteFile(id, null);
         Guid columnId = _board.GetColumnIdFromNoteId(id);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
