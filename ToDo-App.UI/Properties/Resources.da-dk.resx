@@ -128,4 +128,16 @@
     <data name="todo/property_title" xml:space="preserve">
         <value>Titel</value>
     </data>
+    <data name="button/tooltip_dark" xml:space="preserve">
+        <value>Mørkt</value>
+    </data>
+    <data name="button/tooltip_light" xml:space="preserve">
+        <value>Lyst</value>
+    </data>
+    <data name="button/tooltip_accent_color" xml:space="preserve">
+        <value>Temafarve</value>
+    </data>
+    <data name="button/tooltip_system_default" xml:space="preserve">
+        <value>Systemstandard</value>
+    </data>
 </root>

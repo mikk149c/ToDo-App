@@ -111,7 +111,7 @@
                     </Button>
                 </StackPanel>
 
-                <controls:AppearanceSelector Grid.Column="1" VerticalAlignment="Center" />
+                <controls:AppearanceSelector Grid.Column="1" x:Name="AppearanceSelector" VerticalAlignment="Center" />
             </Grid>
 
             <!-- Board columns (stub data) -->

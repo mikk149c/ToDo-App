@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Windows.Storage.Pickers;
-using System.Runtime.CompilerServices;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 using Windows.ApplicationModel.DataTransfer;
@@ -969,6 +968,13 @@ namespace ToDo_App.UI.Views
             AddToDoButton.Content = Res.ResourceManager.GetString("button/add_todo", _currentCulture);
             ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
             ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);
+            
+            AppearanceSelector.SetStrings(
+                Res.ResourceManager.GetString("button/tooltip_light", _currentCulture),
+                Res.ResourceManager.GetString("button/tooltip_system_default", _currentCulture),
+                Res.ResourceManager.GetString("button/tooltip_dark", _currentCulture),
+                Res.ResourceManager.GetString("button/tooltip_accent_color", _currentCulture)
+                );
         }
     }
 }

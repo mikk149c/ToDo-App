@@ -159,6 +159,42 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Accent color.
+        /// </summary>
+        internal static string button_tooltip_accent_color {
+            get {
+                return ResourceManager.GetString("button/tooltip_accent_color", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dark.
+        /// </summary>
+        internal static string button_tooltip_dark {
+            get {
+                return ResourceManager.GetString("button/tooltip_dark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Light.
+        /// </summary>
+        internal static string button_tooltip_light {
+            get {
+                return ResourceManager.GetString("button/tooltip_light", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System default.
+        /// </summary>
+        internal static string button_tooltip_system_default {
+            get {
+                return ResourceManager.GetString("button/tooltip_system_default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add.
         /// </summary>
         internal static string dialog_add {
