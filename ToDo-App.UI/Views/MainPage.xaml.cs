@@ -302,16 +302,20 @@ namespace ToDo_App.UI.Views
 
         private async void onAddTodoToColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
         {
+            const string defaultTitle = "New ToDo";
+            const string defaultContent = "This is a new ToDo item.";
+
+            // Placeholders (not prefilled text) so the user can start typing straight away
             var titleBox = new TextBox
             {
                 Header = "Title",
-                Text = "New ToDo"
+                PlaceholderText = defaultTitle
             };
 
             var contentBox = new TextBox
             {
                 Header = "Description",
-                Text = "This is a new ToDo item.",
+                PlaceholderText = defaultContent,
                 AcceptsReturn = true,
                 TextWrapping = TextWrapping.Wrap,
                 MinHeight = 100
@@ -333,7 +337,11 @@ namespace ToDo_App.UI.Views
 
             ContentDialogResult result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary) { 
-                boardController.CreateNote(columnId, titleBox.Text, contentBox.Text); 
+                // Leaving a field empty keeps the placeholder text, as it did when the fields were prefilled
+                boardController.CreateNote(
+                    columnId,
+                    string.IsNullOrWhiteSpace(titleBox.Text) ? defaultTitle : titleBox.Text,
+                    string.IsNullOrWhiteSpace(contentBox.Text) ? defaultContent : contentBox.Text);
             }
         }
 
