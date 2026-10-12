@@ -39,20 +39,14 @@ public class ToDoBoard
 
     public void MoveColumn(int fromColumnIndex, int toColumnIndex) //TO DO, discuss if the gui can handle specific column/note indexes
     {
-        if (fromColumnIndex == toColumnIndex)
+        if (fromColumnIndex < 0 || fromColumnIndex >= StatusColumns.Count || toColumnIndex < 0 || toColumnIndex >= StatusColumns.Count ||fromColumnIndex == toColumnIndex)
         {
-            return; //skip if it is the same index
+            return; //skip if it is going out of bounds or is the same index
         }
 
         StatusColumn column = StatusColumns[fromColumnIndex];
+        StatusColumns.RemoveAt(fromColumnIndex);
         StatusColumns.Insert(toColumnIndex, column);
-
-        int deletePos = fromColumnIndex;
-        if (toColumnIndex < fromColumnIndex)
-        {
-            deletePos++; //handle change in the original column position, if the column is moved further left in the same list
-        }
-        StatusColumns.RemoveAt(deletePos);
     }
 
     public void SetColumnTitle(Guid columnId, string columnTitle)
@@ -104,24 +98,32 @@ public class ToDoBoard
 
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
     {
+        if (fromColumnIndex < 0 || fromColumnIndex >= StatusColumns.Count ||
+        toColumnIndex < 0 || toColumnIndex >= StatusColumns.Count)
+        {
+            return; //skip since the position doesn't exist
+        }
+        List<ToDoNote> fromNotes = StatusColumns[fromColumnIndex].Notes;
+        List<ToDoNote> toNotes = StatusColumns[toColumnIndex].Notes;
+
+        if (fromPos < 0 || fromPos >= fromNotes.Count)
+        {
+            return; // skip as there is no note at source.
+        }
+
+        int maxPos = fromColumnIndex == toColumnIndex ? toNotes.Count - 1 : toNotes.Count;
+        if (toPos < 0 || toPos > maxPos)
+        {
+            return; //skip since its trying to move beyond the last entry of the column
+        }
         if (fromColumnIndex == toColumnIndex && fromPos == toPos)
         {
-            return; //skip since it would land at the same position and column
+            return; // skip since the position is the same
         }
+        ToDoNote note = fromNotes[fromPos];
+        fromNotes.RemoveAt(fromPos);
+        toNotes.Insert(toPos, note);
 
-        ToDoNote note = StatusColumns[fromColumnIndex].Notes[fromPos];
-        StatusColumns[toColumnIndex].Notes.Insert(toPos, note);
-
-        int deletePos = fromPos;
-        if (fromColumnIndex == toColumnIndex)
-        {
-            if (toPos < fromPos)
-            {
-                deletePos++; //handle change in the original notes position, if the note is moved further up in the same list
-            }
-
-        }
-        StatusColumns[fromColumnIndex].Notes.RemoveAt(deletePos);
     }
 
     public void MoveNoteDown(Guid noteId)
@@ -129,7 +131,7 @@ public class ToDoBoard
         var notePosTuple = GetNotePositionFromId(noteId);
         int startColumn = notePosTuple.columnIndex;
         int startPos = notePosTuple.noteIndex;
-        MoveNote(startColumn, startPos, startColumn, startPos + 2);
+        MoveNote(startColumn, startPos, startColumn, startPos + 1);
     }
 
     public void MoveNoteUp(Guid noteId)
@@ -184,5 +186,18 @@ public class ToDoBoard
     {
         Guid columnId = StatusColumns.Find(column => column.Notes.Exists(note => note.Id == noteId)).Id;
         return columnId;
+    }
+
+    public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex)
+    {
+        var (fromColumnIndex, fromPos) = GetNotePositionFromId(noteId);
+        int toColumnIndex = GetColumnIndexFromId(targetColumnId);
+        MoveNote(fromColumnIndex, fromPos, toColumnIndex, targetIndex);
+    }
+
+    public void MoveColumn (Guid columnId, int targetIndex)
+    {
+        int fromIndex = GetColumnIndexFromId(columnId);
+        MoveColumn(fromIndex, targetIndex);
     }
 }

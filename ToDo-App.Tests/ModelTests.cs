@@ -104,12 +104,6 @@ public class Tests
         Guid id = Guid.NewGuid();
         Assert.Throws<KeyNotFoundException>(() => board.RemoveColumn(id));
     }
-
-    [Test]
-    public void MoveInvalidColumnThrowsException()
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() => board.MoveColumn(0,1));
-    }
     
     [Test]
     public void SetColumnTitleChangesOnlyTargetColumn()
@@ -250,5 +244,36 @@ public class Tests
         
         Assert.That(board.StatusColumns[0].Notes[0], Is.EqualTo(ProgrammingLanguageNote));
         Assert.That(board.StatusColumns[1].Notes[0], Is.EqualTo(ShoppingNote));
+    }
+    [Test]
+    public void TestMoveNoteDownAndUp()
+    {
+        String title1 = "First note", firstContent = "Køb bananer\nÆbler\nCitroner";
+        var ShoppingNote = new ToDoNote(title1, firstContent);
+        String title2 = "Second note", secondContent = "Vælg programmeringssprog\nC#\nPython\nJava\nC";
+        var ProgrammingLanguageNote = new ToDoNote(title2, secondContent);
+        String title3 = "Third note", thirdContent = "Australia\nJapan\nDenmark";
+        var VacationNote = new ToDoNote(title3, thirdContent);
+ 
+        board.CreateColumn("Planned");
+        board.StatusColumns[0].AddNote(ShoppingNote);
+        board.StatusColumns[0].AddNote(ProgrammingLanguageNote);
+        board.StatusColumns[0].AddNote(VacationNote);
+ 
+        Assert.That(board.StatusColumns[0].Notes[0], Is.EqualTo(ShoppingNote));
+        Assert.That(board.StatusColumns[0].Notes[1], Is.EqualTo(ProgrammingLanguageNote));
+        Assert.That(board.StatusColumns[0].Notes[2], Is.EqualTo(VacationNote));
+ 
+        board.MoveNoteDown(ShoppingNote.Id);
+ 
+        Assert.That(board.StatusColumns[0].Notes[0], Is.EqualTo(ProgrammingLanguageNote));
+        Assert.That(board.StatusColumns[0].Notes[1], Is.EqualTo(ShoppingNote));
+        Assert.That(board.StatusColumns[0].Notes[2], Is.EqualTo(VacationNote));
+       
+        board.MoveNoteUp(ShoppingNote.Id);
+       
+        Assert.That(board.StatusColumns[0].Notes[0], Is.EqualTo(ShoppingNote));
+        Assert.That(board.StatusColumns[0].Notes[1], Is.EqualTo(ProgrammingLanguageNote));
+        Assert.That(board.StatusColumns[0].Notes[2], Is.EqualTo(VacationNote));
     }
 }
