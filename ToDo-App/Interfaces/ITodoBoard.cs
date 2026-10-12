@@ -7,7 +7,7 @@ public interface ITodoBoard
     public event EventHandler ColumnRemoved;
     public event EventHandler ColumnContentChanged;
     public event EventHandler BoardChanged;
-    
+    public event EventHandler? ColumnOrderChanged;
     public List<Guid> GetStatusColumnIds();
 
     public String GetStatusColumnName(Guid columnId);
@@ -49,4 +49,8 @@ public interface ITodoBoard
 
     public void SaveBoardToJson(string jsonPath);
     public void LoadBoardFromJson(string jsonPath);
+
+    public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex);
+
+    public void MoveColumn(Guid columnId, int targetIndex);
 }

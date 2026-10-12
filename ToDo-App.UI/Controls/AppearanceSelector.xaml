@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<UserControl
+    x:Class="ToDo_App.UI.Controls.AppearanceSelector"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel Orientation="Horizontal" Spacing="12">
+        <StackPanel.Resources>
+            <!-- Show the selected theme toggle in the user's accent colour instead of the system one -->
+            <StaticResource x:Key="ToggleButtonBackgroundChecked" ResourceKey="PrimaryBrush" />
+            <StaticResource x:Key="ToggleButtonBackgroundCheckedPointerOver" ResourceKey="PrimaryBrush" />
+            <StaticResource x:Key="ToggleButtonBackgroundCheckedPressed" ResourceKey="PrimaryBrush" />
+            <StaticResource x:Key="ToggleButtonBorderBrushChecked" ResourceKey="PrimaryBrush" />
+            <StaticResource x:Key="ToggleButtonBorderBrushCheckedPointerOver" ResourceKey="PrimaryBrush" />
+            <StaticResource x:Key="ToggleButtonBorderBrushCheckedPressed" ResourceKey="PrimaryBrush" />
+            <StaticResource x:Key="ToggleButtonForegroundChecked" ResourceKey="OnAccentBrush" />
+            <StaticResource x:Key="ToggleButtonForegroundCheckedPointerOver" ResourceKey="OnAccentBrush" />
+            <StaticResource x:Key="ToggleButtonForegroundCheckedPressed" ResourceKey="OnAccentBrush" />
+        </StackPanel.Resources>
+
+        <!-- Theme: Light | System default | Dark -->
+        <StackPanel Orientation="Horizontal">
+            <ToggleButton
+                x:Name="LightButton"
+                AutomationProperties.Name="Light theme"
+                Click="OnThemeClicked"
+                CornerRadius="4,0,0,4"
+                Tag="Light"
+                ToolTipService.ToolTip="Light">
+                <FontIcon FontSize="16" Glyph="&#xE706;" />
+            </ToggleButton>
+
+            <ToggleButton
+                x:Name="SystemButton"
+                AutomationProperties.Name="System default theme"
+                Click="OnThemeClicked"
+                CornerRadius="0"
+                Tag="SystemDefault"
+                ToolTipService.ToolTip="System default">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <FontIcon FontSize="16" Glyph="&#xE706;" />
+                    <FontIcon FontSize="16" Glyph="&#xE708;" />
+                </StackPanel>
+            </ToggleButton>
+
+            <ToggleButton
+                x:Name="DarkButton"
+                AutomationProperties.Name="Dark theme"
+                Click="OnThemeClicked"
+                CornerRadius="0,4,4,0"
+                Tag="Dark"
+                ToolTipService.ToolTip="Dark">
+                <FontIcon FontSize="16" Glyph="&#xE708;" />
+            </ToggleButton>
+        </StackPanel>
+
+        <!-- Accent colour -->
+        <DropDownButton
+            AutomationProperties.Name="Accent colour"
+            ToolTipService.ToolTip="Accent colour">
+            <Ellipse
+                Width="16"
+                Height="16"
+                Fill="{StaticResource PrimaryBrush}" />
+            <DropDownButton.Flyout>
+                <Flyout x:Name="AccentFlyout" Placement="BottomEdgeAlignedRight">
+                    <GridView
+                        x:Name="AccentGrid"
+                        IsItemClickEnabled="False"
+                        SelectionChanged="OnAccentSelectionChanged"
+                        SelectionMode="Single">
+                        <GridView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </GridView.ItemsPanel>
+                    </GridView>
+                </Flyout>
+            </DropDownButton.Flyout>
+        </DropDownButton>
+    </StackPanel>
+</UserControl>

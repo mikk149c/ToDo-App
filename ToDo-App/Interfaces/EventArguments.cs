@@ -28,3 +28,8 @@ public class BoardChangedEventArgs(ToDoBoard board) : EventArgs
 {
     public ToDoBoard Board = board;
 }
+
+public class ColumnOrderChangedEventArgs(List<Guid> columnIds) : EventArgs
+{
+    public List<Guid> ColumnIds = columnIds;
+}

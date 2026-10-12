@@ -4,14 +4,28 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:controls="using:ToDo_App.UI.Controls"
     xmlns:local="using:ToDo_App.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Page.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.ThemeDictionaries>
+            <!-- Columns sit lighter than the page behind them in both themes so they stand out -->
+            <ResourceDictionary x:Key="Light">
+                <SolidColorBrush x:Key="BoardBackgroundBrush" Color="#D9DCE3" />
+                <SolidColorBrush x:Key="BoardColumnBackgroundBrush" Color="#F4F5F7" />
+            </ResourceDictionary>
+            <ResourceDictionary x:Key="Dark">
+                <SolidColorBrush x:Key="BoardBackgroundBrush" Color="#161616" />
+                <SolidColorBrush x:Key="BoardColumnBackgroundBrush" Color="#262626" />
+            </ResourceDictionary>
+        </ResourceDictionary.ThemeDictionaries>
+
         <x:Double x:Key="BoardColumnMinWidth">300</x:Double>
         <Style x:Key="BoardColumn" TargetType="Border">
             <Setter Property="Padding" Value="12" />
-            <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="Background" Value="{ThemeResource BoardColumnBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="8" />
@@ -39,20 +53,25 @@
             <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
+      </ResourceDictionary>
     </Page.Resources>
 
     <Page.Content>
-        <Grid Padding="24" RowSpacing="16">
+        <Grid
+            Padding="24"
+            Background="{ThemeResource BoardBackgroundBrush}"
+            RowSpacing="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Toolbar above the columns -->          
-            <StackPanel
-                Grid.Row="0"
-                Orientation="Horizontal"
-                Spacing="12">
+            <!-- Toolbar above the columns -->
+            <Grid Grid.Row="0" ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
                 <Button
                     x:Name="AddColumnButton"
@@ -90,7 +109,8 @@
                     </Button.Content>
                 </Button>
 
-            </StackPanel>
+                <controls:AppearanceSelector Grid.Column="1" VerticalAlignment="Center" />
+            </Grid>
 
             <!-- Board columns (stub data) -->
             <ScrollViewer

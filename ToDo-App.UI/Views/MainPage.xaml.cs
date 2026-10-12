@@ -1,8 +1,10 @@
 using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Windows.Storage.Pickers;
+using System.Runtime.CompilerServices;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
+using Windows.ApplicationModel.DataTransfer;
 using Res = ToDo_App.UI.Resources;
 
 namespace ToDo_App.UI.Views
@@ -27,6 +29,7 @@ namespace ToDo_App.UI.Views
             boardController.ColumnRemoved += onColumnRemoved;
             boardController.ColumnContentChanged += onColumnContentChanged;
             boardController.BoardChanged += onBoardChanged;
+            boardController.ColumnOrderChanged += onColumnOrderChanged;
             
             _currentCulture = new CultureInfo("da-DK");
             
@@ -225,6 +228,30 @@ namespace ToDo_App.UI.Views
             populateStatusColumn(args.ColumnId);
         }
 
+        private void onColumnOrderChanged(object? sender, EventArgs e)
+        {
+            if (e is not ColumnOrderChangedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+
+            columns = new List<Guid>(args.ColumnIds);
+            
+            for (int i =0; i<columns.Count; i++)
+            {
+                string borderName =$"ROOT{columns[i]}";
+
+                foreach (UIElement child in ColumnsPanel.Children)
+                {
+                    if (child is Border border && border.Name == borderName)
+                    {
+                        Grid.SetColumn(border,i);
+                        break;
+                    }
+                }
+            }
+        }
+
         private async void onBoardChanged(object? sender, EventArgs eventArgs)
         {
             if (eventArgs is not BoardChangedEventArgs args)
@@ -259,15 +286,16 @@ namespace ToDo_App.UI.Views
         private Border buildColumn(Guid columnId, string columnName)
         {
             var column = new Border();
-            
             column.Name = $"ROOT{columnId.ToString()}";
             column.Style = (Style)Resources["BoardColumn"];
+            column.AllowDrop = true;
+            column.DragOver += onColumnDragOver;
 
             Grid columnGrid = new Grid { RowSpacing = 8 };
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            columnGrid.ColumnDefinitions.Add( new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            columnGrid.ColumnDefinitions.Add( new ColumnDefinition { Width = GridLength.Auto });
+            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
             // Small edit button
             Button editButton = new Button
@@ -300,18 +328,21 @@ namespace ToDo_App.UI.Views
             ToolTipService.SetToolTip(addTodoToColumnButton, Res.ResourceManager.GetString("button/add_note_tooltip", _currentCulture));
             addTodoToColumnButton.Click += (sender, e) => onAddTodoToColumnClicked(sender, e, columnId);
 
-            // Column name
+            // Column name (also the drag handle for moving the column)
             TextBlock header = new TextBlock
             {
                 Style = (Style)Resources["BoardColumnHeader"],
                 Text = columnName,
+                CanDrag = true,
+                TextWrapping = TextWrapping.Wrap,
                 VerticalAlignment = VerticalAlignment.Center
             };
+            header.DragStarting += (s, e) => onColumn_DragStarting(columnId, e);
 
             // Stack the edit and delete buttons vertically
             StackPanel columnActions = new StackPanel
             {
-                Spacing = 4,
+                Spacing = 0,
                 VerticalAlignment = VerticalAlignment.Center,
                 Children = { editButton, deleteButton }
             };
@@ -326,25 +357,26 @@ namespace ToDo_App.UI.Views
                     new ColumnDefinition { Width = GridLength.Auto },
                     new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
                 },
-                Children = { columnActions, header  }
+                Children = { columnActions, header }
             };
+            Grid.SetColumn(columnActions, 0);
+            Grid.SetColumn(header, 1);
+
+            var cardPanel = new StackPanel
+            {
+                Name = columnId.ToString(),
+                Spacing = 8
+            };
+            column.Drop += (s, e) => onColumnDrop(columnId, cardPanel, e);
 
             ScrollViewer scrollViewer = new ScrollViewer
             {
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-
-                Content = new StackPanel
-                {
-                    Name = columnId.ToString(),
-                    Spacing = 8
-                }
+                Content = cardPanel
             };
 
-            Grid.SetColumn(columnActions, 0);
-            Grid.SetColumn(header, 1);
             Grid.SetColumn(addTodoToColumnButton, 1);
-
             Grid.SetRow(scrollViewer, 1);
             Grid.SetColumnSpan(scrollViewer, 2);
 
@@ -357,6 +389,69 @@ namespace ToDo_App.UI.Views
             return column;
         }
         
+        private void onColumnDragOver(object sender, DragEventArgs e)
+        {
+            if (e.DataView.Properties.ContainsKey("noteId")|| 
+                e.DataView.Properties.ContainsKey("columnId"))
+            {
+                e.AcceptedOperation = DataPackageOperation.Move;
+            }
+        }
+
+        private void onColumnDrop(Guid columnId, StackPanel panel, DragEventArgs e)
+        {
+            if (e.DataView.Properties.TryGetValue("noteId", out object? noteValue) && noteValue is Guid noteId)
+            {
+                double y = e.GetPosition(panel).Y;
+                int dropIndex = panel.Children.Count;
+                for (int i=0; i<panel.Children.Count; i++)
+                {
+                    UIElement card = panel.Children[i];
+                    double midpoint = card.ActualOffset.Y + card.ActualSize.Y /2;
+                    if (y < midpoint)
+                    {
+                        dropIndex = i;
+                        break;
+                    }
+                }
+                List<ToDoNote> notes = boardController.GetNotesInColumn(columnId);
+                int currentIndex = notes.FindIndex(n => n.Id == noteId);
+                if (currentIndex != -1 && currentIndex < dropIndex)
+                {
+                    dropIndex--;
+                }        
+                boardController.MoveNoteToColumn(noteId, columnId, dropIndex);
+            }
+            else if (e.DataView.Properties.TryGetValue("columnId", out object? columnValue) && columnValue is Guid draggedColumnId)
+            {
+                double x = e.GetPosition(ColumnsPanel).X;
+                List<Guid> order = boardController.GetStatusColumnIds();
+                int dropIndex = order.Count;
+
+                foreach (UIElement child in ColumnsPanel.Children)
+                {
+                    if (child is Border border && border.Name.StartsWith("ROOT"))
+                    {
+                        int gridColumn = Grid.GetColumn(border);
+                        double midpoint = border.ActualOffset.X + border.ActualSize.X / 2;
+
+                        if (x < midpoint && gridColumn < dropIndex)
+                        {
+                            dropIndex = gridColumn;
+                        }
+                    }
+                }
+
+                int currentIndex = order.IndexOf(draggedColumnId);
+                if (currentIndex != -1 && currentIndex < dropIndex)
+                {
+                    dropIndex--;
+                }
+
+                boardController.MoveColumn(draggedColumnId, dropIndex);
+            }
+        }
+
         private void AddColumnToUI(Border column, Guid columnId)
         {
             if (!columns.Contains(columnId))
@@ -390,6 +485,10 @@ namespace ToDo_App.UI.Views
 
         private async void onAddTodoToColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
         {
+            const string defaultTitle = "New ToDo";
+            const string defaultContent = "This is a new ToDo item.";
+
+            // Placeholders (not prefilled text) so the user can start typing straight away
             var titleBox = new TextBox
             {
                 Header = Res.ResourceManager.GetString("todo/property_title", _currentCulture),
@@ -421,7 +520,11 @@ namespace ToDo_App.UI.Views
 
             ContentDialogResult result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary) { 
-                boardController.CreateNote(columnId, titleBox.Text, contentBox.Text); 
+                // Leaving a field empty keeps the placeholder text, as it did when the fields were prefilled
+                boardController.CreateNote(
+                    columnId,
+                    string.IsNullOrWhiteSpace(titleBox.Text) ? defaultTitle : titleBox.Text,
+                    string.IsNullOrWhiteSpace(contentBox.Text) ? defaultContent : contentBox.Text);
             }
         }
 
@@ -802,6 +905,7 @@ namespace ToDo_App.UI.Views
             var card = new Border
             {
                 Style = (Style)Resources["TodoCard"],
+                CanDrag = true,
                 Child = new StackPanel
                 {
                     Spacing = 4,
@@ -812,10 +916,25 @@ namespace ToDo_App.UI.Views
                         attachmentRow
                     }
                 }
+                
             };
-
+            card.DragStarting += (s, e) => onNote_DragStarting(note, e);
             return card;
         }
+
+        private void onNote_DragStarting(ToDoNote note, DragStartingEventArgs args)
+        {
+            args.Data.Properties["noteId"] = note.Id;
+            args.AllowedOperations = DataPackageOperation.Move;
+        }
+
+        private void onColumn_DragStarting(Guid columnId, DragStartingEventArgs args)
+        {
+            args.Data.Properties["columnId"] = columnId;
+            args.AllowedOperations = DataPackageOperation.Move;
+        }
+
+
 
         private async void OnClickAddColumn(object sender, RoutedEventArgs e)
         {  //Button to add new columns to the board

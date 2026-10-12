@@ -16,7 +16,7 @@ public class BoardController : ITodoBoard
     public event EventHandler? ColumnRemoved;
     public event EventHandler? ColumnContentChanged;
     public event EventHandler? BoardChanged;
-    
+    public event EventHandler? ColumnOrderChanged;
     private void onColumnCreated(ColumnCreatedEventArgs e)
     {
         ColumnCreated?.Invoke(this, e);
@@ -41,6 +41,11 @@ public class BoardController : ITodoBoard
     {
         BoardChanged?.Invoke(this, e);
     }
+    private void onColumnOrderChanged(ColumnOrderChangedEventArgs e)
+    {
+        ColumnOrderChanged?.Invoke(this, e);
+    }
+    
 
 
     public void SetStatusColumnName(Guid columnId, string newName)
@@ -171,30 +176,6 @@ public class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    public void MoveNoteDown(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteDown(noteId);
-    }
-
-    public void MoveNoteUp(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteUp(noteId);
-    }
-
-    public void MoveNoteRight(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteRight(noteId);
-    }
-
-    public void MoveNoteLeft(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteLeft(noteId);
-    }
-
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
     {
         _board.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos);
@@ -224,4 +205,35 @@ public class BoardController : ITodoBoard
             onColumnCreated(new ColumnCreatedEventArgs(column.Id, column.Title, column.Notes));
         }
     }
+
+    private void moveNoteAndNotify(Guid noteId, Action move)
+    {
+        Guid sourceColumnId = _board.GetColumnIdFromNoteId(noteId);
+        move();
+        Guid targetColumnId = _board.GetColumnIdFromNoteId(noteId);
+
+        onColumnContentChanged(new ColumnContentChangedEventArgs(sourceColumnId, GetNotesInColumn(sourceColumnId)));
+        if (targetColumnId != sourceColumnId)
+        {
+            onColumnContentChanged(new ColumnContentChangedEventArgs(targetColumnId, GetNotesInColumn(targetColumnId)));
+        }
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex)
+    {
+        moveNoteAndNotify(noteId, () => _board.MoveNoteToColumn(noteId, targetColumnId, targetIndex));
+    }
+
+    public void MoveColumn(Guid columnId, int targetIndex)
+    {
+        _board.MoveColumn(columnId, targetIndex);
+        onColumnOrderChanged(new ColumnOrderChangedEventArgs(GetStatusColumnIds()));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void MoveNoteDown(Guid noteId)  { moveNoteAndNotify(noteId, () => _board.MoveNoteDown(noteId)); }
+    public void MoveNoteUp(Guid noteId)    { moveNoteAndNotify(noteId, () => _board.MoveNoteUp(noteId)); }
+    public void MoveNoteRight(Guid noteId) { moveNoteAndNotify(noteId, () => _board.MoveNoteRight(noteId)); }
+    public void MoveNoteLeft(Guid noteId)  { moveNoteAndNotify(noteId, () => _board.MoveNoteLeft(noteId)); }
 }
