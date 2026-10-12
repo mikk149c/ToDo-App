@@ -18,19 +18,34 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="dialog_ok" xml:space="preserve">
+    <data name="dialog/ok" xml:space="preserve">
         <value>Ok</value>
     </data>
-    <data name="dialog_cancel" xml:space="preserve">
+    <data name="dialog/cancel" xml:space="preserve">
         <value>Cancel</value>
     </data>
     <data name="error/failed_to_load_board" xml:space="preserve">
         <value>Failed to load the board.</value>
     </data>
-    <data name="button_export" xml:space="preserve">
+    <data name="button/export" xml:space="preserve">
         <value>Export</value>
     </data>
-    <data name="button_import" xml:space="preserve">
+    <data name="button/import" xml:space="preserve">
         <value>Import</value>
+    </data>
+    <data name="button/add_column" xml:space="preserve">
+        <value>Add Column</value>
+    </data>
+    <data name="button/add_todo" xml:space="preserve">
+        <value>Add ToDo</value>
+    </data>
+    <data name="dialog/delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="dialog/done" xml:space="preserve">
+        <value>Done</value>
+    </data>
+    <data name="dialog/save" xml:space="preserve">
+        <value>Save</value>
     </data>
 </root>

@@ -16,6 +16,8 @@ namespace ToDo_App.UI.Views
         
         List<Guid> columns = new List<Guid>();
         
+        CultureInfo _currentCulture;
+        
         public MainPage()
         {
             InitializeComponent();
@@ -26,17 +28,15 @@ namespace ToDo_App.UI.Views
             boardController.ColumnContentChanged += onColumnContentChanged;
             boardController.BoardChanged += onBoardChanged;
             
+            _currentCulture = new CultureInfo("da-DK");
+            
             this.Loaded += onPageInitialized;
         }
 
         private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
         {
             loadInitialBoard();
-            
-            var importText = Res.ResourceManager.GetString("button_import", new CultureInfo("da-DK"));
-            var exportText = Res.ResourceManager.GetString("button_export", new CultureInfo("da-DK"));
-            ImportButtonText.Text = importText;
-            ExportButtonText.Text = exportText;
+            localizeXaml();
         }
 
         private async void loadInitialBoard()
@@ -59,7 +59,7 @@ namespace ToDo_App.UI.Views
                         XamlRoot = this.Content.XamlRoot,
                         Title = "Failed to load the board",
                         Content = defaultFileException.Message,
-                        CloseButtonText = "Ok"
+                        CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                     };
 
                     var result = await dialog.ShowAsync();
@@ -124,7 +124,7 @@ namespace ToDo_App.UI.Views
                     XamlRoot = this.Content.XamlRoot,
                     Title = "Failed to import board from file",
                     Content = exception.Message,
-                    CloseButtonText = "Ok"
+                    CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
 
                 await dialog.ShowAsync();
@@ -160,7 +160,7 @@ namespace ToDo_App.UI.Views
                     XamlRoot = this.Content.XamlRoot,
                     Title = "Failed to export board to file",
                     Content = exception.Message,
-                    CloseButtonText = "Ok"
+                    CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
 
                 await dialog.ShowAsync();
@@ -241,7 +241,7 @@ namespace ToDo_App.UI.Views
                     XamlRoot = this.Content.XamlRoot,
                     Title = "Failed to save the board",
                     Content = e.Message,
-                    CloseButtonText = "Ok"
+                    CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
 
                 var result = await dialog.ShowAsync();
@@ -407,8 +407,8 @@ namespace ToDo_App.UI.Views
             {
                 XamlRoot = this.XamlRoot,
                 Title = "Add a new note",
-                PrimaryButtonText = "Save",
-                CloseButtonText = "Cancel",
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/save", _currentCulture),
+                CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
                 Content = new StackPanel
                 {
@@ -434,8 +434,8 @@ namespace ToDo_App.UI.Views
             {
                 Title = "Edit column",
                 Content = nameBox,
-                PrimaryButtonText = "Save",
-                CloseButtonText = "Cancel",
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/save", _currentCulture),
+                CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = this.XamlRoot
             };
@@ -495,8 +495,8 @@ namespace ToDo_App.UI.Views
             {
                 Title = "Delete column?",
                 Content = content,
-                PrimaryButtonText = "Delete",
-                CloseButtonText = "Cancel",
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
+                CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = this.XamlRoot
             };
@@ -533,8 +533,8 @@ namespace ToDo_App.UI.Views
             {
                 XamlRoot = this.XamlRoot,
                 Title = "Delete Note?",
-                PrimaryButtonText = "Delete",
-                CloseButtonText = "Cancel",
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
+                CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 Content = $"Delete \"{note.Title}\"? This can't be undone.",
                 DefaultButton = ContentDialogButton.Primary,
             };
@@ -569,7 +569,7 @@ namespace ToDo_App.UI.Views
                 XamlRoot = this.XamlRoot,
                 Title = "Edit note",
                 PrimaryButtonText = "Save",
-                CloseButtonText = "Cancel",
+                CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
                 Content = new StackPanel
                 {
@@ -618,7 +618,7 @@ namespace ToDo_App.UI.Views
                     XamlRoot = this.Content.XamlRoot,
                     Title = "Failed to attach file",
                     Content = e.Message,
-                    CloseButtonText = "Ok"
+                    CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
 
                 await dialog.ShowAsync();
@@ -640,7 +640,7 @@ namespace ToDo_App.UI.Views
                     XamlRoot = this.Content.XamlRoot,
                     Title = "Failed to open attached file",
                     Content = e.Message,
-                    CloseButtonText = "Ok"
+                    CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
 
                 await dialog.ShowAsync();
@@ -660,7 +660,7 @@ namespace ToDo_App.UI.Views
                     XamlRoot = this.Content.XamlRoot,
                     Title = "Failed remove attached file",
                     Content = e.Message,
-                    CloseButtonText = "Ok"
+                    CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
 
                 await dialog.ShowAsync();
@@ -826,8 +826,8 @@ namespace ToDo_App.UI.Views
             {
                 Title = "Create new column",
                 Content = columnNameBox,
-                PrimaryButtonText = "Done",
-                CloseButtonText = "Cancel",
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/done", _currentCulture),
+                CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = this.Content.XamlRoot
             };
@@ -840,6 +840,14 @@ namespace ToDo_App.UI.Views
 
                 Guid newColumn = boardController.CreateColumn(columnName);
             }
+        }
+
+        private void localizeXaml()
+        {
+            AddColumnButton.Content = Res.ResourceManager.GetString("button/add_column", _currentCulture);
+            AddToDoButton.Content = Res.ResourceManager.GetString("button/add_todo", _currentCulture);
+            ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
+            ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);
         }
     }
 }

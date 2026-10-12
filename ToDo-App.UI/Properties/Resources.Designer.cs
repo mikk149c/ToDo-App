@@ -60,11 +60,29 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Column.
+        /// </summary>
+        internal static string button_add_column {
+            get {
+                return ResourceManager.GetString("button/add_column", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add ToDo.
+        /// </summary>
+        internal static string button_add_todo {
+            get {
+                return ResourceManager.GetString("button/add_todo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Export.
         /// </summary>
         internal static string button_export {
             get {
-                return ResourceManager.GetString("button_export", resourceCulture);
+                return ResourceManager.GetString("button/export", resourceCulture);
             }
         }
         
@@ -73,7 +91,7 @@ namespace ToDo_App.UI {
         /// </summary>
         internal static string button_import {
             get {
-                return ResourceManager.GetString("button_import", resourceCulture);
+                return ResourceManager.GetString("button/import", resourceCulture);
             }
         }
         
@@ -82,7 +100,25 @@ namespace ToDo_App.UI {
         /// </summary>
         internal static string dialog_cancel {
             get {
-                return ResourceManager.GetString("dialog_cancel", resourceCulture);
+                return ResourceManager.GetString("dialog/cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        internal static string dialog_delete {
+            get {
+                return ResourceManager.GetString("dialog/delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Done.
+        /// </summary>
+        internal static string dialog_done {
+            get {
+                return ResourceManager.GetString("dialog/done", resourceCulture);
             }
         }
         
@@ -91,7 +127,16 @@ namespace ToDo_App.UI {
         /// </summary>
         internal static string dialog_ok {
             get {
-                return ResourceManager.GetString("dialog_ok", resourceCulture);
+                return ResourceManager.GetString("dialog/ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        internal static string dialog_save {
+            get {
+                return ResourceManager.GetString("dialog/save", resourceCulture);
             }
         }
         

@@ -55,11 +55,13 @@
                 Spacing="12">
 
                 <Button
+                    x:Name="AddColumnButton"
                     Click="OnClickAddColumn"
                     Content="Add Column"
                     Style="{StaticResource Button_AddColumn}" />
 
                 <Button
+                    x:Name="AddToDoButton"
                     Click="OnAddTodoClicked"
                     Content="Add new ToDo"
                     Style="{StaticResource PrimaryAction}" />
@@ -71,7 +73,7 @@
                     <Button.Content>
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <SymbolIcon Symbol="OpenLocal"/>
-                            <TextBlock x:Name="ImportButtonText"></TextBlock>
+                            <TextBlock x:Name="ImportButtonTextBlock"></TextBlock>
                         </StackPanel>
                     </Button.Content>
                 </Button>
@@ -83,7 +85,7 @@
                     <Button.Content>
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <SymbolIcon Symbol="SaveLocal"/>
-                            <TextBlock x:Name="ExportButtonText"></TextBlock>
+                            <TextBlock x:Name="ExportButtonTextBlock"></TextBlock>
                         </StackPanel>
                     </Button.Content>
                 </Button>
