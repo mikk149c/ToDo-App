@@ -38,7 +38,7 @@ namespace ToDo_App.UI {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ToDo_App.UI.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ToDo_App.UI.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -60,6 +60,24 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Export.
+        /// </summary>
+        internal static string button_export {
+            get {
+                return ResourceManager.GetString("button_export", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import.
+        /// </summary>
+        internal static string button_import {
+            get {
+                return ResourceManager.GetString("button_import", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         internal static string dialog_cancel {
@@ -74,6 +92,15 @@ namespace ToDo_App.UI {
         internal static string dialog_ok {
             get {
                 return ResourceManager.GetString("dialog_ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to load the board..
+        /// </summary>
+        internal static string error_failed_to_load_board {
+            get {
+                return ResourceManager.GetString("error/failed_to_load_board", resourceCulture);
             }
         }
     }

@@ -24,4 +24,13 @@
     <data name="dialog_cancel" xml:space="preserve">
         <value>Cancel</value>
     </data>
+    <data name="error/failed_to_load_board" xml:space="preserve">
+        <value>Failed to load the board.</value>
+    </data>
+    <data name="button_export" xml:space="preserve">
+        <value>Export</value>
+    </data>
+    <data name="button_import" xml:space="preserve">
+        <value>Import</value>
+    </data>
 </root>

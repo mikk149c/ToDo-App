@@ -1,7 +1,9 @@
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.Windows.Storage.Pickers;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
+using Res = ToDo_App.UI.Resources;
 
 namespace ToDo_App.UI.Views
 {
@@ -30,6 +32,11 @@ namespace ToDo_App.UI.Views
         private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
         {
             loadInitialBoard();
+            
+            var importText = Res.ResourceManager.GetString("button_import", new CultureInfo("da-DK"));
+            var exportText = Res.ResourceManager.GetString("button_export", new CultureInfo("da-DK"));
+            ImportButtonText.Text = importText;
+            ExportButtonText.Text = exportText;
         }
 
         private async void loadInitialBoard()

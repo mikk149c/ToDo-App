@@ -17,4 +17,13 @@
     <data name="dialog_cancel" xml:space="preserve">
         <value>Annullér</value>
     </data>
+    <data name="error/failed_to_load_board" xml:space="preserve">
+        <value>Tavlen kunne ikke indlæses.</value>
+    </data>
+    <data name="button_export" xml:space="preserve">
+        <value>Eksportér</value>
+    </data>
+    <data name="button_import" xml:space="preserve">
+        <value>Importér</value>
+    </data>
 </root>
