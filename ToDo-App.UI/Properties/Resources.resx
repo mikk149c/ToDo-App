@@ -42,10 +42,97 @@
     <data name="dialog/delete" xml:space="preserve">
         <value>Delete</value>
     </data>
-    <data name="dialog/done" xml:space="preserve">
-        <value>Done</value>
+    <data name="dialog/add" xml:space="preserve">
+        <value>Add</value>
     </data>
     <data name="dialog/save" xml:space="preserve">
         <value>Save</value>
+    </data>
+    <data name="todo/default_title" xml:space="preserve">
+        <value>New ToDo</value>
+    </data>
+    <data name="todo/default_description" xml:space="preserve">
+        <value>This is a new ToDo card.</value>
+    </data>
+    <data name="dialog/import_board" xml:space="preserve">
+        <value>Import Board</value>
+    </data>
+    <data name="dialog/export_board" xml:space="preserve">
+        <value>Export Board</value>
+    </data>
+    <data name="error/failed_to_import_board" xml:space="preserve">
+        <value>Failed to import board from file.</value>
+    </data>
+    <data name="dialog/json_files" xml:space="preserve">
+        <value>JSON Files</value>
+    </data>
+    <data name="error/failed_to_export_board" xml:space="preserve">
+        <value>Failed to export board from file.</value>
+    </data>
+    <data name="error/failed_to_save_board" xml:space="preserve">
+        <value>Failed to save the board.</value>
+    </data>
+    <data name="button/edit_column_title_tooltip" xml:space="preserve">
+        <value>Edit column title</value>
+    </data>
+    <data name="button/delete_column_tooltip" xml:space="preserve">
+        <value>Delete column</value>
+    </data>
+    <data name="button/add_note_tooltip" xml:space="preserve">
+        <value>Add a new note</value>
+    </data>
+    <data name="todo/property_title" xml:space="preserve">
+        <value>Title</value>
+    </data>
+    <data name="todo/property_description" xml:space="preserve">
+        <value>Description</value>
+    </data>
+    <data name="dialog/title_add_new_note" xml:space="preserve">
+        <value>Add New Note</value>
+    </data>
+    <data name="dialog/title_edit_column" xml:space="preserve">
+        <value>Edit Column</value>
+    </data>
+    <data name="dialog/delete_the_todos" xml:space="preserve">
+        <value>Delete the ToDo(s)</value>
+    </data>
+    <data name="dialog/title_delete_column_q" xml:space="preserve">
+        <value>Delete Column?</value>
+    </data>
+    <data name="dialog/title_delete_note_q" xml:space="preserve">
+        <value>Delete Note?</value>
+    </data>
+    <data name="dialog/title_edit_note" xml:space="preserve">
+        <value>Edit Note</value>
+    </data>
+    <data name="dialog/attach_file" xml:space="preserve">
+        <value>Attach File</value>
+    </data>
+    <data name="error/failed_to_attach_file" xml:space="preserve">
+        <value>Failed to attach file.</value>
+    </data>
+    <data name="error/failed_to_open_attached_file" xml:space="preserve">
+        <value>Failed to open attached file.</value>
+    </data>
+    <data name="error/failed_to_remove_attached_file" xml:space="preserve">
+        <value>Failed to remove attached file.</value>
+    </data>
+    <data name="button/edit_tooltip" xml:space="preserve">
+        <value>Edit</value>
+    </data>
+    <data name="button/attach_file_tooltip" xml:space="preserve">
+        <value>Attach file</value>
+    </data>
+    <data name="button/delete_tooltip" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="button/remove_attached_file_tooltip" xml:space="preserve">
+        <value>Remove attached file</value>
+    </data>
+    <data name="dialog/title_add_new_column" xml:space="preserve">
+        <value>Add New Column</value>
+    </data>
+    <data name="todo/column_title" xml:space="preserve">
+        <value>Column title</value>
     </data>
 </root>

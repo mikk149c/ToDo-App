@@ -69,11 +69,65 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add a new note.
+        /// </summary>
+        internal static string button_add_note_tooltip {
+            get {
+                return ResourceManager.GetString("button/add_note_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add ToDo.
         /// </summary>
         internal static string button_add_todo {
             get {
                 return ResourceManager.GetString("button/add_todo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attach file.
+        /// </summary>
+        internal static string button_attach_file_tooltip {
+            get {
+                return ResourceManager.GetString("button/attach_file_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete column.
+        /// </summary>
+        internal static string button_delete_column_tooltip {
+            get {
+                return ResourceManager.GetString("button/delete_column_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        internal static string button_delete_tooltip {
+            get {
+                return ResourceManager.GetString("button/delete_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit column title.
+        /// </summary>
+        internal static string button_edit_column_title_tooltip {
+            get {
+                return ResourceManager.GetString("button/edit_column_title_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        internal static string button_edit_tooltip {
+            get {
+                return ResourceManager.GetString("button/edit_tooltip", resourceCulture);
             }
         }
         
@@ -96,6 +150,33 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove attached file.
+        /// </summary>
+        internal static string button_remove_attached_file_tooltip {
+            get {
+                return ResourceManager.GetString("button/remove_attached_file_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        internal static string dialog_add {
+            get {
+                return ResourceManager.GetString("dialog/add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attach File.
+        /// </summary>
+        internal static string dialog_attach_file {
+            get {
+                return ResourceManager.GetString("dialog/attach_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         internal static string dialog_cancel {
@@ -114,11 +195,38 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Done.
+        ///   Looks up a localized string similar to Delete the ToDo(s).
         /// </summary>
-        internal static string dialog_done {
+        internal static string dialog_delete_the_todos {
             get {
-                return ResourceManager.GetString("dialog/done", resourceCulture);
+                return ResourceManager.GetString("dialog/delete_the_todos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Board.
+        /// </summary>
+        internal static string dialog_export_board {
+            get {
+                return ResourceManager.GetString("dialog/export_board", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Board.
+        /// </summary>
+        internal static string dialog_import_board {
+            get {
+                return ResourceManager.GetString("dialog/import_board", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to JSON Files.
+        /// </summary>
+        internal static string dialog_json_files {
+            get {
+                return ResourceManager.GetString("dialog/json_files", resourceCulture);
             }
         }
         
@@ -141,11 +249,164 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add New Column.
+        /// </summary>
+        internal static string dialog_title_add_new_column {
+            get {
+                return ResourceManager.GetString("dialog/title_add_new_column", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New Note.
+        /// </summary>
+        internal static string dialog_title_add_new_note {
+            get {
+                return ResourceManager.GetString("dialog/title_add_new_note", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Column?.
+        /// </summary>
+        internal static string dialog_title_delete_column_q {
+            get {
+                return ResourceManager.GetString("dialog/title_delete_column_q", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Note?.
+        /// </summary>
+        internal static string dialog_title_delete_note_q {
+            get {
+                return ResourceManager.GetString("dialog/title_delete_note_q", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Column.
+        /// </summary>
+        internal static string dialog_title_edit_column {
+            get {
+                return ResourceManager.GetString("dialog/title_edit_column", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Note.
+        /// </summary>
+        internal static string dialog_title_edit_note {
+            get {
+                return ResourceManager.GetString("dialog/title_edit_note", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to attach file..
+        /// </summary>
+        internal static string error_failed_to_attach_file {
+            get {
+                return ResourceManager.GetString("error/failed_to_attach_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to export board from file..
+        /// </summary>
+        internal static string error_failed_to_export_board {
+            get {
+                return ResourceManager.GetString("error/failed_to_export_board", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to import board from file..
+        /// </summary>
+        internal static string error_failed_to_import_board {
+            get {
+                return ResourceManager.GetString("error/failed_to_import_board", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to load the board..
         /// </summary>
         internal static string error_failed_to_load_board {
             get {
                 return ResourceManager.GetString("error/failed_to_load_board", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to open attached file..
+        /// </summary>
+        internal static string error_failed_to_open_attached_file {
+            get {
+                return ResourceManager.GetString("error/failed_to_open_attached_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to remove attached file..
+        /// </summary>
+        internal static string error_failed_to_remove_attached_file {
+            get {
+                return ResourceManager.GetString("error/failed_to_remove_attached_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to save the board..
+        /// </summary>
+        internal static string error_failed_to_save_board {
+            get {
+                return ResourceManager.GetString("error/failed_to_save_board", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Column title.
+        /// </summary>
+        internal static string todo_column_title {
+            get {
+                return ResourceManager.GetString("todo/column_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is a new ToDo card..
+        /// </summary>
+        internal static string todo_default_description {
+            get {
+                return ResourceManager.GetString("todo/default_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New ToDo.
+        /// </summary>
+        internal static string todo_default_title {
+            get {
+                return ResourceManager.GetString("todo/default_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        internal static string todo_property_description {
+            get {
+                return ResourceManager.GetString("todo/property_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title.
+        /// </summary>
+        internal static string todo_property_title {
+            get {
+                return ResourceManager.GetString("todo/property_title", resourceCulture);
             }
         }
     }

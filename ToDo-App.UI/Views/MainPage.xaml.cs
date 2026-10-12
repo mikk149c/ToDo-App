@@ -57,7 +57,7 @@ namespace ToDo_App.UI.Views
                     var dialog = new ContentDialog()
                     {
                         XamlRoot = this.Content.XamlRoot,
-                        Title = "Failed to load the board",
+                        Title = Res.ResourceManager.GetString("error/failed_to_load_board", _currentCulture),
                         Content = defaultFileException.Message,
                         CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                     };
@@ -89,7 +89,9 @@ namespace ToDo_App.UI.Views
             }
 
             Guid firstColumn = columns[0];
-            boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
+            boardController.CreateNote(firstColumn,
+                Res.ResourceManager.GetString("todo/default_title", _currentCulture),
+                Res.ResourceManager.GetString("todo/default_description", _currentCulture));
         }
 
         private async void onImportBoardClicked(object sender, RoutedEventArgs e)
@@ -101,7 +103,7 @@ namespace ToDo_App.UI.Views
                 
                 var picker = new FileOpenPicker(ExportButton.XamlRoot.ContentIslandEnvironment.AppWindowId)
                 {
-                    CommitButtonText = "Import board",
+                    CommitButtonText = Res.ResourceManager.GetString("dialog/import_board", _currentCulture),
                     SuggestedStartLocation = PickerLocationId.Desktop,
                     FileTypeFilter = { ".json" }
                 };
@@ -122,7 +124,7 @@ namespace ToDo_App.UI.Views
                 var dialog = new ContentDialog()
                 {
                     XamlRoot = this.Content.XamlRoot,
-                    Title = "Failed to import board from file",
+                    Title = Res.ResourceManager.GetString("error/failed_to_import_board", _currentCulture),
                     Content = exception.Message,
                     CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
@@ -142,9 +144,9 @@ namespace ToDo_App.UI.Views
                 
                 var picker = new FileSavePicker(ExportButton.XamlRoot.ContentIslandEnvironment.AppWindowId)
                 {
-                    CommitButtonText = "Export board",
+                    CommitButtonText = Res.ResourceManager.GetString("dialog/export_board", _currentCulture),
                     SuggestedStartLocation = PickerLocationId.Desktop,
-                    FileTypeChoices = {{"JSON Files", new List<string> { ".json" }}}
+                    FileTypeChoices = {{Res.ResourceManager.GetString("dialog/json_files", _currentCulture), new List<string> { ".json" }}}
                 };
                 
                 var file = await picker.PickSaveFileAsync();
@@ -158,7 +160,7 @@ namespace ToDo_App.UI.Views
                 var dialog = new ContentDialog()
                 {
                     XamlRoot = this.Content.XamlRoot,
-                    Title = "Failed to export board to file",
+                    Title = Res.ResourceManager.GetString("error/failed_to_export_board", _currentCulture),
                     Content = exception.Message,
                     CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
@@ -239,7 +241,7 @@ namespace ToDo_App.UI.Views
                 var dialog = new ContentDialog()
                 {
                     XamlRoot = this.Content.XamlRoot,
-                    Title = "Failed to save the board",
+                    Title = Res.ResourceManager.GetString("error/failed_to_save_board", _currentCulture),
                     Content = e.Message,
                     CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
@@ -274,7 +276,7 @@ namespace ToDo_App.UI.Views
                 Padding = new Thickness(6),
                 VerticalAlignment = VerticalAlignment.Center
             };
-            ToolTipService.SetToolTip(editButton, "Edit column title");
+            ToolTipService.SetToolTip(editButton, Res.ResourceManager.GetString("button/edit_column_title_tooltip", _currentCulture));
             editButton.Click += (sender, e) => onEditColumnClicked(sender, e, columnId);
 
             // Small delete button
@@ -284,7 +286,7 @@ namespace ToDo_App.UI.Views
                 Padding = new Thickness(6),
                 VerticalAlignment = VerticalAlignment.Center
             };
-            ToolTipService.SetToolTip(deleteButton, "Delete column");
+            ToolTipService.SetToolTip(deleteButton, Res.ResourceManager.GetString("button/delete_column_tooltip", _currentCulture));
             deleteButton.Click += (sender, e) => onDeleteColumnClicked(sender, e, columnId);
 
             // Regular add button
@@ -295,7 +297,7 @@ namespace ToDo_App.UI.Views
                 Margin = new Thickness(0, 0, 8, 0),
                 VerticalAlignment = VerticalAlignment.Center
             };
-            ToolTipService.SetToolTip(addTodoToColumnButton, "Add a new note");
+            ToolTipService.SetToolTip(addTodoToColumnButton, Res.ResourceManager.GetString("button/add_note_tooltip", _currentCulture));
             addTodoToColumnButton.Click += (sender, e) => onAddTodoToColumnClicked(sender, e, columnId);
 
             // Column name
@@ -390,14 +392,14 @@ namespace ToDo_App.UI.Views
         {
             var titleBox = new TextBox
             {
-                Header = "Title",
-                Text = "New ToDo"
+                Header = Res.ResourceManager.GetString("todo/property_title", _currentCulture),
+                Text = Res.ResourceManager.GetString("todo/default_title", _currentCulture)
             };
 
             var contentBox = new TextBox
             {
-                Header = "Description",
-                Text = "This is a new ToDo item.",
+                Header = Res.ResourceManager.GetString("todo/property_description", _currentCulture),
+                Text = Res.ResourceManager.GetString("todo/default_description", _currentCulture),
                 AcceptsReturn = true,
                 TextWrapping = TextWrapping.Wrap,
                 MinHeight = 100
@@ -406,8 +408,8 @@ namespace ToDo_App.UI.Views
             var dialog = new ContentDialog
             {
                 XamlRoot = this.XamlRoot,
-                Title = "Add a new note",
-                PrimaryButtonText = Res.ResourceManager.GetString("dialog/save", _currentCulture),
+                Title = Res.ResourceManager.GetString("dialog/title_add_new_note", _currentCulture),
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/add", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
                 Content = new StackPanel
@@ -432,7 +434,7 @@ namespace ToDo_App.UI.Views
 
             ContentDialog dialog = new ContentDialog
             {
-                Title = "Edit column",
+                Title = Res.ResourceManager.GetString("dialog/title_edit_column", _currentCulture),
                 Content = nameBox,
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/save", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
@@ -476,7 +478,7 @@ namespace ToDo_App.UI.Views
                         Tag = otherColumn
                     });
                 }
-                todoActionBox.Items.Add(new ComboBoxItem { Content = "Delete the ToDo(s)" });
+                todoActionBox.Items.Add(new ComboBoxItem { Content = Res.ResourceManager.GetString("dialog/delete_the_todos", _currentCulture) });
                 todoActionBox.SelectedIndex = 0;
             }
             else if (noteCount > 0)
@@ -493,7 +495,7 @@ namespace ToDo_App.UI.Views
 
             ContentDialog dialog = new ContentDialog
             {
-                Title = "Delete column?",
+                Title = Res.ResourceManager.GetString("dialog/title_delete_column_q", _currentCulture),
                 Content = content,
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
@@ -532,7 +534,7 @@ namespace ToDo_App.UI.Views
             var dialog = new ContentDialog
             {
                 XamlRoot = this.XamlRoot,
-                Title = "Delete Note?",
+                Title = Res.ResourceManager.GetString("dialog/title_delete_note_q", _currentCulture),
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 Content = $"Delete \"{note.Title}\"? This can't be undone.",
@@ -551,13 +553,13 @@ namespace ToDo_App.UI.Views
         {
             var titleBox = new TextBox
             {
-                Header = "Title",
+                Header = Res.ResourceManager.GetString("todo/property_title", _currentCulture),
                 Text = note.Title
             };
 
             var contentBox = new TextBox
             {
-                Header = "Description",
+                Header = Res.ResourceManager.GetString("todo/property_description", _currentCulture),
                 Text = note.Content,
                 AcceptsReturn = true,
                 TextWrapping = TextWrapping.Wrap,
@@ -567,8 +569,8 @@ namespace ToDo_App.UI.Views
             var dialog = new ContentDialog
             {
                 XamlRoot = this.XamlRoot,
-                Title = "Edit note",
-                PrimaryButtonText = "Save",
+                Title = Res.ResourceManager.GetString("dialog/title_edit_note", _currentCulture),
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/save", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
                 Content = new StackPanel
@@ -596,7 +598,7 @@ namespace ToDo_App.UI.Views
             
                 var picker = new FileOpenPicker(button.XamlRoot.ContentIslandEnvironment.AppWindowId)
                 {
-                    CommitButtonText = "Attach file",
+                    CommitButtonText = Res.ResourceManager.GetString("dialog/attach_file", _currentCulture),
                     SuggestedStartLocation = PickerLocationId.Desktop
                 };
             
@@ -616,7 +618,7 @@ namespace ToDo_App.UI.Views
                 var dialog = new ContentDialog()
                 {
                     XamlRoot = this.Content.XamlRoot,
-                    Title = "Failed to attach file",
+                    Title = Res.ResourceManager.GetString("error/failed_to_attach_file", _currentCulture),
                     Content = e.Message,
                     CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
@@ -638,7 +640,7 @@ namespace ToDo_App.UI.Views
                 var dialog = new ContentDialog()
                 {
                     XamlRoot = this.Content.XamlRoot,
-                    Title = "Failed to open attached file",
+                    Title = Res.ResourceManager.GetString("error/failed_to_open_attached_file", _currentCulture),
                     Content = e.Message,
                     CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
@@ -658,7 +660,7 @@ namespace ToDo_App.UI.Views
                 var dialog = new ContentDialog()
                 {
                     XamlRoot = this.Content.XamlRoot,
-                    Title = "Failed remove attached file",
+                    Title = Res.ResourceManager.GetString("error/failed_to_remove_attached_file", _currentCulture),
                     Content = e.Message,
                     CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
                 };
@@ -688,7 +690,7 @@ namespace ToDo_App.UI.Views
                 Content = new SymbolIcon(Symbol.Edit),
                 VerticalAlignment = VerticalAlignment.Center
             };
-            ToolTipService.SetToolTip(editButton, "Edit");
+            ToolTipService.SetToolTip(editButton, Res.ResourceManager.GetString("button/edit_tooltip", _currentCulture));
             editButton.Click += (s, e) => onEditTodoClicked(note);
         
             var attachButton = new Button
@@ -696,7 +698,7 @@ namespace ToDo_App.UI.Views
                 Content = new SymbolIcon(Symbol.Attach),
                 VerticalAlignment = VerticalAlignment.Bottom
             };
-            ToolTipService.SetToolTip(attachButton, "Attach file");
+            ToolTipService.SetToolTip(attachButton, Res.ResourceManager.GetString("button/attach_file_tooltip", _currentCulture));
             attachButton.Click += (s, e) => onAttachFileClicked(note, attachButton);
         
             var deleteButton = new Button
@@ -704,7 +706,7 @@ namespace ToDo_App.UI.Views
                 Content = new SymbolIcon(Symbol.Delete),
                 VerticalAlignment = VerticalAlignment.Bottom
             };
-            ToolTipService.SetToolTip(deleteButton, "Delete");
+            ToolTipService.SetToolTip(deleteButton, Res.ResourceManager.GetString("button/delete_tooltip", _currentCulture));
             deleteButton.Click += (s, e) => onDeleteTodoClicked(note);
 
             var titleRow = new Grid
@@ -757,7 +759,7 @@ namespace ToDo_App.UI.Views
                     Content = new SymbolIcon(Symbol.Cancel),
                     VerticalAlignment = VerticalAlignment.Bottom
                 };
-                ToolTipService.SetToolTip(attachButton, "Remove attached file");
+                ToolTipService.SetToolTip(attachButton, Res.ResourceManager.GetString("button/remove_attached_file_tooltip", _currentCulture));
                 removeAttachmentButton.Click += (s, e) => onRemoveAttachmentClicked(note);
 
                 var attachmentButtonsStack = new StackPanel
@@ -819,14 +821,14 @@ namespace ToDo_App.UI.Views
         {  //Button to add new columns to the board
             TextBox columnNameBox = new TextBox
             {
-                PlaceholderText = "Column name"
+                PlaceholderText = Res.ResourceManager.GetString("todo/column_title", _currentCulture)
             };
 
             ContentDialog dialog = new ContentDialog //Enter column name
             {
-                Title = "Create new column",
+                Title = Res.ResourceManager.GetString("dialog/title_add_new_column", _currentCulture),
                 Content = columnNameBox,
-                PrimaryButtonText = Res.ResourceManager.GetString("dialog/done", _currentCulture),
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/add", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = this.Content.XamlRoot
