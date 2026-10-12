@@ -64,6 +64,30 @@
                     Content="Add new ToDo"
                     Style="{StaticResource PrimaryAction}" />
 
+                <Button
+                    x:Name="ImportButton"
+                    Click="onImportBoardClicked"
+                    Style="{StaticResource PrimaryAction}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="OpenLocal"/>
+                            <TextBlock Text="Import"></TextBlock>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
+                <Button
+                    x:Name="ExportButton"
+                    Click="onExportBoardClicked"
+                    Style="{StaticResource PrimaryAction}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="SaveLocal"/>
+                            <TextBlock Text="Export"></TextBlock>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
             </StackPanel>
 
             <!-- Board columns (stub data) -->
