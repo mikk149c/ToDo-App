@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 using Windows.ApplicationModel.DataTransfer;
@@ -22,6 +23,7 @@ namespace ToDo_App.UI.Views
             boardController.ColumnRemoved += onColumnRemoved;
             boardController.ColumnContentChanged += onColumnContentChanged;
             boardController.BoardChanged += onBoardChanged;
+            boardController.ColumnOrderChanged += onColumnOrderChanged;
             
             this.Loaded += onPageInitialized;
         }
@@ -138,6 +140,30 @@ namespace ToDo_App.UI.Views
             populateStatusColumn(args.ColumnId);
         }
 
+        private void onColumnOrderChanged(object? sender, EventArgs e)
+        {
+            if (e is not ColumnOrderChangedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+
+            columns = new List<Guid>(args.ColumnIds);
+            
+            for (int i =0; i<columns.Count; i++)
+            {
+                string borderName =$"ROOT{columns[i]}";
+
+                foreach (UIElement child in ColumnsPanel.Children)
+                {
+                    if (child is Border border && border.Name == borderName)
+                    {
+                        Grid.SetColumn(border,i);
+                        break;
+                    }
+                }
+            }
+        }
+
         private async void onBoardChanged(object? sender, EventArgs eventArgs)
         {
             if (eventArgs is not BoardChangedEventArgs args)
@@ -197,10 +223,12 @@ namespace ToDo_App.UI.Views
             {
                 Style = (Style)Resources["BoardColumnHeader"],
                 Text = columnName,
-                VerticalAlignment = VerticalAlignment.Center
+                VerticalAlignment = VerticalAlignment.Center,
+                CanDrag = true
             };
             Grid.SetColumn(header, 1);
             columnGrid.Children.Add(header);
+            header.DragStarting += (s, e) => onColumn_DragStarting(columnId, e);
 
             Button deleteButton = new Button
             {
@@ -237,7 +265,8 @@ namespace ToDo_App.UI.Views
         
         private void onColumnDragOver(object sender, DragEventArgs e)
         {
-            if (e.DataView.Properties.ContainsKey("noteId"))
+            if (e.DataView.Properties.ContainsKey("noteId")|| 
+                e.DataView.Properties.ContainsKey("columnId"))
             {
                 e.AcceptedOperation = DataPackageOperation.Move;
             }
@@ -245,7 +274,7 @@ namespace ToDo_App.UI.Views
 
         private void onColumnDrop(Guid columnId, StackPanel panel, DragEventArgs e)
         {
-            if (e.DataView.Properties.TryGetValue("noteId", out object? value) && value is Guid noteId)
+            if (e.DataView.Properties.TryGetValue("noteId", out object? noteValue) && noteValue is Guid noteId)
             {
                 double y = e.GetPosition(panel).Y;
                 int dropIndex = panel.Children.Count;
@@ -266,6 +295,34 @@ namespace ToDo_App.UI.Views
                     dropIndex--;
                 }        
                 boardController.MoveNoteToColumn(noteId, columnId, dropIndex);
+            }
+            else if (e.DataView.Properties.TryGetValue("columnId", out object? columnValue) && columnValue is Guid draggedColumnId)
+            {
+                double x = e.GetPosition(ColumnsPanel).X;
+                List<Guid> order = boardController.GetStatusColumnIds();
+                int dropIndex = order.Count;
+
+                foreach (UIElement child in ColumnsPanel.Children)
+                {
+                    if (child is Border border && border.Name.StartsWith("ROOT"))
+                    {
+                        int gridColumn = Grid.GetColumn(border);
+                        double midpoint = border.ActualOffset.X + border.ActualSize.X / 2;
+
+                        if (x < midpoint && gridColumn < dropIndex)
+                        {
+                            dropIndex = gridColumn;
+                        }
+                    }
+                }
+
+                int currentIndex = order.IndexOf(draggedColumnId);
+                if (currentIndex != -1 && currentIndex < dropIndex)
+                {
+                    dropIndex--;
+                }
+
+                boardController.MoveColumn(draggedColumnId, dropIndex);
             }
         }
 
@@ -546,6 +603,13 @@ namespace ToDo_App.UI.Views
             args.Data.Properties["noteId"] = note.Id;
             args.AllowedOperations = DataPackageOperation.Move;
         }
+
+        private void onColumn_DragStarting(Guid columnId, DragStartingEventArgs args)
+        {
+            args.Data.Properties["columnId"] = columnId;
+            args.AllowedOperations = DataPackageOperation.Move;
+        }
+
 
 
         private async void OnClickAddColumn(object sender, RoutedEventArgs e)
