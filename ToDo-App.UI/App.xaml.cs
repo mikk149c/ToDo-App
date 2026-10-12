@@ -1,5 +1,6 @@
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Navigation;
+using ToDo_App.UI.Appearance;
 
 namespace ToDo_App.UI
 {
@@ -9,6 +10,9 @@ namespace ToDo_App.UI
     public partial class App : Application
     {
         private Window window = Window.Current;
+
+        /// <summary>The user's theme and accent colour; UI-only and persisted separately from the board.</summary>
+        public AppearanceManager Appearance { get; } = new AppearanceManager(new AppearanceSettingsStore());
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -41,6 +45,9 @@ namespace ToDo_App.UI
                 rootFrame.NavigationFailed += OnNavigationFailed;
                 window.Content = rootFrame;
             }
+
+            // Apply the saved appearance before anything is shown to avoid a theme flash
+            Appearance.Attach(rootFrame);
 
             _ = rootFrame.Navigate(typeof(MainPage), e.Arguments);
             window.Activate();

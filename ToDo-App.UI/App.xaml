@@ -13,18 +13,28 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary.ThemeDictionaries>
+                <!-- Accent colour used for text directly on the page background, recoloured by AppearanceManager -->
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="AccentTextBrush" Color="#512BD4" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="AccentTextBrush" Color="#512BD4" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
             <!-- Other app resources here -->
             <Color x:Key="Primary">#512BD4</Color>
 
+            <!-- The accent brushes are recoloured at runtime by AppearanceManager -->
             <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
-            <SolidColorBrush x:Key="WhiteBrush" Color="White" />
-            <SolidColorBrush x:Key="BlackBrush" Color="Black" />
+            <!-- Text and icons drawn on top of PrimaryBrush. The accent palette guarantees contrast with white -->
+            <SolidColorBrush x:Key="OnAccentBrush" Color="White" />
 
             <x:Double x:Key="AppFontSize">14</x:Double>
 
             <Style x:Key="MyLabel" TargetType="TextBlock">
                 <Setter Property="Foreground"
-                        Value="{StaticResource PrimaryBrush}" />
+                        Value="{ThemeResource AccentTextBrush}" />
             </Style>
 
             <Style x:Key="Action" TargetType="Button">
@@ -42,7 +52,7 @@
                 <Setter Property="CornerRadius"
                         Value="8" />
                 <Setter Property="Foreground"
-                        Value="{StaticResource WhiteBrush}" />
+                        Value="{StaticResource OnAccentBrush}" />
             </Style>
             <Style x:Key="Button_AddColumn"
                    TargetType="Button"
@@ -52,7 +62,7 @@
                 <Setter Property="CornerRadius"
                         Value="8" />
                 <Setter Property="Foreground"
-                        Value="{StaticResource WhiteBrush}" />
+                        Value="{StaticResource OnAccentBrush}" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>

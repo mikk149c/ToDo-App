@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:controls="using:ToDo_App.UI.Controls"
     xmlns:local="using:ToDo_App.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -48,23 +49,32 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Toolbar above the columns -->          
-            <StackPanel
-                Grid.Row="0"
-                Orientation="Horizontal"
-                Spacing="12">
+            <!-- Toolbar above the columns -->
+            <Grid Grid.Row="0" ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-                <Button
-                    Click="OnClickAddColumn"
-                    Content="Add Column"
-                    Style="{StaticResource Button_AddColumn}" />
+                <StackPanel
+                    Grid.Column="0"
+                    Orientation="Horizontal"
+                    Spacing="12">
 
-                <Button
-                    Click="OnAddTodoClicked"
-                    Content="Add new ToDo"
-                    Style="{StaticResource PrimaryAction}" />
+                    <Button
+                        Click="OnClickAddColumn"
+                        Content="Add Column"
+                        Style="{StaticResource Button_AddColumn}" />
 
-            </StackPanel>
+                    <Button
+                        Click="OnAddTodoClicked"
+                        Content="Add new ToDo"
+                        Style="{StaticResource PrimaryAction}" />
+
+                </StackPanel>
+
+                <controls:AppearanceSelector Grid.Column="1" VerticalAlignment="Center" />
+            </Grid>
 
             <!-- Board columns (stub data) -->
             <ScrollViewer
