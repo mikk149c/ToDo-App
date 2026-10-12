@@ -296,13 +296,14 @@ namespace ToDo_App.UI.Views
             {
                 Style = (Style)Resources["BoardColumnHeader"],
                 Text = columnName,
+                TextWrapping = TextWrapping.Wrap,
                 VerticalAlignment = VerticalAlignment.Center
             };
 
             // Stack the edit and delete buttons vertically
             StackPanel columnActions = new StackPanel
             {
-                Spacing = 4,
+                Spacing = 0,
                 VerticalAlignment = VerticalAlignment.Center,
                 Children = { editButton, deleteButton }
             };
