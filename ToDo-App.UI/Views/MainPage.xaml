@@ -10,7 +10,7 @@
     <Page.Resources>
         <x:Double x:Key="BoardColumnMinWidth">300</x:Double>
         <Style x:Key="BoardColumn" TargetType="Border">
-            <Setter Property="Padding" Value="12" />
+            <Setter Property="Padding" Value="12" />           
             <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
             <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
             <Setter Property="BorderThickness" Value="1" />
