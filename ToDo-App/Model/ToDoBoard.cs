@@ -1,14 +1,17 @@
 ﻿namespace ToDo_App;
 
 using System.Linq;
+using System;
 
 public class ToDoBoard
 {
     public List<StatusColumn> StatusColumns { get; set; }
+    public StatusColumn TrashBin { get; set; }
 
     public ToDoBoard()
     {
         StatusColumns = new List<StatusColumn>();
+        TrashBin = new StatusColumn("Trash bin");
     }
 
     public Guid CreateColumn(string title)
@@ -92,6 +95,15 @@ public class ToDoBoard
         int columnIndex = GetColumnIndexFromId(columnId);
         StatusColumns[columnIndex].AddNote(note);
         return note.Id;
+    }
+
+    public void AddNoteToTrashBin(Guid noteId)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int columnIndex = notePosTuple.columnIndex;
+        int noteIndex = notePosTuple.noteIndex;
+        TrashBin.AddNote(StatusColumns[columnIndex].Notes[noteIndex]);
+        Console.WriteLine("Trash bin size: " + TrashBin.Notes.Count.ToString());
     }
 
     public void RemoveNote(Guid noteId)

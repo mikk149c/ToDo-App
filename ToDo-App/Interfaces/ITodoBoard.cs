@@ -27,6 +27,8 @@ public interface ITodoBoard
 
     public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null);
 
+    public List<ToDoNote> GetTrashBinNotes();
+
     public void SetNoteContent(Guid id, string newContent);
 
     public void SetNoteTitle(Guid id, string newTitle);

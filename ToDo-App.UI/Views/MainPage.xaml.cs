@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.Windows.Storage.Pickers;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
+using System;
 
 namespace ToDo_App.UI.Views
 {
@@ -72,6 +73,84 @@ namespace ToDo_App.UI.Views
                     columnPanel.Children.Add(card);
                 }
             }
+        }
+
+        private async void OnTrashBinClicked(object sender, RoutedEventArgs e)
+        {
+            StackPanel listPanel = new StackPanel
+            {
+                Spacing = 8
+            };
+
+            foreach (ToDoNote note in boardController.GetTrashBinNotes())
+            {
+                
+                Grid row = new Grid
+                {
+                    ColumnSpacing = 8
+                };
+
+                row.ColumnDefinitions.Add(new ColumnDefinition
+                {
+                    Width = new GridLength(1, GridUnitType.Star)
+                });
+
+                row.ColumnDefinitions.Add(new ColumnDefinition
+                {
+                    Width = GridLength.Auto
+                });
+
+                TextBlock title = new TextBlock
+                {
+                    Text = note.Title,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap
+                };
+
+                Grid.SetColumn(title, 0);
+                row.Children.Add(title);
+
+                StackPanel buttons = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 4,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                Button viewButton = new Button
+                {
+                    Content = new SymbolIcon(Symbol.View)
+                };
+
+                Button restoreButton = new Button
+                {
+                    Content = new SymbolIcon(Symbol.Undo)
+                };
+
+                Button deleteButton = new Button
+                {
+                    Content = new SymbolIcon(Symbol.Delete)
+                };
+
+                buttons.Children.Add(viewButton);
+                buttons.Children.Add(restoreButton);
+                buttons.Children.Add(deleteButton);
+
+                Grid.SetColumn(buttons, 1);
+                row.Children.Add(buttons);
+
+                listPanel.Children.Add(row);
+            }
+
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = "Trash bin",
+                Content = listPanel,
+                CloseButtonText = "Close",
+                XamlRoot = this.XamlRoot
+            };
+
+            await dialog.ShowAsync();
         }
 
         private void OnAddTodoClicked(object sender, RoutedEventArgs e)

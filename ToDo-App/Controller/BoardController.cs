@@ -84,6 +84,8 @@ public class BoardController : ITodoBoard
 
     public void RemoveColumn(Guid columnId)
     {
+        _board.TrashBin.Notes.AddRange(GetNotesInColumn(columnId));
+        Console.WriteLine("Trash bin size: " + _board.TrashBin.Notes.Count.ToString());
         _board.RemoveColumn(columnId);
         onColumnRemoved(new ColumnRemovedEventArgs(columnId));
         onBoardChanged(new BoardChangedEventArgs(_board));
@@ -131,6 +133,11 @@ public class BoardController : ITodoBoard
         }
 
         throw new Exception($"Note not found (GUID {id})");
+    }
+
+    public List<ToDoNote> GetTrashBinNotes()
+    {
+        return _board.TrashBin.Notes;
     }
 
     public void SetNoteContent(Guid id, string newContent)
@@ -204,6 +211,7 @@ public class BoardController : ITodoBoard
     {
         //TODO handle exception
         Guid columnId = _board.GetColumnIdFromNoteId(noteId);
+        _board.AddNoteToTrashBin(noteId);
         _board.RemoveNote(noteId);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
@@ -218,7 +226,8 @@ public class BoardController : ITodoBoard
     public void LoadBoardFromJson(string jsonPath)
     {
         var storeJson = new StoreJson<ToDoBoard>(jsonPath);
-        _board = storeJson.Load();
+        //_board = storeJson.Load();
+        _board = new ToDoBoard();
         foreach (var column in _board.StatusColumns)
         {
             onColumnCreated(new ColumnCreatedEventArgs(column.Id, column.Title, column.Notes));
