@@ -2,6 +2,9 @@ using System.Runtime.CompilerServices;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 using Windows.ApplicationModel.DataTransfer;
+using Microsoft.UI;
+using Microsoft.UI.Input;
+using Microsoft.UI.Xaml.Media;
 
 namespace ToDo_App.UI.Views
 {
@@ -69,7 +72,7 @@ namespace ToDo_App.UI.Views
             {
                 foreach (ToDoNote item in items)
                 {
-                    Border card = buildToDoCard(item, column);
+                    Grid card = buildToDoCard(item, column);
                     columnPanel.Children.Add(card);
                 }
             }
@@ -224,11 +227,17 @@ namespace ToDo_App.UI.Views
                 Style = (Style)Resources["BoardColumnHeader"],
                 Text = columnName,
                 VerticalAlignment = VerticalAlignment.Center,
+            };
+
+            var headerHandle = new CursorGrid(InputSystemCursorShape.SizeAll)
+            {
+                Background = new SolidColorBrush(Colors.Transparent),
                 CanDrag = true
             };
-            Grid.SetColumn(header, 1);
-            columnGrid.Children.Add(header);
-            header.DragStarting += (s, e) => onColumn_DragStarting(columnId, e);
+            headerHandle.Children.Add(header);
+            Grid.SetColumn(headerHandle, 1);
+            columnGrid.Children.Add(headerHandle);
+            headerHandle.DragStarting += (s, e) => onColumn_DragStarting(columnId, e);
 
             Button deleteButton = new Button
             {
@@ -523,7 +532,7 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        private Border buildToDoCard(ToDoNote note, Guid columnId)
+        private Grid buildToDoCard(ToDoNote note, Guid columnId)
         {
             var titleText = new TextBlock
             {
@@ -532,7 +541,7 @@ namespace ToDo_App.UI.Views
                 TextTrimming = TextTrimming.CharacterEllipsis
             };
 
-            var editButton = new Button
+            var editButton = new CursorButton(InputSystemCursorShape.Hand)
             {
                 Content = new SymbolIcon(Symbol.Edit),
                 VerticalAlignment = VerticalAlignment.Center
@@ -559,7 +568,7 @@ namespace ToDo_App.UI.Views
                 TextWrapping = TextWrapping.Wrap
             };
         
-            var deleteButton = new Button
+            var deleteButton = new CursorButton(InputSystemCursorShape.Hand)
             {
                 Content = new SymbolIcon(Symbol.Delete),
                 VerticalAlignment = VerticalAlignment.Bottom
@@ -582,20 +591,21 @@ namespace ToDo_App.UI.Views
             var card = new Border
             {
                 Style = (Style)Resources["TodoCard"],
-                CanDrag = true,
                 Child = new StackPanel
                 {
                     Spacing = 4,
-                    Children =
-                    {
-                        titleRow,
-                        descriptionRow
-                    }
+                    Children = { titleRow, descriptionRow }
                 }
-                
             };
-            card.DragStarting += (s, e) => onNote_DragStarting(note, e);
-            return card;
+
+            var cardHandle = new CursorGrid(InputSystemCursorShape.SizeAll)
+            {
+                CanDrag = true
+            };
+            cardHandle.Children.Add(card);
+            cardHandle.DragStarting += (s, e) => onNote_DragStarting(note, e);
+
+            return cardHandle;
         }
 
         private void onNote_DragStarting(ToDoNote note, DragStartingEventArgs args)
