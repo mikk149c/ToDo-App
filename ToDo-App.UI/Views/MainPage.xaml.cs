@@ -324,7 +324,7 @@ namespace ToDo_App.UI.Views
             {
                 Style = (Style)Resources["BoardColumnHeader"],
                 Text = columnName,
-                CanDrag = true
+                CanDrag = true,
                 TextWrapping = TextWrapping.Wrap,
                 VerticalAlignment = VerticalAlignment.Center
             };
