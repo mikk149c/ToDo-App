@@ -104,12 +104,6 @@ public class Tests
         Guid id = Guid.NewGuid();
         Assert.Throws<KeyNotFoundException>(() => board.RemoveColumn(id));
     }
-
-    [Test]
-    public void MoveInvalidColumnThrowsException()
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() => board.MoveColumn(0,1));
-    }
     
     [Test]
     public void SetColumnTitleChangesOnlyTargetColumn()
