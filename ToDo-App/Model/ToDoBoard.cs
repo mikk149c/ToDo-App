@@ -88,12 +88,6 @@ public class ToDoBoard
         return note.Id;
     }
 
-    public void InsertNote(int columnIndex, int noteIndex, string title, string content) //TO DO discuss if GUI knows specific column/note indexes
-    {
-        var note = new ToDoNote(title, content);
-        StatusColumns[columnIndex].InsertNote(noteIndex, note);
-    }
-
     public void RemoveNote(Guid noteId)
     {
         var notePosTuple = GetNotePositionFromId(noteId);
@@ -137,7 +131,7 @@ public class ToDoBoard
         var notePosTuple = GetNotePositionFromId(noteId);
         int startColumn = notePosTuple.columnIndex;
         int startPos = notePosTuple.noteIndex;
-        MoveNote(startColumn, startPos, startColumn, startPos + 1);
+        MoveNote(startColumn, startPos, startColumn, startPos + 2);
     }
 
     public void MoveNoteUp(Guid noteId)
@@ -170,6 +164,14 @@ public class ToDoBoard
         int columnIndex = notePosTuple.columnIndex;
         int noteIndex = notePosTuple.noteIndex;
         StatusColumns[columnIndex].Notes[noteIndex].Content = content;
+    }
+
+    public void SetNoteFile(Guid noteId, AttachedFile? file)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int columnIndex = notePosTuple.columnIndex;
+        int noteIndex = notePosTuple.noteIndex;
+        StatusColumns[columnIndex].Notes[noteIndex].File = file;
     }
 
     public void SetNoteTitle(Guid noteId, string title)
