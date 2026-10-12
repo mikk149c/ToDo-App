@@ -176,8 +176,6 @@ public class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    }
-
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
     {
         _board.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos);

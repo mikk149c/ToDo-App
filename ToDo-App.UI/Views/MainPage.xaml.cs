@@ -285,8 +285,8 @@ namespace ToDo_App.UI.Views
             Grid columnGrid = new Grid { RowSpacing = 8 };
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            columnGrid.ColumnDefinitions.Add( new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            columnGrid.ColumnDefinitions.Add( new ColumnDefinition { Width = GridLength.Auto });
+            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            columnGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
             // Small edit button
             Button editButton = new Button
@@ -319,7 +319,7 @@ namespace ToDo_App.UI.Views
             ToolTipService.SetToolTip(addTodoToColumnButton, "Add a new note");
             addTodoToColumnButton.Click += (sender, e) => onAddTodoToColumnClicked(sender, e, columnId);
 
-            // Column name
+            // Column name (also the drag handle for moving the column)
             TextBlock header = new TextBlock
             {
                 Style = (Style)Resources["BoardColumnHeader"],
@@ -327,6 +327,7 @@ namespace ToDo_App.UI.Views
                 VerticalAlignment = VerticalAlignment.Center,
                 CanDrag = true
             };
+            header.DragStarting += (s, e) => onColumn_DragStarting(columnId, e);
 
             // Stack the edit and delete buttons vertically
             StackPanel columnActions = new StackPanel
@@ -346,21 +347,10 @@ namespace ToDo_App.UI.Views
                     new ColumnDefinition { Width = GridLength.Auto },
                     new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
                 },
-                Children = { columnActions, header  }
+                Children = { columnActions, header }
             };
+            Grid.SetColumn(columnActions, 0);
             Grid.SetColumn(header, 1);
-            columnGrid.Children.Add(header);
-            header.DragStarting += (s, e) => onColumn_DragStarting(columnId, e);
-
-            Button deleteButton = new Button
-            {
-                Content = new SymbolIcon(Symbol.Delete),
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            ToolTipService.SetToolTip(deleteButton, "Delete column");
-            deleteButton.Click += (sender, e) => onDeleteColumnClicked(sender, e, columnId);
-            Grid.SetColumn(deleteButton, 2);
-            columnGrid.Children.Add(deleteButton);
 
             var cardPanel = new StackPanel
             {
@@ -369,39 +359,14 @@ namespace ToDo_App.UI.Views
             };
             column.Drop += (s, e) => onColumnDrop(columnId, cardPanel, e);
 
-            // Stack the edit and delete buttons vertically
-            StackPanel columnActions = new StackPanel
-            {
-                Spacing = 4,
-                VerticalAlignment = VerticalAlignment.Center,
-                Children = { editButton, deleteButton }
-            };
-
-            // Left-hand section: stacked buttons and name
-            Grid headerLeft = new Grid
-            {
-                ColumnSpacing = 8,
-                VerticalAlignment = VerticalAlignment.Center,
-                ColumnDefinitions =
-                {
-                    new ColumnDefinition { Width = GridLength.Auto },
-                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
-                },
-                Children = { columnActions, header  }
-            };
-
             ScrollViewer scrollViewer = new ScrollViewer
             {
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-
                 Content = cardPanel
             };
 
-            Grid.SetColumn(columnActions, 0);
-            Grid.SetColumn(header, 1);
             Grid.SetColumn(addTodoToColumnButton, 1);
-
             Grid.SetRow(scrollViewer, 1);
             Grid.SetColumnSpan(scrollViewer, 2);
 
