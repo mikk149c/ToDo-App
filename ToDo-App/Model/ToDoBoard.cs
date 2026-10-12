@@ -192,4 +192,10 @@ public class ToDoBoard
         int toColumnIndex = GetColumnIndexFromId(targetColumnId);
         MoveNote(fromColumnIndex, fromPos, toColumnIndex, targetIndex);
     }
+
+    public void MoveColumn (Guid columnId, int targetIndex)
+    {
+        int fromIndex = GetColumnIndexFromId(columnId);
+        MoveColumn(fromIndex, targetIndex);
+    }
 }

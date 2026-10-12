@@ -16,7 +16,7 @@ public class BoardController : ITodoBoard
     public event EventHandler? ColumnRemoved;
     public event EventHandler? ColumnContentChanged;
     public event EventHandler? BoardChanged;
-    
+    public event EventHandler? ColumnOrderChanged;
     private void onColumnCreated(ColumnCreatedEventArgs e)
     {
         ColumnCreated?.Invoke(this, e);
@@ -41,6 +41,11 @@ public class BoardController : ITodoBoard
     {
         BoardChanged?.Invoke(this, e);
     }
+    private void onColumnOrderChanged(ColumnOrderChangedEventArgs e)
+    {
+        ColumnOrderChanged?.Invoke(this, e);
+    }
+    
 
 
     public void SetStatusColumnName(Guid columnId, string newName)
@@ -199,6 +204,13 @@ public class BoardController : ITodoBoard
     public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex)
     {
         moveNoteAndNotify(noteId, () => _board.MoveNoteToColumn(noteId, targetColumnId, targetIndex));
+    }
+
+    public void MoveColumn(Guid columnId, int targetIndex)
+    {
+        _board.MoveColumn(columnId, targetIndex);
+        onColumnOrderChanged(new ColumnOrderChangedEventArgs(GetStatusColumnIds()));
+        onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
     public void MoveNoteDown(Guid noteId)  { moveNoteAndNotify(noteId, () => _board.MoveNoteDown(noteId)); }
