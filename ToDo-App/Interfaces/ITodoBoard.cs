@@ -45,4 +45,6 @@ public interface ITodoBoard
 
     public void SaveBoardToJson(string jsonPath);
     public void LoadBoardFromJson(string jsonPath);
+
+    public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex);
 }

@@ -1,5 +1,6 @@
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace ToDo_App.UI.Views
 {
@@ -171,9 +172,10 @@ namespace ToDo_App.UI.Views
         private Border buildColumn(Guid columnId, string columnName)
         {
             var column = new Border();
-            
             column.Name = $"ROOT{columnId.ToString()}";
             column.Style = (Style)Resources["BoardColumn"];
+            column.AllowDrop = true;
+            column.DragOver += onColumnDragOver;
 
             Grid columnGrid = new Grid { RowSpacing = 8 };
             columnGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -210,16 +212,19 @@ namespace ToDo_App.UI.Views
             Grid.SetColumn(deleteButton, 2);
             columnGrid.Children.Add(deleteButton);
 
+            var cardPanel = new StackPanel
+            {
+                Name = columnId.ToString(),
+                Spacing = 8
+            };
+            column.Drop += (s, e) => onColumnDrop(columnId, cardPanel, e);
+
             ScrollViewer scrollViewer = new ScrollViewer
             {
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
 
-                Content = new StackPanel
-                {
-                    Name = columnId.ToString(),
-                    Spacing = 8
-                }
+                Content = cardPanel
             };
             Grid.SetRow(scrollViewer, 1);
             Grid.SetColumnSpan(scrollViewer, 3);
@@ -230,6 +235,40 @@ namespace ToDo_App.UI.Views
             return column;
         }
         
+        private void onColumnDragOver(object sender, DragEventArgs e)
+        {
+            if (e.DataView.Properties.ContainsKey("noteId"))
+            {
+                e.AcceptedOperation = DataPackageOperation.Move;
+            }
+        }
+
+        private void onColumnDrop(Guid columnId, StackPanel panel, DragEventArgs e)
+        {
+            if (e.DataView.Properties.TryGetValue("noteId", out object? value) && value is Guid noteId)
+            {
+                double y = e.GetPosition(panel).Y;
+                int dropIndex = panel.Children.Count;
+                for (int i=0; i<panel.Children.Count; i++)
+                {
+                    UIElement card = panel.Children[i];
+                    double midpoint = card.ActualOffset.Y + card.ActualSize.Y /2;
+                    if (y < midpoint)
+                    {
+                        dropIndex = i;
+                        break;
+                    }
+                }
+                List<ToDoNote> notes = boardController.GetNotesInColumn(columnId);
+                int currentIndex = notes.FindIndex(n => n.Id == noteId);
+                if (currentIndex != -1 && currentIndex < dropIndex)
+                {
+                    dropIndex--;
+                }        
+                boardController.MoveNoteToColumn(noteId, columnId, dropIndex);
+            }
+        }
+
         private void AddColumnToUI(Border column, Guid columnId)
         {
             if (!columns.Contains(columnId))
@@ -486,6 +525,7 @@ namespace ToDo_App.UI.Views
             var card = new Border
             {
                 Style = (Style)Resources["TodoCard"],
+                CanDrag = true,
                 Child = new StackPanel
                 {
                     Spacing = 4,
@@ -495,10 +535,18 @@ namespace ToDo_App.UI.Views
                         descriptionRow
                     }
                 }
+                
             };
-
+            card.DragStarting += (s, e) => onNote_DragStarting(note, e);
             return card;
         }
+
+        private void onNote_DragStarting(ToDoNote note, DragStartingEventArgs args)
+        {
+            args.Data.Properties["noteId"] = note.Id;
+            args.AllowedOperations = DataPackageOperation.Move;
+        }
+
 
         private async void OnClickAddColumn(object sender, RoutedEventArgs e)
         {  //Button to add new columns to the board

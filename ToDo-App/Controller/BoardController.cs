@@ -152,30 +152,6 @@ public class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    public void MoveNoteDown(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteDown(noteId);
-    }
-
-    public void MoveNoteUp(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteUp(noteId);
-    }
-
-    public void MoveNoteRight(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteRight(noteId);
-    }
-
-    public void MoveNoteLeft(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteLeft(noteId);
-    }
-
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
     {
         _board.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos);
@@ -205,4 +181,28 @@ public class BoardController : ITodoBoard
             onColumnCreated(new ColumnCreatedEventArgs(column.Id, column.Title, column.Notes));
         }
     }
+
+    private void moveNoteAndNotify(Guid noteId, Action move)
+    {
+        Guid sourceColumnId = _board.GetColumnIdFromNoteId(noteId);
+        move();
+        Guid targetColumnId = _board.GetColumnIdFromNoteId(noteId);
+
+        onColumnContentChanged(new ColumnContentChangedEventArgs(sourceColumnId, GetNotesInColumn(sourceColumnId)));
+        if (targetColumnId != sourceColumnId)
+        {
+            onColumnContentChanged(new ColumnContentChangedEventArgs(targetColumnId, GetNotesInColumn(targetColumnId)));
+        }
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex)
+    {
+        moveNoteAndNotify(noteId, () => _board.MoveNoteToColumn(noteId, targetColumnId, targetIndex));
+    }
+
+    public void MoveNoteDown(Guid noteId)  { moveNoteAndNotify(noteId, () => _board.MoveNoteDown(noteId)); }
+    public void MoveNoteUp(Guid noteId)    { moveNoteAndNotify(noteId, () => _board.MoveNoteUp(noteId)); }
+    public void MoveNoteRight(Guid noteId) { moveNoteAndNotify(noteId, () => _board.MoveNoteRight(noteId)); }
+    public void MoveNoteLeft(Guid noteId)  { moveNoteAndNotify(noteId, () => _board.MoveNoteLeft(noteId)); }
 }
