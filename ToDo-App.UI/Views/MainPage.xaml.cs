@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using Microsoft.Windows.Storage.Pickers;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 
@@ -27,10 +29,10 @@ namespace ToDo_App.UI.Views
 
         private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
         {
-            loadBoard();
+            loadInitialBoard();
         }
 
-        private async void loadBoard()
+        private async void loadInitialBoard()
         {
             try
             {
@@ -81,6 +83,83 @@ namespace ToDo_App.UI.Views
 
             Guid firstColumn = columns[0];
             boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
+        }
+
+        private async void onImportBoardClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Disable the button to avoid double-clicking
+                ImportButton.IsEnabled = false;
+                
+                var picker = new FileOpenPicker(ExportButton.XamlRoot.ContentIslandEnvironment.AppWindowId)
+                {
+                    CommitButtonText = "Import board",
+                    SuggestedStartLocation = PickerLocationId.Desktop,
+                    FileTypeFilter = { ".json" }
+                };
+                
+                var file = await picker.PickSingleFileAsync();
+                if (file != null)
+                {
+                    // Remove existing board first
+                    columns.Clear();
+                    ColumnsPanel.Children.Clear();
+                    ColumnsPanel.ColumnDefinitions.Clear();
+                    
+                    boardController.LoadBoardFromJson(file.Path);
+                }
+            }
+            catch (Exception exception)
+            {
+                var dialog = new ContentDialog()
+                {
+                    XamlRoot = this.Content.XamlRoot,
+                    Title = "Failed to import board from file",
+                    Content = exception.Message,
+                    CloseButtonText = "Ok"
+                };
+
+                await dialog.ShowAsync();
+            }
+            
+            ImportButton.IsEnabled = true;
+        }
+
+        private async void onExportBoardClicked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Disable the button to avoid double-clicking
+                ExportButton.IsEnabled = false;
+                
+                var picker = new FileSavePicker(ExportButton.XamlRoot.ContentIslandEnvironment.AppWindowId)
+                {
+                    CommitButtonText = "Export board",
+                    SuggestedStartLocation = PickerLocationId.Desktop,
+                    FileTypeChoices = {{"JSON Files", new List<string> { ".json" }}}
+                };
+                
+                var file = await picker.PickSaveFileAsync();
+                if (file != null)
+                {
+                    boardController.SaveBoardToJson(file.Path);
+                }
+            }
+            catch (Exception exception)
+            {
+                var dialog = new ContentDialog()
+                {
+                    XamlRoot = this.Content.XamlRoot,
+                    Title = "Failed to export board to file",
+                    Content = exception.Message,
+                    CloseButtonText = "Ok"
+                };
+
+                await dialog.ShowAsync();
+            }
+            
+            ExportButton.IsEnabled = true;
         }
 
         private void onColumnCreated(object? sender, EventArgs eventArgs)
@@ -217,13 +296,14 @@ namespace ToDo_App.UI.Views
             {
                 Style = (Style)Resources["BoardColumnHeader"],
                 Text = columnName,
+                TextWrapping = TextWrapping.Wrap,
                 VerticalAlignment = VerticalAlignment.Center
             };
 
             // Stack the edit and delete buttons vertically
             StackPanel columnActions = new StackPanel
             {
-                Spacing = 4,
+                Spacing = 0,
                 VerticalAlignment = VerticalAlignment.Center,
                 Children = { editButton, deleteButton }
             };
@@ -449,7 +529,7 @@ namespace ToDo_App.UI.Views
             ColumnsPanel.ColumnDefinitions.RemoveAt(0); //TODO: remove specific column instead of index 0
         }
 
-        private async void onDeleteTodoClicked(ToDoNote note, Guid columnId)
+        private async void onDeleteTodoClicked(ToDoNote note)
         {
             var dialog = new ContentDialog
             {
@@ -469,7 +549,7 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        private async void onEditTodoClicked(ToDoNote note, Guid columnId)
+        private async void onEditTodoClicked(ToDoNote note)
         {
             var titleBox = new TextBox
             {
@@ -509,6 +589,86 @@ namespace ToDo_App.UI.Views
             }
         }
 
+        private async void onAttachFileClicked(ToDoNote note, Button button)
+        {
+            try
+            {
+                // Disable the button to avoid double-clicking
+                button.IsEnabled = false;
+            
+                var picker = new FileOpenPicker(button.XamlRoot.ContentIslandEnvironment.AppWindowId)
+                {
+                    CommitButtonText = "Attach file",
+                    SuggestedStartLocation = PickerLocationId.Desktop
+                };
+            
+                var file = await picker.PickSingleFileAsync();
+                if (file != null)
+                {
+                    boardController.SetNoteFileAttachment(note.Id, file.Path);
+                }
+                else
+                {
+                    // Re-enable button if no file was selected
+                    button.IsEnabled = true;
+                }
+            }
+            catch (Exception e)
+            {
+                var dialog = new ContentDialog()
+                {
+                    XamlRoot = this.Content.XamlRoot,
+                    Title = "Failed to attach file",
+                    Content = e.Message,
+                    CloseButtonText = "Ok"
+                };
+
+                await dialog.ShowAsync();
+                
+                button.IsEnabled = true;
+            }
+        }
+
+        private async void onAttachmentClicked(ToDoNote note)
+        {
+            try
+            {
+                Process.Start("explorer", $"\"{note.File.FullPath}\"");
+            }
+            catch (Exception e)
+            {
+                var dialog = new ContentDialog()
+                {
+                    XamlRoot = this.Content.XamlRoot,
+                    Title = "Failed to open attached file",
+                    Content = e.Message,
+                    CloseButtonText = "Ok"
+                };
+
+                await dialog.ShowAsync();
+            }
+        }
+
+        private async void onRemoveAttachmentClicked(ToDoNote note)
+        {
+            try
+            {
+                boardController.RemoveNoteFileAttachment(note.Id);
+            }
+            catch (Exception e)
+            {
+                var dialog = new ContentDialog()
+                {
+                    XamlRoot = this.Content.XamlRoot,
+                    Title = "Failed remove attached file",
+                    Content = e.Message,
+                    CloseButtonText = "Ok"
+                };
+
+                await dialog.ShowAsync();
+            }
+        }
+
         private Border buildToDoCard(ToDoNote note, Guid columnId)
         {
             var titleText = new TextBlock
@@ -518,13 +678,36 @@ namespace ToDo_App.UI.Views
                 TextTrimming = TextTrimming.CharacterEllipsis
             };
 
+            var descriptionText = new TextBlock
+            {
+                Style = (Style)Resources["TodoDescription"],
+                Text = note.Content,
+                TextWrapping = TextWrapping.Wrap
+            };
+            
             var editButton = new Button
             {
                 Content = new SymbolIcon(Symbol.Edit),
                 VerticalAlignment = VerticalAlignment.Center
             };
             ToolTipService.SetToolTip(editButton, "Edit");
-            editButton.Click += (s, e) => onEditTodoClicked(note, columnId);
+            editButton.Click += (s, e) => onEditTodoClicked(note);
+        
+            var attachButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Attach),
+                VerticalAlignment = VerticalAlignment.Bottom
+            };
+            ToolTipService.SetToolTip(attachButton, "Attach file");
+            attachButton.Click += (s, e) => onAttachFileClicked(note, attachButton);
+        
+            var deleteButton = new Button
+            {
+                Content = new SymbolIcon(Symbol.Delete),
+                VerticalAlignment = VerticalAlignment.Bottom
+            };
+            ToolTipService.SetToolTip(deleteButton, "Delete");
+            deleteButton.Click += (s, e) => onDeleteTodoClicked(note);
 
             var titleRow = new Grid
             {
@@ -537,21 +720,6 @@ namespace ToDo_App.UI.Views
                 Children = { titleText, editButton }
             };
             Grid.SetColumn(editButton, 1);
-
-            var descriptionText = new TextBlock
-            {
-                Style = (Style)Resources["TodoDescription"],
-                Text = note.Content,
-                TextWrapping = TextWrapping.Wrap
-            };
-        
-            var deleteButton = new Button
-            {
-                Content = new SymbolIcon(Symbol.Delete),
-                VerticalAlignment = VerticalAlignment.Bottom
-            };
-            ToolTipService.SetToolTip(deleteButton, "Delete");
-            deleteButton.Click += (s, e) => onDeleteTodoClicked(note, columnId);
         
             var descriptionRow = new Grid
             {
@@ -561,8 +729,74 @@ namespace ToDo_App.UI.Views
                     new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
                     new ColumnDefinition { Width = GridLength.Auto }
                 },
-                Children = { descriptionText, deleteButton }
+                Children = { descriptionText, attachButton }
             };
+            Grid.SetColumn(attachButton, 1);
+
+            Grid attachmentRow;
+            if (note.File != null)
+            {
+                attachButton.IsEnabled = false;
+                
+                var attachedFileButton = new Button
+                {
+                    Style = (Style)Application.Current.Resources["AttachedFile"],
+                    Content = new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        Spacing = 8,
+                        Children =
+                        {
+                            new SymbolIcon(Symbol.Attach),
+                            new TextBlock {Text = note.File.Name}
+                        }
+                    }
+                };
+                attachedFileButton.Click += (s, e) => onAttachmentClicked(note);
+                
+                var removeAttachmentButton = new Button
+                {
+                    Content = new SymbolIcon(Symbol.Cancel),
+                    VerticalAlignment = VerticalAlignment.Bottom
+                };
+                ToolTipService.SetToolTip(attachButton, "Remove attached file");
+                removeAttachmentButton.Click += (s, e) => onRemoveAttachmentClicked(note);
+
+                var attachmentButtonsStack = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 4,
+                    Children =
+                    {
+                        attachedFileButton,
+                        removeAttachmentButton
+                    }
+                };
+                
+                attachmentRow = new Grid
+                {
+                    ColumnSpacing = 8,
+                    ColumnDefinitions =
+                    {
+                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                        new ColumnDefinition { Width = GridLength.Auto }
+                    },
+                    Children =  { attachmentButtonsStack, deleteButton }
+                };
+            }
+            else
+            {
+                attachmentRow = new Grid
+                {
+                    ColumnSpacing = 8,
+                    ColumnDefinitions =
+                    {
+                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                        new ColumnDefinition { Width = GridLength.Auto }
+                    },
+                    Children =  { deleteButton }
+                };
+            }
             Grid.SetColumn(deleteButton, 1);
 
             var card = new Border
@@ -574,7 +808,8 @@ namespace ToDo_App.UI.Views
                     Children =
                     {
                         titleRow,
-                        descriptionRow
+                        descriptionRow,
+                        attachmentRow
                     }
                 }
             };
