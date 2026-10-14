@@ -140,4 +140,25 @@
     <data name="button/tooltip_system_default" xml:space="preserve">
         <value>Standardeinstellung des Betriebssystems</value>
     </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>Tags</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>Schreib eine Tagname und drück die Eingabetaste</value>
+    </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>"{0}" entfernen</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>"{0}" löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+    </data>
+    <data name="dialog/content_delete_column_no_space" xml:space="preserve">
+        <value>"{0}" und die {1} Notiz(en) darin löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+    </data>
+    <data name="dialog/content_delete_note" xml:space="preserve">
+        <value>"{0}" löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+    </data>
+    <data name="dialog/content_delete_column_consequence" xml:space="preserve">
+        <value>Was soll mit die {0} Notiz(en) in diese Spalte geschehen?</value>
+    </data>
 </root>

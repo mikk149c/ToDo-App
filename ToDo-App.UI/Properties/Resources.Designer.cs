@@ -204,6 +204,15 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Write a tag name and press Enter.
+        /// </summary>
+        internal static string dialog_add_tag_placeholder {
+            get {
+                return ResourceManager.GetString("dialog/add_tag_placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attach File.
         /// </summary>
         internal static string dialog_attach_file {
@@ -317,6 +326,15 @@ namespace ToDo_App.UI {
         internal static string dialog_option_move_to_column {
             get {
                 return ResourceManager.GetString("dialog/option_move_to_column", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove &quot;{0}&quot;.
+        /// </summary>
+        internal static string dialog_remove_tag {
+            get {
+                return ResourceManager.GetString("dialog/remove_tag", resourceCulture);
             }
         }
         
@@ -533,6 +551,15 @@ namespace ToDo_App.UI {
         internal static string todo_property_description {
             get {
                 return ResourceManager.GetString("todo/property_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tags.
+        /// </summary>
+        internal static string todo_property_tags {
+            get {
+                return ResourceManager.GetString("todo/property_tags", resourceCulture);
             }
         }
         

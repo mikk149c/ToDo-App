@@ -173,4 +173,13 @@
     <data name="language/faroese" xml:space="preserve">
         <value>nìFerìstì</value>
     </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>Aysyon</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>Pamrel si tstxor syonä ulte 'ampi fì'ut alu Enter</value>
+    </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>'Aku "{0}"ti</value>
+    </data>
 </root>

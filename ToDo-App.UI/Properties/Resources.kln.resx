@@ -110,4 +110,43 @@
     <data name="language/faroese" xml:space="preserve">
         <value>va'ro' 'ambaymey Hol</value>
     </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>"{0}" yIteq</value>
+    </data>
+    <data name="button/attach_file_tooltip" xml:space="preserve">
+        <value>ta yIvev</value>
+    </data>
+    <data name="button/remove_attached_file_tooltip" xml:space="preserve">
+        <value>ghu'lIS ta yIteq</value>
+    </data>
+    <data name="dialog/json_files" xml:space="preserve">
+        <value>JSON De'</value>
+    </data>
+    <data name="button/export" xml:space="preserve">
+        <value>yIngeH</value>
+    </data>
+    <data name="button/import" xml:space="preserve">
+        <value>yIHev</value>
+    </data>
+    <data name="button/tooltip_accent_color" xml:space="preserve">
+        <value>qalmuS</value>
+    </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>permey</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>per pong yIghItlh 'ej Enter leQ yIyuv</value>
+    </data>
+    <data name="button/tooltip_system_default" xml:space="preserve">
+        <value>pat DuH motlh</value>
+    </data>
+    <data name="dialog/attach_file" xml:space="preserve">
+        <value>ta yIvev</value>
+    </data>
+    <data name="dialog/export_board" xml:space="preserve">
+        <value>teywI' 'echlet yIngeH</value>
+    </data>
+    <data name="dialog/import_board" xml:space="preserve">
+        <value>teywI' 'echlet yIHev</value>
+    </data>
 </root>

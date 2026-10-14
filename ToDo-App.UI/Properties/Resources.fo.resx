@@ -120,10 +120,10 @@
         <value>Festa eina fílu við</value>
     </data>
     <data name="button/export" xml:space="preserve">
-        <value>Flyta út</value>
+        <value>Flyt út</value>
     </data>
     <data name="button/import" xml:space="preserve">
-        <value>Flyta inn</value>
+        <value>Flyt inn</value>
     </data>
     <data name="button/remove_attached_file_tooltip" xml:space="preserve">
         <value>Tak viðfestaða fíluna burtur</value>
@@ -133,5 +133,23 @@
     </data>
     <data name="button/tooltip_system_default" xml:space="preserve">
         <value>Skipanarstilling</value>
+    </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>Frámerki</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>Skriv eitt frámerkinavn og trýst á Enter</value>
+    </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>Tak "{0}" burtur</value>
+    </data>
+    <data name="dialog/export_board" xml:space="preserve">
+        <value>Flyt talvu út</value>
+    </data>
+    <data name="dialog/import_board" xml:space="preserve">
+        <value>Flyt talvu inn</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>Strika "{0}"? Hetta kann ikki angrast.</value>
     </data>
 </root>

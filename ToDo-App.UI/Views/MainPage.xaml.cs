@@ -510,7 +510,13 @@ namespace ToDo_App.UI.Views
                 MinHeight = 100
             };
 
-            var tagEditor = new TagEditor(Array.Empty<string>(), boardTagNames());
+            var tagStrings = new Dictionary<string, string>
+            {
+                { "todo/property_tags", Res.ResourceManager.GetString("todo/property_tags", _currentCulture) },
+                { "dialog/add_tag_placeholder", Res.ResourceManager.GetString("dialog/add_tag_placeholder", _currentCulture) },
+                { "dialog/remove_tag", Res.ResourceManager.GetString("dialog/remove_tag", _currentCulture) }
+            };
+            var tagEditor = new TagEditor(Array.Empty<string>(), boardTagNames(), tagStrings);
 
             var dialog = new ContentDialog
             {
@@ -679,8 +685,14 @@ namespace ToDo_App.UI.Views
                 TextWrapping = TextWrapping.Wrap,
                 MinHeight = 100
             };
-
-            var tagEditor = new TagEditor(note.Tags.Select(tag => tag.Name), boardTagNames());
+            
+            var tagStrings = new Dictionary<string, string>
+            {
+                { "todo/property_tags", Res.ResourceManager.GetString("todo/property_tags", _currentCulture) },
+                { "dialog/add_tag_placeholder", Res.ResourceManager.GetString("dialog/add_tag_placeholder", _currentCulture) },
+                { "dialog/remove_tag", Res.ResourceManager.GetString("dialog/remove_tag", _currentCulture) }
+            };
+            var tagEditor = new TagEditor(note.Tags.Select(tag => tag.Name), boardTagNames(), tagStrings);
 
             var dialog = new ContentDialog
             {

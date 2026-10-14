@@ -173,4 +173,13 @@
     <data name="language/faroese" xml:space="preserve">
         <value>færøsk</value>
     </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>Tags</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>Skriv et tag-navn og tryk Enter</value>
+    </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>Fjern "{0}"</value>
+    </data>
 </root>

@@ -180,4 +180,13 @@
     <data name="language/faroese" xml:space="preserve">
         <value>Faroese</value>
     </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>Tags</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>Write a tag name and press Enter</value>
+    </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>Remove "{0}"</value>
+    </data>
 </root>
