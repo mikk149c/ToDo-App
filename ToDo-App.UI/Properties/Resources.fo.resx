@@ -161,4 +161,25 @@
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
         <value>Hvat skal henda við tey {0} uppriti(ni) í hesu teiginum?</value>
     </data>
+    <data name="error/failed_to_attach_file" xml:space="preserve">
+        <value>Fílan kundi ikki viðfestast.</value>
+    </data>
+    <data name="error/failed_to_export_board" xml:space="preserve">
+        <value>Talvan kundi ikki flytast út.</value>
+    </data>
+    <data name="error/failed_to_import_board" xml:space="preserve">
+        <value>Talvan kundi ikki flytast inn.</value>
+    </data>
+    <data name="error/failed_to_load_board" xml:space="preserve">
+        <value>Talvan kundi ikki lesast inn.</value>
+    </data>
+    <data name="error/failed_to_save_board" xml:space="preserve">
+        <value>Talvan kundi ikki goymast.</value>
+    </data>
+    <data name="error/failed_to_open_attached_file" xml:space="preserve">
+        <value>Tann viðfestaða fílan kundi ikki latast upp.</value>
+    </data>
+    <data name="error/failed_to_remove_attached_file" xml:space="preserve">
+        <value>Tann viðfestaða fílan kundi ikki takast burtur.</value>
+    </data>
 </root>

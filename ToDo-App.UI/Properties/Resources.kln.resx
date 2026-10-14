@@ -149,4 +149,37 @@
     <data name="dialog/import_board" xml:space="preserve">
         <value>teywI' 'echlet yIHev</value>
     </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>"{0}" luteqlu''a' DaneH? DateqHa'laHbe'.</value>
+    </data>
+    <data name="dialog/content_delete_note" xml:space="preserve">
+        <value>"{0}" luteqlu''a' DaneH? DateqHa'laHbe'.</value>
+    </data>
+    <data name="dialog/content_delete_column_no_space" xml:space="preserve">
+        <value>"{0}" {1} ghu'lIS rarchuq je vIteq'a' DaneH? DateqHa'laHbe'.</value>
+    </data>
+    <data name="dialog/content_delete_column_consequence" xml:space="preserve">
+        <value>nuqDaq jaH warvam {0} ghu'lIS?</value>
+    </data>
+    <data name="error/failed_to_attach_file" xml:space="preserve">
+        <value>ta luvevlaHbe'.</value>
+    </data>
+    <data name="error/failed_to_export_board" xml:space="preserve">
+        <value>teywI' 'echlet lungeHlaHbe'.</value>
+    </data>
+    <data name="error/failed_to_import_board" xml:space="preserve">
+        <value>teywI' 'echlet luHevlaHbe'.</value>
+    </data>
+    <data name="error/failed_to_load_board" xml:space="preserve">
+        <value>teywI' 'echlet lulaDlaHbe'.</value>
+    </data>
+    <data name="error/failed_to_save_board" xml:space="preserve">
+        <value>teywI' 'echlet lupollaHbe'.</value>
+    </data>
+    <data name="error/failed_to_open_attached_file" xml:space="preserve">
+        <value>poSlaHbe' ghu'lIS ta.</value>
+    </data>
+    <data name="error/failed_to_remove_attached_file" xml:space="preserve">
+        <value>ghu'lIS ta luteqlaHbe'.</value>
+    </data>
 </root>

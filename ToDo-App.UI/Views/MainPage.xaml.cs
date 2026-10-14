@@ -1121,7 +1121,16 @@ namespace ToDo_App.UI.Views
             var item = selectionChangedEventArgs.AddedItems[0] as ComboBoxItem;
             var language = item.Tag.ToString();
             _currentCulture = new CultureInfo(language);
+            
+            // Refresh static UI elements
             localizeXaml();
+            
+            // Refresh dynamic UI elements for each column
+            foreach (var guid in columns)
+            {
+                clearColumnItems(guid);
+                populateStatusColumn(guid);
+            }
             
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             localSettings.Values["selectedLanguage"] = language;

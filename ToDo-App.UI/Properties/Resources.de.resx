@@ -161,4 +161,25 @@
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
         <value>Was soll mit die {0} Notiz(en) in diese Spalte geschehen?</value>
     </data>
+    <data name="error/failed_to_attach_file" xml:space="preserve">
+        <value>Die Datei konnte nicht anhängt werden.</value>
+    </data>
+    <data name="error/failed_to_export_board" xml:space="preserve">
+        <value>Die Tafel konnte nicht als Datei exportiert werden.</value>
+    </data>
+    <data name="error/failed_to_import_board" xml:space="preserve">
+        <value>Die Tafel konnte nicht aus der Datei importiert werden.</value>
+    </data>
+    <data name="error/failed_to_load_board" xml:space="preserve">
+        <value>Die Tafel konnte nicht eingeladen werden.</value>
+    </data>
+    <data name="error/failed_to_open_attached_file" xml:space="preserve">
+        <value>Die angehängte Datei konnte nicht geöffnet werden.</value>
+    </data>
+    <data name="error/failed_to_remove_attached_file" xml:space="preserve">
+        <value>Die angehängte Datei konnte nicht entfernt werden.</value>
+    </data>
+    <data name="error/failed_to_save_board" xml:space="preserve">
+        <value>Die Tafel konnte nicht gespeichert werden.</value>
+    </data>
 </root>
