@@ -11,13 +11,14 @@ namespace ToDo_App.UI.Views
     {
         private const string DefaultJsonPath = "Assets/default_board.json";
         private const string UserJsonPath = "board.json";
+        private const double ScrollSpeed = 30;
 
         ITodoBoard boardController = new BoardController();
 
         List<Guid> columns = new List<Guid>();
 
         DispatcherTimer scrollTimer = new DispatcherTimer();
-        double scrollSpeed = 0;
+        double scrollDirection = 0;
 
         public MainPage()
         {
@@ -31,6 +32,9 @@ namespace ToDo_App.UI.Views
             boardController.ColumnOrderChanged += onColumnOrderChanged;
             BoardScrollViewer.DragOver += onBoardDragOver;
             BoardScrollViewer.AllowDrop = true;
+            this.Content.AllowDrop = true;
+            this.Content.DragOver += onBoardDragOver;
+            this.Content.DragLeave += (s, e) => stopAutoScroll();
             scrollTimer.Interval = TimeSpan.FromMilliseconds(20);
             scrollTimer.Tick += onScrollTimerTick;
             BoardScrollViewer.DragLeave += (s, e) => stopAutoScroll();
@@ -403,18 +407,27 @@ namespace ToDo_App.UI.Views
 
             double x = e.GetPosition(BoardScrollViewer).X;
             const double zoneWidth = 60;
+            const double fastZone = 20;
 
-            if (x < zoneWidth)
+            if (x < fastZone)
             {
-                scrollSpeed = -20;
+                scrollDirection = -ScrollSpeed * 2;
             }
-            else if (x > BoardScrollViewer.ActualWidth - zoneWidth)
+            else if (x < zoneWidth && x >= fastZone)
             {
-                scrollSpeed = 20;
+                scrollDirection = -ScrollSpeed;
+            }
+            else if (x > BoardScrollViewer.ActualWidth - zoneWidth && x <= BoardScrollViewer.ActualWidth - fastZone)
+            {
+                scrollDirection = ScrollSpeed;
+            }
+            else if (x > BoardScrollViewer.ActualWidth - fastZone)
+            {
+                scrollDirection = ScrollSpeed*2;
             }
             else
             {
-                scrollSpeed = 0;
+                scrollDirection = 0;
             }
             if (!scrollTimer.IsEnabled)
             {
@@ -424,17 +437,17 @@ namespace ToDo_App.UI.Views
 
         private void onScrollTimerTick(object? sender, object e)
         {
-            if (scrollSpeed == 0)
+            if (scrollDirection == 0)
             {
                 scrollTimer.Stop();
                 return;
             }
-            BoardScrollViewer.ChangeView(BoardScrollViewer.HorizontalOffset + scrollSpeed, null, null, true);
+            BoardScrollViewer.ChangeView(BoardScrollViewer.HorizontalOffset + scrollDirection, null, null, true);
         }
 
         private void stopAutoScroll()
         {
-            scrollSpeed = 0;
+            scrollDirection = 0;
             scrollTimer.Stop();
         }
 
