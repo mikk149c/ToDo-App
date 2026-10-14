@@ -140,6 +140,13 @@ public class BoardController : ITodoBoard
         return _board.TrashBin.Notes;
     }
 
+    public void RestoreNote(Guid noteId, Guid columnId)
+    {
+        _board.RestoreNoteFromTrashBin(noteId, columnId);
+        onColumnContentChanged( new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
     public void SetNoteContent(Guid id, string newContent)
     {
         //TODO handle exception

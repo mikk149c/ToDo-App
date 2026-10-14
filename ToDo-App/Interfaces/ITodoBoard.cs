@@ -29,6 +29,8 @@ public interface ITodoBoard
 
     public List<ToDoNote> GetTrashBinNotes();
 
+    public void RestoreNote(Guid noteId, Guid columnId);
+
     public void SetNoteContent(Guid id, string newContent);
 
     public void SetNoteTitle(Guid id, string newTitle);

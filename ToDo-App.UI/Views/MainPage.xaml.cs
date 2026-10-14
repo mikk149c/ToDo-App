@@ -80,6 +80,9 @@ namespace ToDo_App.UI.Views
             StackPanel listPanel,
             TextBlock confirmationText,
             ScrollViewer trashScrollViewer,
+            StackPanel restorePanel,
+            TextBlock restoreHeading,
+            StackPanel restoreColumnButtons,
             StackPanel confirmationPanel)
         {
             listPanel.Children.Clear();
@@ -87,20 +90,10 @@ namespace ToDo_App.UI.Views
             foreach (ToDoNote note in boardController.GetTrashBinNotes())
             {
                 
-                Grid row = new Grid
-                {
-                    ColumnSpacing = 8
-                };
+                Grid row = new Grid { ColumnSpacing = 8 };
 
-                row.ColumnDefinitions.Add(new ColumnDefinition
-                {
-                    Width = new GridLength(1, GridUnitType.Star)
-                });
-
-                row.ColumnDefinitions.Add(new ColumnDefinition
-                {
-                    Width = GridLength.Auto
-                });
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
                 TextBlock title = new TextBlock
                 {
@@ -119,20 +112,45 @@ namespace ToDo_App.UI.Views
                     VerticalAlignment = VerticalAlignment.Center
                 };
 
-                Button viewButton = new Button
+                Button restoreButton = new Button{ Content = new SymbolIcon(Symbol.Undo) };
+                restoreButton.Click += (sender, e) =>
                 {
-                    Content = new SymbolIcon(Symbol.View)
+                    selectedTrashNoteId = note.Id;
+                    restoreHeading.Text = $"Restore \"{note.Title}\" to which column?";
+                    restoreColumnButtons.Children.Clear();
+                    List<Guid> columnIds = boardController.GetStatusColumnIds();
+
+                    foreach (Guid columnId in columnIds)
+                    {
+                        string columnName = boardController.GetStatusColumnName(columnId);
+
+                        Button destinationButton = new Button
+                        {
+                            Content = $"Restore to \"{columnName}\"",
+                            HorizontalAlignment = HorizontalAlignment.Stretch
+                        };
+
+                        destinationButton.Click += (columnSender, columnE) =>
+                        {
+                            if (selectedTrashNoteId == Guid.Empty) { return; }
+                            boardController.RestoreNote( selectedTrashNoteId, columnId);
+                            selectedTrashNoteId = Guid.Empty;
+
+                            RefreshTrashBin(listPanel, confirmationText, trashScrollViewer, restorePanel,
+                                            restoreHeading, restoreColumnButtons, confirmationPanel);
+
+                            restorePanel.Visibility = Visibility.Collapsed;
+                            trashScrollViewer.Visibility = Visibility.Visible;
+                        };
+
+                        restoreColumnButtons.Children.Add(destinationButton);
+                    }
+
+                    trashScrollViewer.Visibility = Visibility.Collapsed;
+                    restorePanel.Visibility = Visibility.Visible;
                 };
 
-                Button restoreButton = new Button
-                {
-                    Content = new SymbolIcon(Symbol.Undo)
-                };
-
-                Button deleteButton = new Button
-                {
-                    Content = new SymbolIcon(Symbol.Delete)
-                };
+                Button deleteButton = new Button { Content = new SymbolIcon(Symbol.Delete) };
                 deleteButton.Click += (sender, e) => { 
                     selectedTrashNoteId = note.Id;
                     confirmationText.Text =
@@ -141,7 +159,6 @@ namespace ToDo_App.UI.Views
                     confirmationPanel.Visibility = Visibility.Visible;
                 };
 
-                buttons.Children.Add(viewButton);
                 buttons.Children.Add(restoreButton);
                 buttons.Children.Add(deleteButton);
 
@@ -167,6 +184,43 @@ namespace ToDo_App.UI.Views
                 MaxHeight = 500
             };
 
+            //Restore note section
+            StackPanel restorePanel = new StackPanel
+            {
+                Spacing = 12,
+                Visibility = Visibility.Collapsed
+            };
+
+            TextBlock restoreHeading = new TextBlock { TextWrapping = TextWrapping.Wrap };
+
+            StackPanel restoreColumnButtons = new StackPanel { Spacing = 8 };
+
+            ScrollViewer restoreColumnScrollViewer = new ScrollViewer
+            {
+                Content = restoreColumnButtons,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                MaxHeight = 400
+            };
+
+            Button cancelRestoreButton = new Button
+            {
+                Content = "Cancel",
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+
+            cancelRestoreButton.Click += (sender, e) =>
+            {
+                selectedTrashNoteId = Guid.Empty;
+                restorePanel.Visibility = Visibility.Collapsed;
+                trashScrollViewer.Visibility = Visibility.Visible;
+            };
+
+            restorePanel.Children.Add(restoreHeading);
+            restorePanel.Children.Add(restoreColumnScrollViewer);
+            restorePanel.Children.Add(cancelRestoreButton);
+
+            //Confirm delete section
             StackPanel confirmationPanel = new StackPanel
             {
                 Spacing = 12,
@@ -186,10 +240,7 @@ namespace ToDo_App.UI.Views
                 Spacing = 8
             };
 
-            Button cancelDeleteFromTrashButton = new Button
-            {
-                Content = "Cancel"
-            };
+            Button cancelDeleteFromTrashButton = new Button { Content = "Cancel" };
             cancelDeleteFromTrashButton.Click += (sender, e) =>
             {
                 selectedTrashNoteId = Guid.Empty;
@@ -205,7 +256,8 @@ namespace ToDo_App.UI.Views
             confirmDeleteFromTrashButton.Click += (sender, e) =>
             {
                 OnClickConfirmDeleteFromTrashButton(sender, e, selectedTrashNoteId);
-                RefreshTrashBin(listPanel, confirmationText, trashScrollViewer, confirmationPanel);
+                RefreshTrashBin(listPanel, confirmationText,trashScrollViewer, restorePanel, 
+                                restoreHeading, restoreColumnButtons, confirmationPanel);
                 selectedTrashNoteId = Guid.Empty;
                 confirmationPanel.Visibility = Visibility.Collapsed;
                 trashScrollViewer.Visibility = Visibility.Visible;
@@ -217,12 +269,15 @@ namespace ToDo_App.UI.Views
             confirmationPanel.Children.Add(confirmationText);
             confirmationPanel.Children.Add(confirmationButtons);
 
+            //Build the trash bin
             Grid dialogContent = new Grid();
 
             dialogContent.Children.Add(trashScrollViewer);
+            dialogContent.Children.Add(restorePanel);
             dialogContent.Children.Add(confirmationPanel);
 
-            RefreshTrashBin(listPanel, confirmationText, trashScrollViewer, confirmationPanel);
+            RefreshTrashBin(listPanel, confirmationText,trashScrollViewer, restorePanel, 
+                            restoreHeading, restoreColumnButtons, confirmationPanel);
 
             ContentDialog dialog = new ContentDialog
             {

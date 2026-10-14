@@ -97,6 +97,14 @@ public class ToDoBoard
         return note.Id;
     }
 
+    public void RemoveNote(Guid noteId)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int columnIndex = notePosTuple.columnIndex;
+        int noteIndex = notePosTuple.noteIndex;
+        StatusColumns[columnIndex].RemoveNote(noteIndex);
+    }
+
     public void AddNoteToTrashBin(Guid noteId)
     {
         var notePosTuple = GetNotePositionFromId(noteId);
@@ -104,14 +112,6 @@ public class ToDoBoard
         int noteIndex = notePosTuple.noteIndex;
         TrashBin.AddNote(StatusColumns[columnIndex].Notes[noteIndex]);
         Console.WriteLine("Trash bin size: " + TrashBin.Notes.Count.ToString());
-    }
-
-    public void RemoveNote(Guid noteId)
-    {
-        var notePosTuple = GetNotePositionFromId(noteId);
-        int columnIndex = notePosTuple.columnIndex;
-        int noteIndex = notePosTuple.noteIndex;
-        StatusColumns[columnIndex].RemoveNote(noteIndex);
     }
 
     public void RemoveNoteFromTrashBin(Guid noteId)
@@ -125,6 +125,24 @@ public class ToDoBoard
             }
         }
         
+    }
+
+    public void RestoreNoteFromTrashBin(Guid noteId, Guid columnId)
+    {
+        int columnIndex = GetColumnIndexFromId(columnId);
+
+        for (int i = 0; i < TrashBin.Notes.Count; i++)
+        {
+            if (TrashBin.Notes[i].Id == noteId)
+            {
+                ToDoNote note = TrashBin.Notes[i];
+
+                StatusColumns[columnIndex].Notes.Add(note);
+                TrashBin.RemoveNote(i);
+
+                return;
+            }
+        }
     }
 
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
