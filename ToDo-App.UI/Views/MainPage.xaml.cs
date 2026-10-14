@@ -89,20 +89,60 @@ namespace ToDo_App.UI.Views
 
             foreach (ToDoNote note in boardController.GetTrashBinNotes())
             {       
-                Grid row = new Grid { ColumnSpacing = 8 };
-
-                row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-
                 TextBlock title = new TextBlock
                 {
+                    Style = (Style)Resources["TodoTitle"],
                     Text = note.Title,
-                    VerticalAlignment = VerticalAlignment.Center,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                TextBlock expandIcon = new TextBlock { Text = ">", VerticalAlignment = VerticalAlignment.Center };
+
+                Grid titleRow = new Grid
+                {
+                    ColumnSpacing = 8,
+                    ColumnDefinitions =
+                    {
+                        new ColumnDefinition { Width = GridLength.Auto },
+                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                    },
+                    Children = { expandIcon, title }
+                };
+
+                Grid.SetColumn(title, 1);
+
+                TextBlock description = new TextBlock
+                {
+                    Style = (Style)Resources["TodoDescription"],
+                    Text = note.Content,
                     TextWrapping = TextWrapping.Wrap
                 };
 
-                Grid.SetColumn(title, 0);
-                row.Children.Add(title);
+                StackPanel expandedContent = new StackPanel
+                {
+                    Spacing = 4,
+                    Visibility = Visibility.Collapsed,
+                    Children = { description }
+                };
+
+                Button titleButton = new Button
+                {
+                    Content = titleRow,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    HorizontalContentAlignment = HorizontalAlignment.Stretch
+                };
+
+                titleButton.Click += (sender, e) =>
+                {
+                    bool isExpanded = expandedContent.Visibility == Visibility.Visible;
+
+                    expandedContent.Visibility = isExpanded
+                        ? Visibility.Collapsed
+                        : Visibility.Visible;
+
+                    expandIcon.Text = isExpanded ? ">" : "v";
+                };
 
                 StackPanel buttons = new StackPanel
                 {
@@ -171,10 +211,32 @@ namespace ToDo_App.UI.Views
                 buttons.Children.Add(restoreButton);
                 buttons.Children.Add(deleteButton);
 
-                Grid.SetColumn(buttons, 1);
-                row.Children.Add(buttons);
+                // Put the clickable title and action buttons side by side.
+                Grid headerRow = new Grid
+                {
+                    ColumnSpacing = 8,
+                    ColumnDefinitions =
+                    {
+                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                        new ColumnDefinition { Width = GridLength.Auto }
+                    },
+                    Children = { titleButton, buttons }
+                };
 
-                listPanel.Children.Add(row);
+                Grid.SetColumn(buttons, 1);
+
+                // Assemble the card.
+                Border card = new Border
+                {
+                    Style = (Style)Resources["TodoCard"],
+                    Child = new StackPanel
+                    {
+                        Spacing = 4,
+                        Children = { headerRow, expandedContent }
+                    }
+                };
+
+                listPanel.Children.Add(card);
             }
         }
 
