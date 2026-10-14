@@ -1,13 +1,11 @@
 using Microsoft.UI.Xaml.Automation;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Shapes;
 
 namespace ToDo_App.UI.Controls
 {
     /// <summary>
     /// A tag in the note dialogs: one pill split by a divider into two buttons. Clicking the name raises
     /// <see cref="EditRequested"/>, clicking the square ✕ area raises <see cref="RemoveRequested"/>.
-    /// A tag that isn't saved yet has a dashed outline and a "+" icon.
+    /// A tag that isn't saved yet has a dashed accent outline and an accent "+" icon.
     /// </summary>
     public sealed partial class TagChip : UserControl
     {
@@ -23,15 +21,7 @@ namespace ToDo_App.UI.Controls
         public void Show(string name, bool isNew, string editLabel, string removeLabel)
         {
             NameText.Text = name;
-            NewIcon.Visibility = isNew ? Visibility.Visible : Visibility.Collapsed;
-            if (isNew)
-            {
-                Outline.StrokeDashArray = new DoubleCollection { 3, 2 };
-            }
-            else
-            {
-                Outline.ClearValue(Shape.StrokeDashArrayProperty);
-            }
+            VisualStateManager.GoToState(this, isNew ? "New" : "Saved", false);
 
             AutomationProperties.SetName(EditButton, editLabel);
             ToolTipService.SetToolTip(EditButton, editLabel);

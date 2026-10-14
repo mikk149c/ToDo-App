@@ -18,13 +18,30 @@
     </UserControl.Resources>
 
     <Grid Height="28">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="SaveStates">
+                <VisualState x:Name="Saved" />
+
+                <!-- Not on the board yet: dashed accent outline and an accent "+", so it stands out
+                     without relying on colour alone -->
+                <VisualState x:Name="New">
+                    <VisualState.Setters>
+                        <Setter Target="Outline.Stroke" Value="{ThemeResource AccentTextBrush}" />
+                        <Setter Target="Outline.StrokeThickness" Value="1.5" />
+                        <Setter Target="Outline.StrokeDashArray" Value="4,2" />
+                        <Setter Target="NewIcon.Visibility" Value="Visible" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <!-- Same pill shape as before; dashed while the tag isn't saved yet -->
+        <!-- Same pill shape as before. The New state restyles it while the tag isn't saved yet -->
         <Rectangle
             x:Name="Outline"
             Grid.ColumnSpan="3"
@@ -45,7 +62,9 @@
                 <FontIcon
                     x:Name="NewIcon"
                     FontSize="10"
-                    Glyph="&#xE710;" />
+                    Foreground="{ThemeResource AccentTextBrush}"
+                    Glyph="&#xE710;"
+                    Visibility="Collapsed" />
                 <TextBlock x:Name="NameText" VerticalAlignment="Center" />
             </StackPanel>
         </Button>
