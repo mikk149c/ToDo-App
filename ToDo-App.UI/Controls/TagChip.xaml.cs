@@ -29,6 +29,12 @@ namespace ToDo_App.UI.Controls
             ToolTipService.SetToolTip(RemoveButton, removeLabel);
         }
 
+        /// <summary>Moves focus to the tag's name, e.g. to show which tag was just added.</summary>
+        public void FocusName()
+        {
+            EditButton.Focus(FocusState.Programmatic);
+        }
+
         private void OnEditClicked(object sender, RoutedEventArgs e)
         {
             EditRequested?.Invoke(this, EventArgs.Empty);

@@ -100,15 +100,20 @@ namespace ToDo_App.UI.Controls
             }
 
             // A todo can't have the same tag twice, and a tag already on the board keeps its Id and spelling
-            if (findEntry(name) == null)
+            TagEntry? entry = findEntry(name);
+            if (entry == null)
             {
                 NoteTag? existing = findBoardTag(name);
-                addEntry(existing?.Id, existing?.Name ?? name);
+                entry = addEntry(existing?.Id, existing?.Name ?? name);
             }
 
             TagInput.Text = "";
             TagInput.IsSuggestionListOpen = false;
             ErrorText.Visibility = Visibility.Collapsed;
+
+            // Move focus off the box so the suggestions close and don't cover the tags, and onto the
+            // added tag as feedback. Queued, because a chip that was just added isn't loaded yet
+            DispatcherQueue.TryEnqueue(entry.Chip.FocusName);
             return true;
         }
 
@@ -125,7 +130,7 @@ namespace ToDo_App.UI.Controls
             TagInput.IsSuggestionListOpen = suggestions.Count > 0;
         }
 
-        private void addEntry(Guid? id, string name)
+        private TagEntry addEntry(Guid? id, string name)
         {
             var entry = new TagEntry { Id = id, Name = name };
             entry.Chip.EditRequested += (sender, e) => openFlyout(entry);
@@ -134,6 +139,7 @@ namespace ToDo_App.UI.Controls
 
             entries.Add(entry);
             TagChips.Children.Add(entry.Chip);
+            return entry;
         }
 
         private void showEntry(TagEntry entry)
