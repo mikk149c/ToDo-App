@@ -116,9 +116,11 @@ public class BoardController : ITodoBoard
         throw new NotImplementedException();
     }
 
-    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null)
+    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null)
     {
-        var noteId = _board.AddNote(columnId, new ToDoNote(title, content, file));
+        // Resolve tags before adding the note, so an invalid tag name leaves the board unchanged
+        var note = new ToDoNote(title, content, file) { Tags = _board.ResolveTags(tagNames ?? []) };
+        var noteId = _board.AddNote(columnId, note);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
         return noteId;
@@ -155,6 +157,19 @@ public class BoardController : ITodoBoard
         Guid columnId = _board.GetColumnIdFromNoteId(id);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void SetNoteTags(Guid id, IEnumerable<string> tagNames)
+    {
+        _board.SetNoteTags(id, tagNames);
+        Guid columnId = _board.GetColumnIdFromNoteId(id);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public List<NoteTag> GetTags()
+    {
+        return _board.GetTags();
     }
 
     public void SetNoteFileAttachment(Guid id, string newFilePath)
@@ -209,6 +224,7 @@ public class BoardController : ITodoBoard
         var storeJson = new StoreJson<ToDoBoard>(jsonPath);
         // Load first, so a file that can't be read leaves the current board and UI untouched
         ToDoBoard loadedBoard = storeJson.Load();
+        loadedBoard.NormalizeTags();
         List<Guid> replacedColumnIds = GetStatusColumnIds();
         _board = loadedBoard;
 

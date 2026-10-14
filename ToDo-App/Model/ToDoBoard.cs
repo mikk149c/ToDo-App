@@ -182,6 +182,75 @@ public class ToDoBoard
         StatusColumns[columnIndex].Notes[noteIndex].Title = title;
     }
 
+    /// <summary>
+    /// Replaces a note's tags. Names are validated with <see cref="NoteTag.NormalizeName"/>,
+    /// and a name that matches a tag already on the board reuses that tag.
+    /// </summary>
+    public void SetNoteTags(Guid noteId, IEnumerable<string> tagNames)
+    {
+        var (columnIndex, noteIndex) = GetNotePositionFromId(noteId);
+        StatusColumns[columnIndex].Notes[noteIndex].Tags = ResolveTags(tagNames);
+    }
+
+    /// <summary>
+    /// The tags on the board, worked out from its notes: a tag exists while at least one note has it.
+    /// Each tag appears once, sorted by name.
+    /// </summary>
+    public List<NoteTag> GetTags()
+    {
+        return StatusColumns
+            .SelectMany(column => column.Notes)
+            .SelectMany(note => note.Tags)
+            .DistinctBy(tag => tag.Id)
+            .OrderBy(tag => tag.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    /// <summary>
+    /// Turns tag names into tags for a note: validates each name, drops duplicates, and reuses the Id and
+    /// spelling of a tag already on the board. Nothing is changed if any name is invalid.
+    /// </summary>
+    /// <exception cref="ArgumentException">A name is empty, only whitespace, or too long.</exception>
+    public List<NoteTag> ResolveTags(IEnumerable<string> tagNames)
+    {
+        List<NoteTag> existingTags = GetTags();
+        var resolved = new List<NoteTag>();
+
+        foreach (string tagName in tagNames)
+        {
+            string name = NoteTag.NormalizeName(tagName);
+            if (resolved.Exists(tag => NoteTag.NamesMatch(tag.Name, name)))
+            {
+                continue; // a note can't have the same tag twice
+            }
+
+            NoteTag? existing = existingTags.Find(tag => NoteTag.NamesMatch(tag.Name, name));
+            resolved.Add(existing != null ? new NoteTag(existing.Name) { Id = existing.Id } : new NoteTag(name));
+        }
+
+        return resolved;
+    }
+
+    /// <summary>
+    /// Makes loaded tag data consistent: missing tag lists become empty, a note keeps each tag once,
+    /// and when copies of a tag have different names, the first one found wins.
+    /// </summary>
+    internal void NormalizeTags()
+    {
+        var namesById = new Dictionary<Guid, string>();
+        foreach (ToDoNote note in StatusColumns.SelectMany(column => column.Notes))
+        {
+            note.Tags = (note.Tags ?? new List<NoteTag>()).DistinctBy(tag => tag.Id).ToList();
+            foreach (NoteTag tag in note.Tags)
+            {
+                if (!namesById.TryAdd(tag.Id, tag.Name))
+                {
+                    tag.Name = namesById[tag.Id];
+                }
+            }
+        }
+    }
+
     internal Guid GetColumnIdFromNoteId(Guid noteId)
     {
         // Throws KeyNotFoundException for an unknown note, like the other lookups
