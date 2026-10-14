@@ -79,7 +79,7 @@ namespace ToDo_App.UI.Views
         private void RefreshTrashBin(
             StackPanel listPanel,
             TextBlock confirmationText,
-            StackPanel trashListView,
+            Grid trashListView,
             StackPanel restorePanel,
             TextBlock restoreHeading,
             StackPanel restoreColumnButtons,
@@ -243,7 +243,17 @@ namespace ToDo_App.UI.Views
         private async void OnTrashBinClicked(object sender, RoutedEventArgs e)
         {
             StackPanel listPanel = new StackPanel { Spacing = 8 };
-            StackPanel trashListView = new StackPanel { Spacing = 12 };
+
+            Grid trashListView = new Grid
+            {
+                RowDefinitions =
+                {
+                    new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
+                    new RowDefinition { Height = GridLength.Auto }
+                },
+                RowSpacing = 12,
+                MaxHeight = 550
+            };
 
             ScrollViewer trashScrollViewer = new ScrollViewer
             {
@@ -345,10 +355,12 @@ namespace ToDo_App.UI.Views
                 HorizontalAlignment = HorizontalAlignment.Right
             };
             
+            Grid.SetRow(trashScrollViewer, 0);
+            Grid.SetRow(closeTrashBinButton, 1);
             trashListView.Children.Add(trashScrollViewer);
             trashListView.Children.Add(closeTrashBinButton);
 
-            Grid dialogContent = new Grid();
+            Grid dialogContent = new Grid { Width = 500 };
             dialogContent.Children.Add(trashListView);
             dialogContent.Children.Add(restorePanel);
             dialogContent.Children.Add(confirmationPanel);
