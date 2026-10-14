@@ -152,4 +152,13 @@
     <data name="dialog/content_delete_column" xml:space="preserve">
         <value>Strika "{0}"? Hetta kann ikki angrast.</value>
     </data>
+    <data name="dialog/content_delete_note" xml:space="preserve">
+        <value>Strika "{0}"? Hetta kann ikki angrast.</value>
+    </data>
+    <data name="dialog/content_delete_column_no_space" xml:space="preserve">
+        <value>Strika "{0}" og tey {1} uppriti(ni) inni í? Hetta kann ikki angrast.</value>
+    </data>
+    <data name="dialog/content_delete_column_consequence" xml:space="preserve">
+        <value>Hvat skal henda við tey {0} uppriti(ni) í hesu teiginum?</value>
+    </data>
 </root>
