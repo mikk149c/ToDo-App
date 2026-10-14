@@ -46,6 +46,7 @@ namespace ToDo_App.UI.Views
             boardController.ColumnContentChanged += onColumnContentChanged;
             boardController.BoardChanged += onBoardChanged;
             boardController.ColumnOrderChanged += onColumnOrderChanged;
+            boardController.TagChanged += onTagChanged;
             BoardScrollViewer.DragOver += onBoardDragOver;
             BoardScrollViewer.AllowDrop = true;
             this.Content.AllowDrop = true;
@@ -245,6 +246,24 @@ namespace ToDo_App.UI.Views
             
             clearColumnItems(args.ColumnId);
             populateStatusColumn(args.ColumnId);
+        }
+
+        private void onTagChanged(object? sender, EventArgs eventArgs)
+        {
+            if (eventArgs is not TagChangedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+
+            // Redraw every column with a card that shows the tag
+            foreach (Guid columnId in columns)
+            {
+                if (boardController.GetNotesInColumn(columnId).Exists(note => note.Tags.Exists(tag => tag.Id == args.TagId)))
+                {
+                    clearColumnItems(columnId);
+                    populateStatusColumn(columnId);
+                }
+            }
         }
 
         private void onColumnOrderChanged(object? sender, EventArgs e)
@@ -574,13 +593,7 @@ namespace ToDo_App.UI.Views
                 MinHeight = 100
             };
 
-            var tagStrings = new Dictionary<string, string>
-            {
-                { "todo/property_tags", Res.ResourceManager.GetString("todo/property_tags", _currentCulture) },
-                { "dialog/add_tag_placeholder", Res.ResourceManager.GetString("dialog/add_tag_placeholder", _currentCulture) },
-                { "dialog/remove_tag", Res.ResourceManager.GetString("dialog/remove_tag", _currentCulture) }
-            };
-            var tagEditor = new TagEditor(Array.Empty<string>(), boardTagNames(), tagStrings);
+            var tagEditor = new TagEditor(boardController, Array.Empty<NoteTag>(), tagEditorStrings());
 
             var dialog = new ContentDialog
             {
@@ -750,13 +763,7 @@ namespace ToDo_App.UI.Views
                 MinHeight = 100
             };
             
-            var tagStrings = new Dictionary<string, string>
-            {
-                { "todo/property_tags", Res.ResourceManager.GetString("todo/property_tags", _currentCulture) },
-                { "dialog/add_tag_placeholder", Res.ResourceManager.GetString("dialog/add_tag_placeholder", _currentCulture) },
-                { "dialog/remove_tag", Res.ResourceManager.GetString("dialog/remove_tag", _currentCulture) }
-            };
-            var tagEditor = new TagEditor(note.Tags.Select(tag => tag.Name), boardTagNames(), tagStrings);
+            var tagEditor = new TagEditor(boardController, note.Tags, tagEditorStrings());
 
             var dialog = new ContentDialog
             {
@@ -1035,9 +1042,16 @@ namespace ToDo_App.UI.Views
             return tagsRow;
         }
 
-        private List<string> boardTagNames()
+        private Dictionary<string, string> tagEditorStrings()
         {
-            return boardController.GetTags().Select(tag => tag.Name).ToList();
+            string[] keys =
+            {
+                "todo/property_tags", "dialog/add_tag_placeholder", "dialog/remove_tag", "dialog/edit_tag",
+                "dialog/new_tag_tooltip", "dialog/tag_name", "dialog/tag_used_on", "dialog/tag_new_info",
+                "dialog/tag_name_taken", "dialog/rename", "dialog/delete", "dialog/cancel", "dialog/delete_tag_confirm"
+            };
+            // A missing translation shows the key instead of crashing the dialog
+            return keys.ToDictionary(key => key, key => Res.ResourceManager.GetString(key, _currentCulture) ?? key);
         }
 
         private void onNote_DragStarting(ToDoNote note, DragStartingEventArgs args)

@@ -6,6 +6,67 @@
     xmlns:controls="using:ToDo_App.UI.Controls">
 
     <StackPanel Spacing="8">
+        <FlyoutBase.AttachedFlyout>
+            <!-- Opened from a tag's name. A flyout, because only one ContentDialog can be open at a time -->
+            <Flyout x:Name="TagFlyout" Placement="Bottom">
+                <StackPanel
+                    x:Name="FlyoutRoot"
+                    Width="240"
+                    Spacing="8">
+                    <TextBox
+                        x:Name="FlyoutNameBox"
+                        Header="Name"
+                        KeyDown="OnFlyoutNameKeyDown"
+                        MaxLength="12" />
+
+                    <TextBlock
+                        x:Name="FlyoutInfoText"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        TextWrapping="Wrap" />
+
+                    <TextBlock
+                        x:Name="FlyoutErrorText"
+                        Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                        TextWrapping="Wrap"
+                        Visibility="Collapsed" />
+
+                    <StackPanel
+                        x:Name="FlyoutActions"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button
+                            x:Name="RenameButton"
+                            Click="OnRenameClicked"
+                            Content="Rename"
+                            Style="{StaticResource AccentButtonStyle}" />
+                        <Button
+                            x:Name="DeleteButton"
+                            Click="OnDeleteClicked"
+                            Content="Delete" />
+                    </StackPanel>
+
+                    <!-- Delete asks before removing the tag from every todo -->
+                    <StackPanel
+                        x:Name="DeleteConfirmPanel"
+                        Spacing="8"
+                        Visibility="Collapsed">
+                        <TextBlock x:Name="DeleteConfirmText" TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button
+                                x:Name="ConfirmDeleteButton"
+                                Click="OnConfirmDeleteClicked"
+                                Content="Delete"
+                                Style="{StaticResource AccentButtonStyle}" />
+                            <Button
+                                x:Name="CancelDeleteButton"
+                                Click="OnCancelDeleteClicked"
+                                Content="Cancel" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Flyout>
+        </FlyoutBase.AttachedFlyout>
+
         <AutoSuggestBox
             x:Name="TagInput"
             Header="Tags"
@@ -21,7 +82,7 @@
             TextWrapping="Wrap"
             Visibility="Collapsed" />
 
-        <!-- One removable chip per tag -->
+        <!-- One TagChip per tag -->
         <controls:WrapPanel
             x:Name="TagChips"
             AutomationProperties.Name="Tags on this todo"
