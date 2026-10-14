@@ -105,11 +105,7 @@ namespace ToDo_App.UI.Views
                 var file = await picker.PickSingleFileAsync();
                 if (file != null)
                 {
-                    // Remove existing board first
-                    columns.Clear();
-                    ColumnsPanel.Children.Clear();
-                    ColumnsPanel.ColumnDefinitions.Clear();
-                    
+                    // The controller raises ColumnRemoved for the current columns, so the UI clears itself
                     boardController.LoadBoardFromJson(file.Path);
                 }
             }

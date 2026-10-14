@@ -3,10 +3,9 @@ namespace ToDo_App.Tests;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 
-// Suspected bugs (#61). Each test asserts the correct behaviour and fails against the current code.
-// They are [Explicit], so a normal test run skips them. Run them with: dotnet test --filter "Category=KnownBug"
-// When a bug is fixed, remove [Explicit] so the test becomes a regular regression test.
-public class KnownBugTests
+// Regression tests for the bugs found in #61. They started as [Explicit] known-bug tests,
+// failed for the stated reasons, and became regular tests once the bugs were fixed.
+public class BugRegressionTests
 {
     private BoardController controller;
     private EventRecorder recorder;
@@ -24,9 +23,7 @@ public class KnownBugTests
         recorder = new EventRecorder(controller);
     }
 
-    // Currently a NullReferenceException from ToDoBoard.GetColumnIdFromNoteId
-    [Explicit("Known bug, see #61")]
-    [Category("KnownBug")]
+    // Was a NullReferenceException from ToDoBoard.GetColumnIdFromNoteId
     [TestCase(nameof(BoardController.RemoveNote))]
     [TestCase(nameof(BoardController.MoveNoteUp))]
     [TestCase(nameof(BoardController.MoveNoteDown))]
@@ -51,9 +48,7 @@ public class KnownBugTests
         Assert.That(controller.GetNotesInColumn(plannedId).Single().Id, Is.EqualTo(noteId));
     }
 
-    // Currently no BoardChanged is raised after loading
-    [Explicit("Known bug, see #61")]
-    [Category("KnownBug")]
+    // Loading raised no BoardChanged, so the loaded board wasn't saved and nothing else was told
     [Test]
     public void LoadBoardFromJsonRaisesBoardChanged()
     {
@@ -70,9 +65,7 @@ public class KnownBugTests
         }
     }
 
-    // Currently the replaced columns get no ColumnRemoved, so a subscribed UI keeps showing them
-    [Explicit("Known bug, see #61")]
-    [Category("KnownBug")]
+    // The replaced columns got no ColumnRemoved, so a subscribed UI kept showing them
     [Test]
     public void LoadBoardFromJsonRaisesColumnRemovedForReplacedColumns()
     {
@@ -90,9 +83,7 @@ public class KnownBugTests
         }
     }
 
-    // Currently the board changes without any event
-    [Explicit("Known bug, see #61")]
-    [Category("KnownBug")]
+    // The board changed without any event
     [Test]
     public void MoveNoteByIndexRaisesContentChangedForBothColumnsThenBoardChanged()
     {
@@ -106,6 +97,49 @@ public class KnownBugTests
         }));
         var changedColumns = recorder.ArgsOf<ColumnContentChangedEventArgs>().Select(e => e.ColumnId);
         Assert.That(changedColumns, Is.EqualTo(new[] { plannedId, progressId }));
+    }
+
+    [TestCase(-1, 0, TestName = "MoveNoteByIndexFromInvalidColumnRaisesNoEvents")]
+    [TestCase(0, 1, TestName = "MoveNoteByIndexFromEmptyPositionRaisesNoEvents")]
+    public void MoveNoteByIndexWithNothingToMoveRaisesNoEvents(int fromColumnIndex, int fromPos)
+    {
+        controller.MoveNote(fromColumnIndex, fromPos, 1, 0);
+
+        Assert.That(recorder.Names, Is.Empty);
+        Assert.That(controller.GetNotesInColumn(plannedId).Single().Id, Is.EqualTo(noteId));
+    }
+
+    [Test]
+    public void LoadBoardFromJsonRaisesRemovedThenCreatedThenBoardChanged()
+    {
+        string jsonPath = saveOtherBoard();
+        try
+        {
+            controller.LoadBoardFromJson(jsonPath);
+
+            Assert.That(recorder.Names, Is.EqualTo(new[]
+            {
+                nameof(BoardController.ColumnRemoved),
+                nameof(BoardController.ColumnRemoved),
+                nameof(BoardController.ColumnCreated),
+                nameof(BoardController.BoardChanged)
+            }));
+        }
+        finally
+        {
+            File.Delete(jsonPath);
+        }
+    }
+
+    [Test]
+    public void LoadBoardFromUnreadableFileKeepsBoardAndRaisesNoEvents()
+    {
+        string missingPath = Path.Combine(Path.GetTempPath(), $"todo-tests-{Guid.NewGuid()}.json");
+
+        Assert.Throws<FileNotFoundException>(() => controller.LoadBoardFromJson(missingPath));
+
+        Assert.That(recorder.Names, Is.Empty);
+        Assert.That(controller.GetStatusColumnIds(), Is.EqualTo(new[] { plannedId, progressId }));
     }
 
     private static string saveOtherBoard()
