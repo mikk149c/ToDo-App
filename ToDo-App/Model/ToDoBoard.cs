@@ -184,8 +184,9 @@ public class ToDoBoard
 
     internal Guid GetColumnIdFromNoteId(Guid noteId)
     {
-        Guid columnId = StatusColumns.Find(column => column.Notes.Exists(note => note.Id == noteId)).Id;
-        return columnId;
+        // Throws KeyNotFoundException for an unknown note, like the other lookups
+        int columnIndex = GetNotePositionFromId(noteId).columnIndex;
+        return StatusColumns[columnIndex].Id;
     }
 
     public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex)
