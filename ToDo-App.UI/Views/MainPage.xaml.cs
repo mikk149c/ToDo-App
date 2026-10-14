@@ -7,6 +7,9 @@ using ToDo_App.Interfaces;
 using ToDo_App.UI.Controls;
 using Windows.ApplicationModel.DataTransfer;
 using Res = ToDo_App.UI.Resources;
+using Microsoft.UI;
+using Microsoft.UI.Xaml.Media;
+using static ToDo_App.UI.Resources;
 
 namespace ToDo_App.UI.Views
 {
@@ -14,7 +17,8 @@ namespace ToDo_App.UI.Views
     {
         private const string DefaultJsonPath = "Assets/default_board.json";
         private const string UserJsonPath = "board.json";
-        private const double ScrollSpeed = 30;
+        private const double ScrollSpeed = 60;
+        private const double ScrollTickSpeed = 10;
 
         private static readonly Dictionary<string, string> Languages = new()
         {
@@ -30,8 +34,12 @@ namespace ToDo_App.UI.Views
 
         List<Guid> columns = new List<Guid>();
 
-        DispatcherTimer scrollTimer = new DispatcherTimer();
+        DispatcherTimer horizontalScrollTimer = new DispatcherTimer();
         double scrollDirection = 0;
+        private const double VerticalZoneHeight = 80;
+        DispatcherTimer verticalScrollTimer = new DispatcherTimer();
+        double verticalScrollDirection = 0;
+        ScrollViewer? verticalScrollTarget = null;
 
         
         CultureInfo _currentCulture;
@@ -52,9 +60,11 @@ namespace ToDo_App.UI.Views
             this.Content.AllowDrop = true;
             this.Content.DragOver += onBoardDragOver;
             this.Content.DragLeave += (s, e) => stopAutoScroll();
-            scrollTimer.Interval = TimeSpan.FromMilliseconds(20);
-            scrollTimer.Tick += onScrollTimerTick;
+            horizontalScrollTimer.Interval = TimeSpan.FromMilliseconds(ScrollTickSpeed);
+            horizontalScrollTimer.Tick += onHorizontalScrollTimerTick;
             BoardScrollViewer.DragLeave += (s, e) => stopAutoScroll();
+            verticalScrollTimer.Interval = TimeSpan.FromMilliseconds(ScrollTickSpeed);
+            verticalScrollTimer.Tick += onVerticalScrollTimerTick;
 
             this.Loaded += onPageInitialized;
         }
@@ -414,6 +424,10 @@ namespace ToDo_App.UI.Views
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                 Content = cardPanel
             };
+            scrollViewer.Background = new SolidColorBrush(Colors.Transparent);
+            scrollViewer.AllowDrop = true;
+            scrollViewer.DragOver += (s, e) => onColumnScrollDragOver(scrollViewer, e);
+            scrollViewer.DragLeave += (s, e) => stopAutoScroll();
 
             Grid.SetColumn(addTodoToColumnButton, 1);
             Grid.SetRow(scrollViewer, 1);
@@ -426,6 +440,44 @@ namespace ToDo_App.UI.Views
             column.Child = columnGrid;
 
             return column;
+        }
+
+        private void onColumnScrollDragOver(ScrollViewer column, DragEventArgs e)
+        {
+            if (!e.DataView.Properties.ContainsKey("noteId"))
+            {
+                return;
+            }
+
+            double y = e.GetPosition(column).Y;
+
+            const double fastZone = VerticalZoneHeight/2;
+
+            if (y < fastZone)
+            {
+                verticalScrollDirection = -ScrollSpeed * 2;
+            }
+            else if (y < VerticalZoneHeight && y >= fastZone)
+            {
+                verticalScrollDirection = -ScrollSpeed;
+            }
+            else if (y > column.ActualHeight - VerticalZoneHeight && y <= column.ActualHeight - fastZone)
+            {
+                verticalScrollDirection = ScrollSpeed;
+            }
+            else if (y > column.ActualHeight - fastZone)
+            {
+                verticalScrollDirection = ScrollSpeed * 2;
+            }
+            else
+            {
+                verticalScrollDirection = 0;
+            }
+            verticalScrollTarget = column;
+            if (!verticalScrollTimer.IsEnabled)
+            {
+                verticalScrollTimer.Start();
+            }
         }
 
         private void onColumnDragOver(object sender, DragEventArgs e)
@@ -464,26 +516,40 @@ namespace ToDo_App.UI.Views
             {
                 scrollDirection = 0;
             }
-            if (!scrollTimer.IsEnabled)
+            if (!horizontalScrollTimer.IsEnabled)
             {
-                scrollTimer.Start();
+                horizontalScrollTimer.Start();
             }
         }
 
-        private void onScrollTimerTick(object? sender, object e)
+        private void onHorizontalScrollTimerTick(object? sender, object e)
         {
             if (scrollDirection == 0)
             {
-                scrollTimer.Stop();
+                horizontalScrollTimer.Stop();
                 return;
             }
-            BoardScrollViewer.ChangeView(BoardScrollViewer.HorizontalOffset + scrollDirection, null, null, true);
+            BoardScrollViewer.ChangeView(BoardScrollViewer.HorizontalOffset + scrollDirection, null, null, false);
+        }
+
+        private void onVerticalScrollTimerTick(object? sender, object e)
+        {
+            if (verticalScrollDirection == 0 || verticalScrollTarget == null)
+            {
+                verticalScrollTimer.Stop();
+                return;
+            }
+
+            verticalScrollTarget.ChangeView(null, verticalScrollTarget.VerticalOffset + verticalScrollDirection, null, false);
         }
 
         private void stopAutoScroll()
         {
             scrollDirection = 0;
-            scrollTimer.Stop();
+            horizontalScrollTimer.Stop();
+            verticalScrollDirection = 0;
+            verticalScrollTarget = null;
+            verticalScrollTimer.Stop();
         }
 
         private void onColumnDrop(Guid columnId, StackPanel panel, DragEventArgs e)
