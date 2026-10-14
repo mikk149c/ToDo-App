@@ -56,9 +56,14 @@
 
                 <Button
                     Click="OnClickAddColumn"
-                    Content="Add Column"
-                    Style="{StaticResource Button_AddColumn}" />
-
+                    Style="{StaticResource PrimaryAction}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Add"/>
+                            <TextBlock Text="Column"></TextBlock>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
                 <Button
                     Click="OnAddTodoClicked"
                     Content="Add new ToDo"
@@ -94,7 +99,7 @@
                     <Button.Content>
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <SymbolIcon Symbol="Delete"/>
-                            <TextBlock Text="Trash bin"></TextBlock>
+                            <TextBlock Text="Trash Bin"></TextBlock>
                         </StackPanel>
                     </Button.Content>
                 </Button>
