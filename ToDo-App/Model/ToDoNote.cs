@@ -6,6 +6,7 @@ public class ToDoNote
     public string Title { get; set; }
     public string Content { get; set; }
     public AttachedFile? File { get; set; }
+    public List<NoteTag> Tags { get; set; } = new List<NoteTag>();
 
     public ToDoNote(String title, String content, AttachedFile? file = null)
     {
