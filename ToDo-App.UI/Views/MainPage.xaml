@@ -127,7 +127,9 @@
                 <Grid
                     x:Name="ColumnsPanel"
                     Width="{Binding ViewportWidth, ElementName=BoardScrollViewer}"
-                    ColumnSpacing="16"> 
+                    ColumnSpacing="16" 
+                    Background="Transparent"
+                    AllowDrop="True">
                     <Grid.ColumnDefinitions>
                     </Grid.ColumnDefinitions>
                 </Grid>
