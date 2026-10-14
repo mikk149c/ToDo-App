@@ -1,0 +1,143 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="language/german" xml:space="preserve">
+        <value>deutsch</value>
+    </data>
+    <data name="language/danish" xml:space="preserve">
+        <value>dänisch</value>
+    </data>
+    <data name="language/english" xml:space="preserve">
+        <value>englisch</value>
+    </data>
+    <data name="language/klingon" xml:space="preserve">
+        <value>klingonisch</value>
+    </data>
+    <data name="language/navi" xml:space="preserve">
+        <value>Na'vi</value>
+    </data>
+    <data name="button/tooltip_dark" xml:space="preserve">
+        <value>Dunkel</value>
+    </data>
+    <data name="button/tooltip_light" xml:space="preserve">
+        <value>Hell</value>
+    </data>
+    <data name="todo/property_title" xml:space="preserve">
+        <value>Titel</value>
+    </data>
+    <data name="todo/column_title" xml:space="preserve">
+        <value>Spaltetitel</value>
+    </data>
+    <data name="todo/property_description" xml:space="preserve">
+        <value>Beschreibung</value>
+    </data>
+    <data name="button/add_column" xml:space="preserve">
+        <value>Spalte Hinzufügen</value>
+    </data>
+    <data name="button/add_todo" xml:space="preserve">
+        <value>Notiz Hinzufügen</value>
+    </data>
+    <data name="button/add_note_tooltip" xml:space="preserve">
+        <value>Eine neue Notiz hinzufügen</value>
+    </data>
+    <data name="button/delete_column_tooltip" xml:space="preserve">
+        <value>Spalte löschen</value>
+    </data>
+    <data name="button/delete_tooltip" xml:space="preserve">
+        <value>Löschen</value>
+    </data>
+    <data name="dialog/add" xml:space="preserve">
+        <value>Hinzufügen</value>
+    </data>
+    <data name="dialog/cancel" xml:space="preserve">
+        <value>Einstellen</value>
+    </data>
+    <data name="dialog/ok" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="todo/default_title" xml:space="preserve">
+        <value>Neue ToDo</value>
+    </data>
+    <data name="todo/default_description" xml:space="preserve">
+        <value>Das ist eine neue Todo.</value>
+    </data>
+    <data name="dialog/save" xml:space="preserve">
+        <value>Speichern</value>
+    </data>
+    <data name="dialog/delete" xml:space="preserve">
+        <value>Löschen</value>
+    </data>
+    <data name="dialog/delete_the_todos" xml:space="preserve">
+        <value>Notiz(en) löschen</value>
+    </data>
+    <data name="dialog/title_add_new_column" xml:space="preserve">
+        <value>Neue Spalte Hinzufügen</value>
+    </data>
+    <data name="dialog/title_add_new_note" xml:space="preserve">
+        <value>Neue Notiz Hinzufügen</value>
+    </data>
+    <data name="dialog/title_delete_column_q" xml:space="preserve">
+        <value>Spalte Löschen?</value>
+    </data>
+    <data name="dialog/title_delete_note_q" xml:space="preserve">
+        <value>Notiz Löschen?</value>
+    </data>
+    <data name="dialog/title_edit_column" xml:space="preserve">
+        <value>Spalte Bearbeiten</value>
+    </data>
+    <data name="dialog/title_edit_note" xml:space="preserve">
+        <value>Notiz Bearbeiten</value>
+    </data>
+    <data name="button/edit_column_title_tooltip" xml:space="preserve">
+        <value>Spaltetitel bearbeiten</value>
+    </data>
+    <data name="button/edit_tooltip" xml:space="preserve">
+        <value>Bearbeiten</value>
+    </data>
+    <data name="button/export" xml:space="preserve">
+        <value>Exportieren</value>
+    </data>
+    <data name="button/import" xml:space="preserve">
+        <value>Importieren</value>
+    </data>
+    <data name="dialog/export_board" xml:space="preserve">
+        <value>Tafel Exportieren</value>
+    </data>
+    <data name="dialog/import_board" xml:space="preserve">
+        <value>Tafel Importieren</value>
+    </data>
+    <data name="dialog/json_files" xml:space="preserve">
+        <value>JSON-Datei</value>
+    </data>
+    <data name="dialog/option_move_to_column" xml:space="preserve">
+        <value>Auf "{0}" stellen</value>
+    </data>
+    <data name="button/attach_file_tooltip" xml:space="preserve">
+        <value>Datei anhängen</value>
+    </data>
+    <data name="button/remove_attached_file_tooltip" xml:space="preserve">
+        <value>Den Anhang entfernen</value>
+    </data>
+    <data name="button/tooltip_accent_color" xml:space="preserve">
+        <value>Temafarbe</value>
+    </data>
+    <data name="dialog/attach_file" xml:space="preserve">
+        <value>Datei anhängen</value>
+    </data>
+    <data name="language/faroese" xml:space="preserve">
+        <value>färöisch</value>
+    </data>
+    <data name="button/tooltip_system_default" xml:space="preserve">
+        <value>Standardeinstellung des Betriebssystems</value>
+    </data>
+</root>

@@ -12,7 +12,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="dialog/ok" xml:space="preserve">
-        <value>Ok</value>
+        <value>OK</value>
     </data>
     <data name="dialog/cancel" xml:space="preserve">
         <value>Annuller</value>
@@ -138,7 +138,7 @@
         <value>Temafarve</value>
     </data>
     <data name="button/tooltip_system_default" xml:space="preserve">
-        <value>Systemstandard</value>
+        <value>Styresystemets standardindstilling</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
         <value>Slet "{0}"? Dette kan ikke fortrydes.</value>
@@ -160,5 +160,17 @@
     </data>
     <data name="language/danish" xml:space="preserve">
         <value>dansk</value>
+    </data>
+    <data name="language/navi" xml:space="preserve">
+        <value>Na'vi</value>
+    </data>
+    <data name="language/klingon" xml:space="preserve">
+        <value>Klingon</value>
+    </data>
+    <data name="language/german" xml:space="preserve">
+        <value>tysk</value>
+    </data>
+    <data name="language/faroese" xml:space="preserve">
+        <value>færøsk</value>
     </data>
 </root>

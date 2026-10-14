@@ -16,7 +16,11 @@ namespace ToDo_App.UI.Views
         private static readonly Dictionary<string, string> Languages = new()
         {
             {"en-US", "language/english"},
-            {"da-DK", "language/danish"}
+            {"da-DK", "language/danish"},
+            {"de", "language/german"},
+            {"fo", "language/faroese"},
+            {"kln", "language/klingon"},
+            {"naq", "language/navi"}
         };
 
         ITodoBoard boardController = new BoardController();
@@ -590,7 +594,7 @@ namespace ToDo_App.UI.Views
             }
             else if (noteCount > 0)
             {
-                message.Text = String.Format(Res.ResourceManager.GetString("dialog/content_delete_note", _currentCulture), columnName, noteCount);
+                message.Text = String.Format(Res.ResourceManager.GetString("dialog/content_delete_column_no_space", _currentCulture), columnName, noteCount);
             }
 
             StackPanel content = new StackPanel { Spacing = 12 };

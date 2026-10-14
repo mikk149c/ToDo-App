@@ -303,7 +303,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ok.
+        ///   Looks up a localized string similar to OK.
         /// </summary>
         internal static string dialog_ok {
             get {
@@ -461,6 +461,42 @@ namespace ToDo_App.UI {
         internal static string language_english {
             get {
                 return ResourceManager.GetString("language/english", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Faroese.
+        /// </summary>
+        internal static string language_faroese {
+            get {
+                return ResourceManager.GetString("language/faroese", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to German.
+        /// </summary>
+        internal static string language_german {
+            get {
+                return ResourceManager.GetString("language/german", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Klingon.
+        /// </summary>
+        internal static string language_klingon {
+            get {
+                return ResourceManager.GetString("language/klingon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Na&apos;vi.
+        /// </summary>
+        internal static string language_navi {
+            get {
+                return ResourceManager.GetString("language/navi", resourceCulture);
             }
         }
         
