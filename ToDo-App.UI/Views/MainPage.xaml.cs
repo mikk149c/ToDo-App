@@ -484,20 +484,20 @@ namespace ToDo_App.UI.Views
 
         private async void onAddTodoToColumnClicked(object sender, RoutedEventArgs e, Guid columnId)
         {
-            const string defaultTitle = "New ToDo";
-            const string defaultContent = "This is a new ToDo item.";
+            string defaultTitle = Res.ResourceManager.GetString("todo/default_title", _currentCulture);
+            string defaultContent = Res.ResourceManager.GetString("todo/default_description", _currentCulture);
 
             // Placeholders (not prefilled text) so the user can start typing straight away
             var titleBox = new TextBox
             {
                 Header = Res.ResourceManager.GetString("todo/property_title", _currentCulture),
-                Text = Res.ResourceManager.GetString("todo/default_title", _currentCulture)
+                PlaceholderText = defaultTitle
             };
 
             var contentBox = new TextBox
             {
                 Header = Res.ResourceManager.GetString("todo/property_description", _currentCulture),
-                Text = Res.ResourceManager.GetString("todo/default_description", _currentCulture),
+                PlaceholderText = defaultContent,
                 AcceptsReturn = true,
                 TextWrapping = TextWrapping.Wrap,
                 MinHeight = 100
@@ -559,7 +559,7 @@ namespace ToDo_App.UI.Views
 
             TextBlock message = new TextBlock
             {
-                Text = $"Delete \"{columnName}\"? This can't be undone.",
+                Text = String.Format(Res.ResourceManager.GetString("dialog/content_delete_column", _currentCulture), columnName),
                 TextWrapping = TextWrapping.Wrap
             };
 
@@ -569,14 +569,14 @@ namespace ToDo_App.UI.Views
             {
                 todoActionBox = new ComboBox
                 {
-                    Header = $"What should happen to the {noteCount} ToDo(s) in this column?",
+                    Header = String.Format(Res.ResourceManager.GetString("dialog/content_delete_column_consequence", _currentCulture), noteCount),
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
                 foreach (Guid otherColumn in otherColumns)
                 {
                     todoActionBox.Items.Add(new ComboBoxItem
                     {
-                        Content = $"Move to \"{boardController.GetStatusColumnName(otherColumn)}\"",
+                        Content = String.Format(Res.ResourceManager.GetString("dialog/option_move_to_column", _currentCulture), boardController.GetStatusColumnName(otherColumn)),
                         Tag = otherColumn
                     });
                 }
@@ -585,7 +585,7 @@ namespace ToDo_App.UI.Views
             }
             else if (noteCount > 0)
             {
-                message.Text = $"Delete \"{columnName}\" and the {noteCount} ToDo(s) in it? This can't be undone.";
+                message.Text = String.Format(Res.ResourceManager.GetString("dialog/content_delete_note", _currentCulture), columnName, noteCount);
             }
 
             StackPanel content = new StackPanel { Spacing = 12 };
@@ -639,7 +639,7 @@ namespace ToDo_App.UI.Views
                 Title = Res.ResourceManager.GetString("dialog/title_delete_note_q", _currentCulture),
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
-                Content = $"Delete \"{note.Title}\"? This can't be undone.",
+                Content = String.Format(Res.ResourceManager.GetString("dialog/content_delete_note", _currentCulture), note.Title),
                 DefaultButton = ContentDialogButton.Primary,
             };
 

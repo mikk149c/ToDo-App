@@ -222,6 +222,42 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete &quot;{0}&quot;? This can&apos;t be undone..
+        /// </summary>
+        internal static string dialog_content_delete_column {
+            get {
+                return ResourceManager.GetString("dialog/content_delete_column", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What should happen to the {0} note(s) in this column?.
+        /// </summary>
+        internal static string dialog_content_delete_column_consequence {
+            get {
+                return ResourceManager.GetString("dialog/content_delete_column_consequence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete &quot;{0}&quot; and the {1} note(s) in it? This can&apos;t be undone..
+        /// </summary>
+        internal static string dialog_content_delete_column_no_space {
+            get {
+                return ResourceManager.GetString("dialog/content_delete_column_no_space", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete &quot;{0}&quot;? This can&apos;t be undone..
+        /// </summary>
+        internal static string dialog_content_delete_note {
+            get {
+                return ResourceManager.GetString("dialog/content_delete_note", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         internal static string dialog_delete {
@@ -231,7 +267,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete the ToDo(s).
+        ///   Looks up a localized string similar to Delete the note(s).
         /// </summary>
         internal static string dialog_delete_the_todos {
             get {
@@ -272,6 +308,15 @@ namespace ToDo_App.UI {
         internal static string dialog_ok {
             get {
                 return ResourceManager.GetString("dialog/ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move to &quot;{0}&quot;.
+        /// </summary>
+        internal static string dialog_option_move_to_column {
+            get {
+                return ResourceManager.GetString("dialog/option_move_to_column", resourceCulture);
             }
         }
         

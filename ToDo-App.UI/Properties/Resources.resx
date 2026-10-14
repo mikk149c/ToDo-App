@@ -94,7 +94,7 @@
         <value>Edit Column</value>
     </data>
     <data name="dialog/delete_the_todos" xml:space="preserve">
-        <value>Delete the ToDo(s)</value>
+        <value>Delete the note(s)</value>
     </data>
     <data name="dialog/title_delete_column_q" xml:space="preserve">
         <value>Delete Column?</value>
@@ -146,5 +146,20 @@
     </data>
     <data name="button/tooltip_accent_color" xml:space="preserve">
         <value>Accent color</value>
+    </data>
+    <data name="dialog/content_delete_note" xml:space="preserve">
+        <value>Delete "{0}"? This can't be undone.</value>
+    </data>
+    <data name="dialog/content_delete_column_no_space" xml:space="preserve">
+        <value>Delete "{0}" and the {1} note(s) in it? This can't be undone.</value>
+    </data>
+    <data name="dialog/option_move_to_column" xml:space="preserve">
+        <value>Move to "{0}"</value>
+    </data>
+    <data name="dialog/content_delete_column_consequence" xml:space="preserve">
+        <value>What should happen to the {0} note(s) in this column?</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>Delete "{0}"? This can't be undone.</value>
     </data>
 </root>
