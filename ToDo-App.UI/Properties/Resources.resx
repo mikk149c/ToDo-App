@@ -189,4 +189,28 @@
     <data name="dialog/remove_tag" xml:space="preserve">
         <value>Remove "{0}"</value>
     </data>
+    <data name="dialog/edit_tag" xml:space="preserve">
+        <value>Edit "{0}"</value>
+    </data>
+    <data name="dialog/new_tag_tooltip" xml:space="preserve">
+        <value>New tag "{0}", saved when you save the note</value>
+    </data>
+    <data name="dialog/tag_name" xml:space="preserve">
+        <value>Name</value>
+    </data>
+    <data name="dialog/tag_used_on" xml:space="preserve">
+        <value>Used on {0} note(s)</value>
+    </data>
+    <data name="dialog/tag_new_info" xml:space="preserve">
+        <value>New tag, added when you save the note</value>
+    </data>
+    <data name="dialog/tag_name_taken" xml:space="preserve">
+        <value>Another tag is already called "{0}".</value>
+    </data>
+    <data name="dialog/rename" xml:space="preserve">
+        <value>Rename</value>
+    </data>
+    <data name="dialog/delete_tag_confirm" xml:space="preserve">
+        <value>Remove "{0}" from all {1} note(s)?</value>
+    </data>
 </root>

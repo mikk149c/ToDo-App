@@ -182,4 +182,28 @@
     <data name="dialog/remove_tag" xml:space="preserve">
         <value>Fjern "{0}"</value>
     </data>
+    <data name="dialog/edit_tag" xml:space="preserve">
+        <value>Rediger "{0}"</value>
+    </data>
+    <data name="dialog/new_tag_tooltip" xml:space="preserve">
+        <value>Nyt tag "{0}", gemmes når du gemmer noten</value>
+    </data>
+    <data name="dialog/tag_name" xml:space="preserve">
+        <value>Navn</value>
+    </data>
+    <data name="dialog/tag_used_on" xml:space="preserve">
+        <value>Bruges på {0} note(r)</value>
+    </data>
+    <data name="dialog/tag_new_info" xml:space="preserve">
+        <value>Nyt tag, tilføjes når du gemmer noten</value>
+    </data>
+    <data name="dialog/tag_name_taken" xml:space="preserve">
+        <value>Et andet tag hedder allerede "{0}".</value>
+    </data>
+    <data name="dialog/rename" xml:space="preserve">
+        <value>Omdøb</value>
+    </data>
+    <data name="dialog/delete_tag_confirm" xml:space="preserve">
+        <value>Fjern "{0}" fra alle {1} note(r)?</value>
+    </data>
 </root>
