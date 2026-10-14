@@ -16,7 +16,7 @@ concurrency:
 env:
   # Minimum line coverage (percent) of the ToDo-App class library. 0 = report only.
   # See "Tests and coverage" in README.md.
-  COVERAGE_THRESHOLD: 0
+  COVERAGE_THRESHOLD: 95
 
 jobs:
   coverage:
