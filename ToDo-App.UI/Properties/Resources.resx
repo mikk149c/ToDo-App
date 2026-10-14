@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="dialog/ok" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="dialog/cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="error/failed_to_load_board" xml:space="preserve">
+        <value>Failed to load the board.</value>
+    </data>
+    <data name="button/export" xml:space="preserve">
+        <value>Export</value>
+    </data>
+    <data name="button/import" xml:space="preserve">
+        <value>Import</value>
+    </data>
+    <data name="button/add_column" xml:space="preserve">
+        <value>Add Column</value>
+    </data>
+    <data name="button/add_todo" xml:space="preserve">
+        <value>Add Note</value>
+    </data>
+    <data name="dialog/delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="dialog/add" xml:space="preserve">
+        <value>Add</value>
+    </data>
+    <data name="dialog/save" xml:space="preserve">
+        <value>Save</value>
+    </data>
+    <data name="todo/default_title" xml:space="preserve">
+        <value>New ToDo</value>
+    </data>
+    <data name="todo/default_description" xml:space="preserve">
+        <value>This is a new ToDo note.</value>
+    </data>
+    <data name="dialog/import_board" xml:space="preserve">
+        <value>Import Board</value>
+    </data>
+    <data name="dialog/export_board" xml:space="preserve">
+        <value>Export Board</value>
+    </data>
+    <data name="error/failed_to_import_board" xml:space="preserve">
+        <value>Failed to import board from file.</value>
+    </data>
+    <data name="dialog/json_files" xml:space="preserve">
+        <value>JSON Files</value>
+    </data>
+    <data name="error/failed_to_export_board" xml:space="preserve">
+        <value>Failed to export board from file.</value>
+    </data>
+    <data name="error/failed_to_save_board" xml:space="preserve">
+        <value>Failed to save the board.</value>
+    </data>
+    <data name="button/edit_column_title_tooltip" xml:space="preserve">
+        <value>Edit column title</value>
+    </data>
+    <data name="button/delete_column_tooltip" xml:space="preserve">
+        <value>Delete column</value>
+    </data>
+    <data name="button/add_note_tooltip" xml:space="preserve">
+        <value>Add a new ToDo note</value>
+    </data>
+    <data name="todo/property_title" xml:space="preserve">
+        <value>Title</value>
+    </data>
+    <data name="todo/property_description" xml:space="preserve">
+        <value>Description</value>
+    </data>
+    <data name="dialog/title_add_new_note" xml:space="preserve">
+        <value>Add New Note</value>
+    </data>
+    <data name="dialog/title_edit_column" xml:space="preserve">
+        <value>Edit Column</value>
+    </data>
+    <data name="dialog/delete_the_todos" xml:space="preserve">
+        <value>Delete the note(s)</value>
+    </data>
+    <data name="dialog/title_delete_column_q" xml:space="preserve">
+        <value>Delete Column?</value>
+    </data>
+    <data name="dialog/title_delete_note_q" xml:space="preserve">
+        <value>Delete Note?</value>
+    </data>
+    <data name="dialog/title_edit_note" xml:space="preserve">
+        <value>Edit Note</value>
+    </data>
+    <data name="dialog/attach_file" xml:space="preserve">
+        <value>Attach File</value>
+    </data>
+    <data name="error/failed_to_attach_file" xml:space="preserve">
+        <value>Failed to attach file.</value>
+    </data>
+    <data name="error/failed_to_open_attached_file" xml:space="preserve">
+        <value>Failed to open attached file.</value>
+    </data>
+    <data name="error/failed_to_remove_attached_file" xml:space="preserve">
+        <value>Failed to remove attached file.</value>
+    </data>
+    <data name="button/edit_tooltip" xml:space="preserve">
+        <value>Edit</value>
+    </data>
+    <data name="button/attach_file_tooltip" xml:space="preserve">
+        <value>Attach file</value>
+    </data>
+    <data name="button/delete_tooltip" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="button/remove_attached_file_tooltip" xml:space="preserve">
+        <value>Remove attached file</value>
+    </data>
+    <data name="dialog/title_add_new_column" xml:space="preserve">
+        <value>Add New Column</value>
+    </data>
+    <data name="todo/column_title" xml:space="preserve">
+        <value>Column title</value>
+    </data>
+    <data name="button/tooltip_dark" xml:space="preserve">
+        <value>Dark</value>
+    </data>
+    <data name="button/tooltip_system_default" xml:space="preserve">
+        <value>System default</value>
+    </data>
+    <data name="button/tooltip_light" xml:space="preserve">
+        <value>Light</value>
+    </data>
+    <data name="button/tooltip_accent_color" xml:space="preserve">
+        <value>Accent color</value>
+    </data>
+    <data name="dialog/content_delete_note" xml:space="preserve">
+        <value>Delete "{0}"? This can't be undone.</value>
+    </data>
+    <data name="dialog/content_delete_column_no_space" xml:space="preserve">
+        <value>Delete "{0}" and the {1} note(s) in it? This can't be undone.</value>
+    </data>
+    <data name="dialog/option_move_to_column" xml:space="preserve">
+        <value>Move to "{0}"</value>
+    </data>
+    <data name="dialog/content_delete_column_consequence" xml:space="preserve">
+        <value>What should happen to the {0} note(s) in this column?</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>Delete "{0}"? This can't be undone.</value>
+    </data>
+    <data name="language/english" xml:space="preserve">
+        <value>English</value>
+    </data>
+    <data name="language/danish" xml:space="preserve">
+        <value>Danish</value>
+    </data>
+    <data name="language/navi" xml:space="preserve">
+        <value>Na'vi</value>
+    </data>
+    <data name="language/klingon" xml:space="preserve">
+        <value>Klingon</value>
+    </data>
+    <data name="language/german" xml:space="preserve">
+        <value>German</value>
+    </data>
+    <data name="language/faroese" xml:space="preserve">
+        <value>Faroese</value>
+    </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>Tags</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>Write a tag name and press Enter</value>
+    </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>Remove "{0}"</value>
+    </data>
+</root>

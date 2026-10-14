@@ -1,0 +1,185 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="dialog/ok" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="dialog/cancel" xml:space="preserve">
+        <value>Annuller</value>
+    </data>
+    <data name="error/failed_to_load_board" xml:space="preserve">
+        <value>Tavlen kunne ikke indlæses.</value>
+    </data>
+    <data name="button/export" xml:space="preserve">
+        <value>Eksportér</value>
+    </data>
+    <data name="button/import" xml:space="preserve">
+        <value>Importér</value>
+    </data>
+    <data name="button/add_column" xml:space="preserve">
+        <value>Tilføj Kolonne</value>
+    </data>
+    <data name="button/add_todo" xml:space="preserve">
+        <value>Tilføj Note</value>
+    </data>
+    <data name="dialog/delete" xml:space="preserve">
+        <value>Slet</value>
+    </data>
+    <data name="dialog/add" xml:space="preserve">
+        <value>Tilføj</value>
+    </data>
+    <data name="dialog/save" xml:space="preserve">
+        <value>Gem</value>
+    </data>
+    <data name="todo/default_title" xml:space="preserve">
+        <value>Ny ToDo</value>
+    </data>
+    <data name="todo/default_description" xml:space="preserve">
+        <value>Dette er en ny ToDo note.</value>
+    </data>
+    <data name="dialog/export_board" xml:space="preserve">
+        <value>Eksportér Tavle</value>
+    </data>
+    <data name="dialog/import_board" xml:space="preserve">
+        <value>Importér Tavle</value>
+    </data>
+    <data name="error/failed_to_import_board" xml:space="preserve">
+        <value>Tavlen kunne ikke importeres fra filen.</value>
+    </data>
+    <data name="dialog/json_files" xml:space="preserve">
+        <value>JSON-filer</value>
+    </data>
+    <data name="error/failed_to_export_board" xml:space="preserve">
+        <value>Tavlen kunne ikke eksporteres til filen.</value>
+    </data>
+    <data name="error/failed_to_save_board" xml:space="preserve">
+        <value>Tavlen kunne ikke gemmes.</value>
+    </data>
+    <data name="error/failed_to_attach_file" xml:space="preserve">
+        <value>Filen kunne ikke vedhæftes.</value>
+    </data>
+    <data name="error/failed_to_open_attached_file" xml:space="preserve">
+        <value>Den vedhæftede fil kunne ikke åbnes.</value>
+    </data>
+    <data name="error/failed_to_remove_attached_file" xml:space="preserve">
+        <value>Den vedhæftede fil kunne ikke fjernes.</value>
+    </data>
+    <data name="button/add_note_tooltip" xml:space="preserve">
+        <value>Tilføj en ny ToDo note</value>
+    </data>
+    <data name="button/attach_file_tooltip" xml:space="preserve">
+        <value>Vedhæft en fil</value>
+    </data>
+    <data name="button/delete_column_tooltip" xml:space="preserve">
+        <value>Slet kolonnen</value>
+    </data>
+    <data name="button/delete_tooltip" xml:space="preserve">
+        <value>Slet</value>
+    </data>
+    <data name="button/edit_column_title_tooltip" xml:space="preserve">
+        <value>Rediger kolonnetitlen</value>
+    </data>
+    <data name="button/edit_tooltip" xml:space="preserve">
+        <value>Rediger</value>
+    </data>
+    <data name="button/remove_attached_file_tooltip" xml:space="preserve">
+        <value>Fjern den vedhæftede fil</value>
+    </data>
+    <data name="dialog/attach_file" xml:space="preserve">
+        <value>Vedhæft en fil</value>
+    </data>
+    <data name="dialog/delete_the_todos" xml:space="preserve">
+        <value>Slet note(rne)</value>
+    </data>
+    <data name="dialog/title_add_new_note" xml:space="preserve">
+        <value>Tilføj Ny Note</value>
+    </data>
+    <data name="dialog/title_add_new_column" xml:space="preserve">
+        <value>Tilføj Ny Kolonne</value>
+    </data>
+    <data name="dialog/title_delete_column_q" xml:space="preserve">
+        <value>Slet Kolonne?</value>
+    </data>
+    <data name="dialog/title_delete_note_q" xml:space="preserve">
+        <value>Slet Note?</value>
+    </data>
+    <data name="dialog/title_edit_column" xml:space="preserve">
+        <value>Rediger Kolonne</value>
+    </data>
+    <data name="dialog/title_edit_note" xml:space="preserve">
+        <value>Rediger Note</value>
+    </data>
+    <data name="todo/column_title" xml:space="preserve">
+        <value>Kolonnetitel</value>
+    </data>
+    <data name="todo/property_description" xml:space="preserve">
+        <value>Beskrivelse</value>
+    </data>
+    <data name="todo/property_title" xml:space="preserve">
+        <value>Titel</value>
+    </data>
+    <data name="button/tooltip_dark" xml:space="preserve">
+        <value>Mørkt</value>
+    </data>
+    <data name="button/tooltip_light" xml:space="preserve">
+        <value>Lyst</value>
+    </data>
+    <data name="button/tooltip_accent_color" xml:space="preserve">
+        <value>Temafarve</value>
+    </data>
+    <data name="button/tooltip_system_default" xml:space="preserve">
+        <value>Styresystemets standardindstilling</value>
+    </data>
+    <data name="dialog/content_delete_note" xml:space="preserve">
+        <value>Slet "{0}"? Dette kan ikke fortrydes.</value>
+    </data>
+    <data name="dialog/content_delete_column_no_space" xml:space="preserve">
+        <value>Slet "{0}" og de(n) {1} note(r) der ligger i den? Dette kan ikke fortrydes.</value>
+    </data>
+    <data name="dialog/content_delete_column_consequence" xml:space="preserve">
+        <value>Hvad skal der ske med de(n) {0} note(r) i denne kolonne?</value>
+    </data>
+    <data name="dialog/option_move_to_column" xml:space="preserve">
+        <value>Flyt til "{0}"</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>Slet "{0}"? Dette kan ikke fortrydes.</value>
+    </data>
+    <data name="language/english" xml:space="preserve">
+        <value>engelsk</value>
+    </data>
+    <data name="language/danish" xml:space="preserve">
+        <value>dansk</value>
+    </data>
+    <data name="language/navi" xml:space="preserve">
+        <value>Na'vi</value>
+    </data>
+    <data name="language/klingon" xml:space="preserve">
+        <value>Klingon</value>
+    </data>
+    <data name="language/german" xml:space="preserve">
+        <value>tysk</value>
+    </data>
+    <data name="language/faroese" xml:space="preserve">
+        <value>færøsk</value>
+    </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>Tags</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>Skriv et tag-navn og tryk Enter</value>
+    </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>Fjern "{0}"</value>
+    </data>
+</root>

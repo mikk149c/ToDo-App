@@ -11,6 +11,8 @@ namespace ToDo_App.UI.Controls
         private readonly List<string> tagNames = new List<string>();
         private readonly List<string> existingTagNames = new List<string>();
 
+        private Dictionary<string, string> localizationStrings;
+
         public TagEditor()
         {
             InitializeComponent();
@@ -18,13 +20,23 @@ namespace ToDo_App.UI.Controls
 
         /// <param name="tagNames">The todo's current tags.</param>
         /// <param name="existingTagNames">Every tag on the board, offered as suggestions.</param>
-        public TagEditor(IEnumerable<string> tagNames, IEnumerable<string> existingTagNames) : this()
+        /// <param name="localizationStrings">Dictionary with relevant localized strings</param>
+        public TagEditor(IEnumerable<string> tagNames, IEnumerable<string> existingTagNames, Dictionary<string,string> localizationStrings) : this()
         {
+            SetLocalizationStrings(localizationStrings);
+            
             this.existingTagNames.AddRange(existingTagNames);
             foreach (string name in tagNames)
             {
                 addChip(name);
             }
+        }
+
+        public void SetLocalizationStrings(Dictionary<string,string> localizationStrings)
+        {
+            this.localizationStrings = localizationStrings;
+            TagInput.Header = localizationStrings["todo/property_tags"];
+            TagInput.PlaceholderText = localizationStrings["dialog/add_tag_placeholder"];
         }
 
         public IReadOnlyList<string> TagNames => tagNames;
@@ -115,7 +127,7 @@ namespace ToDo_App.UI.Controls
                 }
             };
             AutomationProperties.SetName(chip, $"Remove tag {name}");
-            ToolTipService.SetToolTip(chip, $"Remove {name}");
+            ToolTipService.SetToolTip(chip, string.Format(localizationStrings["dialog/remove_tag"], name));
             chip.Click += (sender, e) =>
             {
                 tagNames.Remove(name);
