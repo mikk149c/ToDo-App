@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.Windows.Storage.Pickers;
 using System.Runtime.CompilerServices;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
+using ToDo_App.UI.Controls;
 using Windows.ApplicationModel.DataTransfer;
 
 namespace ToDo_App.UI.Views
@@ -491,6 +493,8 @@ namespace ToDo_App.UI.Views
                 MinHeight = 100
             };
 
+            var tagEditor = new TagEditor(Array.Empty<string>(), boardTagNames());
+
             var dialog = new ContentDialog
             {
                 XamlRoot = this.XamlRoot,
@@ -501,17 +505,20 @@ namespace ToDo_App.UI.Views
                 Content = new StackPanel
                 {
                     Spacing = 8,
-                    Children = { titleBox, contentBox }
+                    Children = { titleBox, contentBox, tagEditor }
                 }
             };
+            // Keep the dialog open if a typed tag isn't valid, so the user can see why
+            dialog.PrimaryButtonClick += (s, args) => args.Cancel = !tagEditor.CommitPendingInput();
 
             ContentDialogResult result = await dialog.ShowAsync();
-            if (result == ContentDialogResult.Primary) { 
+            if (result == ContentDialogResult.Primary) {
                 // Leaving a field empty keeps the placeholder text, as it did when the fields were prefilled
                 boardController.CreateNote(
                     columnId,
                     string.IsNullOrWhiteSpace(titleBox.Text) ? defaultTitle : titleBox.Text,
-                    string.IsNullOrWhiteSpace(contentBox.Text) ? defaultContent : contentBox.Text);
+                    string.IsNullOrWhiteSpace(contentBox.Text) ? defaultContent : contentBox.Text,
+                    tagNames: tagEditor.TagNames);
             }
         }
 
@@ -656,6 +663,8 @@ namespace ToDo_App.UI.Views
                 MinHeight = 100
             };
 
+            var tagEditor = new TagEditor(note.Tags.Select(tag => tag.Name), boardTagNames());
+
             var dialog = new ContentDialog
             {
                 XamlRoot = this.XamlRoot,
@@ -666,9 +675,11 @@ namespace ToDo_App.UI.Views
                 Content = new StackPanel
                 {
                     Spacing = 8,
-                    Children = { titleBox, contentBox }
+                    Children = { titleBox, contentBox, tagEditor }
                 }
             };
+            // Keep the dialog open if a typed tag isn't valid, so the user can see why
+            dialog.PrimaryButtonClick += (s, args) => args.Cancel = !tagEditor.CommitPendingInput();
 
             ContentDialogResult result = await dialog.ShowAsync();
 
@@ -676,6 +687,7 @@ namespace ToDo_App.UI.Views
             {
                 boardController.SetNoteTitle(note.Id, titleBox.Text);
                 boardController.SetNoteContent(note.Id, contentBox.Text);
+                boardController.SetNoteTags(note.Id, tagEditor.TagNames);
             }
         }
 
@@ -889,24 +901,49 @@ namespace ToDo_App.UI.Views
             }
             Grid.SetColumn(deleteButton, 1);
 
+            var cardContent = new StackPanel { Spacing = 4 };
+            cardContent.Children.Add(titleRow);
+            if (note.Tags.Count > 0)
+            {
+                cardContent.Children.Add(buildTagsRow(note));
+            }
+            cardContent.Children.Add(descriptionRow);
+            cardContent.Children.Add(attachmentRow);
+
             var card = new Border
             {
                 Style = (Style)Resources["TodoCard"],
                 CanDrag = true,
-                Child = new StackPanel
-                {
-                    Spacing = 4,
-                    Children =
-                    {
-                        titleRow,
-                        descriptionRow,
-                        attachmentRow
-                    }
-                }
-                
+                Child = cardContent
             };
             card.DragStarting += (s, e) => onNote_DragStarting(note, e);
             return card;
+        }
+
+        private WrapPanel buildTagsRow(ToDoNote note)
+        {
+            var tagsRow = new WrapPanel();
+            AutomationProperties.SetName(tagsRow, "Tags");
+
+            foreach (NoteTag tag in note.Tags)
+            {
+                tagsRow.Children.Add(new Border
+                {
+                    Style = (Style)Resources["TodoTag"],
+                    Child = new TextBlock
+                    {
+                        Style = (Style)Resources["TodoTagText"],
+                        Text = tag.Name
+                    }
+                });
+            }
+
+            return tagsRow;
+        }
+
+        private List<string> boardTagNames()
+        {
+            return boardController.GetTags().Select(tag => tag.Name).ToList();
         }
 
         private void onNote_DragStarting(ToDoNote note, DragStartingEventArgs args)
