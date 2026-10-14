@@ -8,6 +8,7 @@ public interface ITodoBoard
     public event EventHandler ColumnContentChanged;
     public event EventHandler BoardChanged;
     public event EventHandler? ColumnOrderChanged;
+    public event EventHandler? TagChanged;
     public List<Guid> GetStatusColumnIds();
 
     public String GetStatusColumnName(Guid columnId);
@@ -34,6 +35,12 @@ public interface ITodoBoard
     public void SetNoteTags(Guid id, IEnumerable<string> tagNames);
 
     public List<NoteTag> GetTags();
+
+    public int CountNotesWithTag(Guid tagId);
+
+    public void RenameTag(Guid tagId, string newName);
+
+    public void DeleteTag(Guid tagId);
 
     public void SetNoteFileAttachment(Guid id, string newFilePath);
 

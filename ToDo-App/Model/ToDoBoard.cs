@@ -198,8 +198,7 @@ public class ToDoBoard
     /// </summary>
     public List<NoteTag> GetTags()
     {
-        return StatusColumns
-            .SelectMany(column => column.Notes)
+        return AllNotes()
             .SelectMany(note => note.Tags)
             .DistinctBy(tag => tag.Id)
             .OrderBy(tag => tag.Name, StringComparer.OrdinalIgnoreCase)
@@ -238,7 +237,7 @@ public class ToDoBoard
     internal void NormalizeTags()
     {
         var namesById = new Dictionary<Guid, string>();
-        foreach (ToDoNote note in StatusColumns.SelectMany(column => column.Notes))
+        foreach (ToDoNote note in AllNotes())
         {
             note.Tags = (note.Tags ?? new List<NoteTag>()).DistinctBy(tag => tag.Id).ToList();
             foreach (NoteTag tag in note.Tags)
@@ -249,6 +248,74 @@ public class ToDoBoard
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Renames a tag on every note that has it, and returns the name it was given (trimmed).
+    /// Changing only the case of the tag's own name is allowed.
+    /// </summary>
+    /// <exception cref="KeyNotFoundException">No note has the tag.</exception>
+    /// <exception cref="ArgumentException">The name isn't valid, or another tag already has it.</exception>
+    public string RenameTag(Guid tagId, string newName)
+    {
+        List<NoteTag> copies = GetTagCopies(tagId);
+        string name = NoteTag.NormalizeName(newName);
+        if (GetTags().Exists(tag => tag.Id != tagId && NoteTag.NamesMatch(tag.Name, name)))
+        {
+            throw new ArgumentException($"Another tag is already called \"{name}\".");
+        }
+
+        foreach (NoteTag copy in copies)
+        {
+            copy.Name = name;
+        }
+        return name;
+    }
+
+    /// <summary>Removes a tag from every note that has it. The notes themselves are kept.</summary>
+    /// <exception cref="KeyNotFoundException">No note has the tag.</exception>
+    public void DeleteTag(Guid tagId)
+    {
+        GetTagCopies(tagId);
+        foreach (ToDoNote note in AllNotes())
+        {
+            note.Tags.RemoveAll(tag => tag.Id == tagId);
+        }
+    }
+
+    /// <summary>The Ids of the columns with at least one note that has the tag, in board order.</summary>
+    public List<Guid> GetColumnIdsWithTag(Guid tagId)
+    {
+        return StatusColumns
+            .Where(column => column.Notes.Exists(note => HasTag(note, tagId)))
+            .Select(column => column.Id)
+            .ToList();
+    }
+
+    public int CountNotesWithTag(Guid tagId)
+    {
+        return AllNotes().Count(note => HasTag(note, tagId));
+    }
+
+    private IEnumerable<ToDoNote> AllNotes()
+    {
+        return StatusColumns.SelectMany(column => column.Notes);
+    }
+
+    private static bool HasTag(ToDoNote note, Guid tagId)
+    {
+        return note.Tags.Exists(tag => tag.Id == tagId);
+    }
+
+    // Every note stores its own copy of a tag. Throws KeyNotFoundException when no note has it, like the other lookups
+    private List<NoteTag> GetTagCopies(Guid tagId)
+    {
+        List<NoteTag> copies = AllNotes().SelectMany(note => note.Tags).Where(tag => tag.Id == tagId).ToList();
+        if (copies.Count == 0)
+        {
+            throw new KeyNotFoundException($"Tag id '{tagId}' does not exist");
+        }
+        return copies;
     }
 
     internal Guid GetColumnIdFromNoteId(Guid noteId)

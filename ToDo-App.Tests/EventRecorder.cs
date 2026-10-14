@@ -18,6 +18,7 @@ public class EventRecorder
         controller.ColumnContentChanged += (sender, e) => Events.Add((nameof(controller.ColumnContentChanged), e));
         controller.BoardChanged += (sender, e) => Events.Add((nameof(controller.BoardChanged), e));
         controller.ColumnOrderChanged += (sender, e) => Events.Add((nameof(controller.ColumnOrderChanged), e));
+        controller.TagChanged += (sender, e) => Events.Add((nameof(controller.TagChanged), e));
     }
 
     public List<string> Names => Events.Select(recorded => recorded.Name).ToList();
