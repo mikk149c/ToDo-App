@@ -10,6 +10,7 @@ namespace ToDo_App.UI.Views
     {
         private const string DefaultJsonPath = "Assets/default_board.json";
         private const string UserJsonPath = "board.json";
+        private Guid selectedTrashNoteId = Guid.Empty;
         
         ITodoBoard boardController = new BoardController();
         
@@ -75,73 +76,13 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        private async void OnTrashBinClicked(object sender, RoutedEventArgs e)
+        private void RefreshTrashBin(
+            StackPanel listPanel,
+            TextBlock confirmationText,
+            ScrollViewer trashScrollViewer,
+            StackPanel confirmationPanel)
         {
-            StackPanel listPanel = new StackPanel
-            {
-                Spacing = 8
-            };
-
-            ScrollViewer trashScrollViewer = new ScrollViewer
-            {
-                Content = listPanel,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
-                MaxHeight = 500
-            };
-
-            StackPanel confirmationPanel = new StackPanel
-            {
-                Spacing = 12,
-                Visibility = Visibility.Collapsed
-            };
-
-            TextBlock confirmationText = new TextBlock
-            {
-                Text = "Are you sure you want to permanently delete this note?",
-                TextWrapping = TextWrapping.Wrap
-            };
-
-            StackPanel confirmationButtons = new StackPanel
-            {
-                Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Spacing = 8
-            };
-
-            Button cancelButton = new Button
-            {
-                Content = "Cancel"
-            };
-            cancelButton.Click += (sender, e) =>
-            {
-                confirmationPanel.Visibility = Visibility.Collapsed;
-                trashScrollViewer.Visibility = Visibility.Visible;
-            };
-
-            Button confirmDeleteButton = new Button
-            {
-                Content = "Delete",
-                Style = (Style)Application.Current.Resources["PrimaryAction"]
-            };
-            confirmDeleteButton.Click += (sender, e) =>
-            {
-                // Actual deletion will be added later.
-
-                confirmationPanel.Visibility = Visibility.Collapsed;
-                trashScrollViewer.Visibility = Visibility.Visible;
-            };
-
-            confirmationButtons.Children.Add(cancelButton);
-            confirmationButtons.Children.Add(confirmDeleteButton);
-
-            confirmationPanel.Children.Add(confirmationText);
-            confirmationPanel.Children.Add(confirmationButtons);
-
-            Grid dialogContent = new Grid();
-
-            dialogContent.Children.Add(trashScrollViewer);
-            dialogContent.Children.Add(confirmationPanel);
+            listPanel.Children.Clear();
 
             foreach (ToDoNote note in boardController.GetTrashBinNotes())
             {
@@ -193,9 +134,9 @@ namespace ToDo_App.UI.Views
                     Content = new SymbolIcon(Symbol.Delete)
                 };
                 deleteButton.Click += (sender, e) => { 
+                    selectedTrashNoteId = note.Id;
                     confirmationText.Text =
-                    $"Are you sure you want to permanently delete \"{note.Title}\"?";
-                    OnClickDeleteNoteFromTrash(sender, e, note.Id); 
+                    $"Are you sure you want to permanently delete \"{note.Title}\"?"; 
                     trashScrollViewer.Visibility = Visibility.Collapsed;
                     confirmationPanel.Visibility = Visibility.Visible;
                 };
@@ -209,6 +150,79 @@ namespace ToDo_App.UI.Views
 
                 listPanel.Children.Add(row);
             }
+        }
+
+        private async void OnTrashBinClicked(object sender, RoutedEventArgs e)
+        {
+            StackPanel listPanel = new StackPanel
+            {
+                Spacing = 8
+            };
+
+            ScrollViewer trashScrollViewer = new ScrollViewer
+            {
+                Content = listPanel,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                MaxHeight = 500
+            };
+
+            StackPanel confirmationPanel = new StackPanel
+            {
+                Spacing = 12,
+                Visibility = Visibility.Collapsed
+            };
+
+            TextBlock confirmationText = new TextBlock
+            {
+                Text = "Are you sure you want to permanently delete this note?",
+                TextWrapping = TextWrapping.Wrap
+            };
+
+            StackPanel confirmationButtons = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Spacing = 8
+            };
+
+            Button cancelDeleteFromTrashButton = new Button
+            {
+                Content = "Cancel"
+            };
+            cancelDeleteFromTrashButton.Click += (sender, e) =>
+            {
+                selectedTrashNoteId = Guid.Empty;
+                confirmationPanel.Visibility = Visibility.Collapsed;
+                trashScrollViewer.Visibility = Visibility.Visible;
+            };
+
+            Button confirmDeleteFromTrashButton = new Button
+            {
+                Content = "Delete",
+                Style = (Style)Application.Current.Resources["PrimaryAction"]
+            };
+            confirmDeleteFromTrashButton.Click += (sender, e) =>
+            {
+                OnClickConfirmDeleteFromTrashButton(sender, e, selectedTrashNoteId);
+                RefreshTrashBin(listPanel, confirmationText, trashScrollViewer, confirmationPanel);
+                selectedTrashNoteId = Guid.Empty;
+                confirmationPanel.Visibility = Visibility.Collapsed;
+                trashScrollViewer.Visibility = Visibility.Visible;
+            };
+
+            confirmationButtons.Children.Add(cancelDeleteFromTrashButton);
+            confirmationButtons.Children.Add(confirmDeleteFromTrashButton);
+
+            confirmationPanel.Children.Add(confirmationText);
+            confirmationPanel.Children.Add(confirmationButtons);
+
+            Grid dialogContent = new Grid();
+
+            dialogContent.Children.Add(trashScrollViewer);
+            dialogContent.Children.Add(confirmationPanel);
+
+            RefreshTrashBin(listPanel, confirmationText, trashScrollViewer, confirmationPanel);
 
             ContentDialog dialog = new ContentDialog
             {
@@ -232,16 +246,9 @@ namespace ToDo_App.UI.Views
             boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
         }
 
-        private void OnClickDeleteNoteFromTrash(object sender, RoutedEventArgs e, Guid noteId)
+        private void OnClickConfirmDeleteFromTrashButton(object sender, RoutedEventArgs e, Guid noteId)
         {
-            //TO DO
-            if (columns.Count == 0)
-            {
-                return;
-            }
-
-            Guid firstColumn = columns[0];
-            boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
+            boardController.PermanentlyRemoveNote(noteId);
         }
 
         private async void onImportBoardClicked(object sender, RoutedEventArgs e)

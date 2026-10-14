@@ -217,6 +217,11 @@ public class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
+    public void PermanentlyRemoveNote(Guid noteId)
+    {
+        _board.RemoveNoteFromTrashBin(noteId);
+    }
+
     public void SaveBoardToJson(string jsonPath)
     {
         var storeJson = new StoreJson<ToDoBoard>(jsonPath);
