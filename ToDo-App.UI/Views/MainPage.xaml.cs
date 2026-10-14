@@ -1083,6 +1083,14 @@ namespace ToDo_App.UI.Views
 
         private void initializeLanguageSettings()
         {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            var selectedLanguage = localSettings.Values["selectedLanguage"]?.ToString();
+
+            if (selectedLanguage == null)
+                selectedLanguage = "en-US";
+            
+            _currentCulture = new CultureInfo(selectedLanguage);
+            
             foreach (var language in Languages)
             {
                 LanguageSelector.Items.Add(new ComboBoxItem
@@ -1091,14 +1099,32 @@ namespace ToDo_App.UI.Views
                     Tag = language.Key
                 });
             }
-            LanguageSelector.SelectedIndex = 0;
+            
+            var initialIndex = 0;
+            if (Languages.ContainsKey(selectedLanguage))
+            {
+                for (int i = 0; i < LanguageSelector.Items.Count; i++)
+                {
+                    var item = (ComboBoxItem)LanguageSelector.Items[i];
+                    if (item.Tag.Equals(selectedLanguage))
+                    {
+                        initialIndex = i;
+                    }
+                }
+            }
+            
+            LanguageSelector.SelectedIndex = initialIndex;
         }
 
         private void onLanguageSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
         {
             var item = selectionChangedEventArgs.AddedItems[0] as ComboBoxItem;
-            _currentCulture = new CultureInfo(item.Tag.ToString());
+            var language = item.Tag.ToString();
+            _currentCulture = new CultureInfo(language);
             localizeXaml();
+            
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values["selectedLanguage"] = language;
         }
         
         private void localizeXaml()
