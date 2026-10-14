@@ -1,0 +1,164 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="todo/column_title" xml:space="preserve">
+        <value>Teigsheiti</value>
+    </data>
+    <data name="todo/property_title" xml:space="preserve">
+        <value>Heiti</value>
+    </data>
+    <data name="todo/default_description" xml:space="preserve">
+        <value>Hetta er ein nýggjur ToDo.</value>
+    </data>
+    <data name="todo/default_title" xml:space="preserve">
+        <value>Nýggjur ToDo</value>
+    </data>
+    <data name="todo/property_description" xml:space="preserve">
+        <value>Frágreiðing</value>
+    </data>
+    <data name="language/danish" xml:space="preserve">
+        <value>danskt</value>
+    </data>
+    <data name="language/english" xml:space="preserve">
+        <value>enskt</value>
+    </data>
+    <data name="language/german" xml:space="preserve">
+        <value>týskt</value>
+    </data>
+    <data name="language/klingon" xml:space="preserve">
+        <value>Klingon</value>
+    </data>
+    <data name="language/navi" xml:space="preserve">
+        <value>Na'vi</value>
+    </data>
+    <data name="button/add_column" xml:space="preserve">
+        <value>Legg Teig Afturat</value>
+    </data>
+    <data name="button/add_note_tooltip" xml:space="preserve">
+        <value>Legg eitt nýtt upprit afturat</value>
+    </data>
+    <data name="button/delete_tooltip" xml:space="preserve">
+        <value>Strika</value>
+    </data>
+    <data name="dialog/title_delete_column_q" xml:space="preserve">
+        <value>Strika Teigin?</value>
+    </data>
+    <data name="dialog/title_delete_note_q" xml:space="preserve">
+        <value>Strika Uppritið?</value>
+    </data>
+    <data name="dialog/ok" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="dialog/delete" xml:space="preserve">
+        <value>Strika</value>
+    </data>
+    <data name="dialog/delete_the_todos" xml:space="preserve">
+        <value>Strika uppriti(ni)</value>
+    </data>
+    <data name="dialog/json_files" xml:space="preserve">
+        <value>JSON-fílur</value>
+    </data>
+    <data name="button/edit_column_title_tooltip" xml:space="preserve">
+        <value>Rætta teigsheiti</value>
+    </data>
+    <data name="button/edit_tooltip" xml:space="preserve">
+        <value>Rætta</value>
+    </data>
+    <data name="button/tooltip_dark" xml:space="preserve">
+        <value>Myrkt</value>
+    </data>
+    <data name="button/tooltip_light" xml:space="preserve">
+        <value>Ljóst</value>
+    </data>
+    <data name="dialog/add" xml:space="preserve">
+        <value>Legg afturat</value>
+    </data>
+    <data name="dialog/cancel" xml:space="preserve">
+        <value>Avlýs</value>
+    </data>
+    <data name="dialog/title_edit_note" xml:space="preserve">
+        <value>Rætta Uppritið</value>
+    </data>
+    <data name="dialog/title_edit_column" xml:space="preserve">
+        <value>Rætta Teigin</value>
+    </data>
+    <data name="dialog/save" xml:space="preserve">
+        <value>Goym</value>
+    </data>
+    <data name="dialog/option_move_to_column" xml:space="preserve">
+        <value>Flyt til "{0}"</value>
+    </data>
+    <data name="dialog/title_add_new_column" xml:space="preserve">
+        <value>Legg Nýggjan Teig Afturat</value>
+    </data>
+    <data name="dialog/title_add_new_note" xml:space="preserve">
+        <value>Legg Nýtt Upprit Afturat</value>
+    </data>
+    <data name="language/faroese" xml:space="preserve">
+        <value>føroyskt</value>
+    </data>
+    <data name="button/add_todo" xml:space="preserve">
+        <value>Legg Upprit Afturat</value>
+    </data>
+    <data name="button/delete_column_tooltip" xml:space="preserve">
+        <value>Strika teigin</value>
+    </data>
+    <data name="button/attach_file_tooltip" xml:space="preserve">
+        <value>Festa eina fílu við</value>
+    </data>
+    <data name="dialog/attach_file" xml:space="preserve">
+        <value>Festa eina fílu við</value>
+    </data>
+    <data name="button/export" xml:space="preserve">
+        <value>Flyt út</value>
+    </data>
+    <data name="button/import" xml:space="preserve">
+        <value>Flyt inn</value>
+    </data>
+    <data name="button/remove_attached_file_tooltip" xml:space="preserve">
+        <value>Tak viðfestaða fíluna burtur</value>
+    </data>
+    <data name="button/tooltip_accent_color" xml:space="preserve">
+        <value>Temalitur</value>
+    </data>
+    <data name="button/tooltip_system_default" xml:space="preserve">
+        <value>Skipanarstilling</value>
+    </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>Frámerki</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>Skriv eitt frámerkinavn og trýst á Enter</value>
+    </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>Tak "{0}" burtur</value>
+    </data>
+    <data name="dialog/export_board" xml:space="preserve">
+        <value>Flyt talvu út</value>
+    </data>
+    <data name="dialog/import_board" xml:space="preserve">
+        <value>Flyt talvu inn</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>Strika "{0}"? Hetta kann ikki angrast.</value>
+    </data>
+    <data name="dialog/content_delete_note" xml:space="preserve">
+        <value>Strika "{0}"? Hetta kann ikki angrast.</value>
+    </data>
+    <data name="dialog/content_delete_column_no_space" xml:space="preserve">
+        <value>Strika "{0}" og tey {1} uppriti(ni) inni í? Hetta kann ikki angrast.</value>
+    </data>
+    <data name="dialog/content_delete_column_consequence" xml:space="preserve">
+        <value>Hvat skal henda við tey {0} uppriti(ni) í hesu teiginum?</value>
+    </data>
+</root>

@@ -56,6 +56,7 @@
 
         <!-- Accent colour -->
         <DropDownButton
+            x:Name="Accent"
             AutomationProperties.Name="Accent colour"
             ToolTipService.ToolTip="Accent colour">
             <Ellipse
