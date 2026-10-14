@@ -12,7 +12,13 @@ namespace ToDo_App.UI.Views
     {
         private const string DefaultJsonPath = "Assets/default_board.json";
         private const string UserJsonPath = "board.json";
-        
+
+        private static readonly Dictionary<string, string> Languages = new()
+        {
+            {"en-US", "language/english"},
+            {"da-DK", "language/danish"}
+        };
+
         ITodoBoard boardController = new BoardController();
         
         List<Guid> columns = new List<Guid>();
@@ -30,14 +36,13 @@ namespace ToDo_App.UI.Views
             boardController.BoardChanged += onBoardChanged;
             boardController.ColumnOrderChanged += onColumnOrderChanged;
             
-            _currentCulture = new CultureInfo("da-DK");
-            
             this.Loaded += onPageInitialized;
         }
 
         private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
         {
             loadInitialBoard();
+            initializeLanguageSettings();
             localizeXaml();
         }
 
@@ -962,12 +967,38 @@ namespace ToDo_App.UI.Views
             }
         }
 
+        private void initializeLanguageSettings()
+        {
+            foreach (var language in Languages)
+            {
+                LanguageSelector.Items.Add(new ComboBoxItem
+                {
+                    Content = Res.ResourceManager.GetString(language.Value, _currentCulture),
+                    Tag = language.Key
+                });
+            }
+            LanguageSelector.SelectedIndex = 0;
+        }
+
+        private void onLanguageSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
+        {
+            var item = selectionChangedEventArgs.AddedItems[0] as ComboBoxItem;
+            _currentCulture = new CultureInfo(item.Tag.ToString());
+            localizeXaml();
+        }
+        
         private void localizeXaml()
         {
             AddColumnButton.Content = Res.ResourceManager.GetString("button/add_column", _currentCulture);
             AddToDoButton.Content = Res.ResourceManager.GetString("button/add_todo", _currentCulture);
             ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
             ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);
+
+            foreach (ComboBoxItem item in LanguageSelector.Items)
+            {
+                var languageStringName = Languages[item.Tag.ToString()];
+                item.Content = Res.ResourceManager.GetString(languageStringName, _currentCulture);
+            }
             
             AppearanceSelector.SetStrings(
                 Res.ResourceManager.GetString("button/tooltip_light", _currentCulture),

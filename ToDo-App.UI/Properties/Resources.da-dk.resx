@@ -155,4 +155,10 @@
     <data name="dialog/content_delete_column" xml:space="preserve">
         <value>Slet "{0}"? Dette kan ikke fortrydes.</value>
     </data>
+    <data name="language/english" xml:space="preserve">
+        <value>engelsk</value>
+    </data>
+    <data name="language/danish" xml:space="preserve">
+        <value>dansk</value>
+    </data>
 </root>

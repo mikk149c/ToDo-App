@@ -111,7 +111,14 @@
                     </Button>
                 </StackPanel>
 
-                <controls:AppearanceSelector Grid.Column="1" x:Name="AppearanceSelector" VerticalAlignment="Center" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <controls:AppearanceSelector x:Name="AppearanceSelector" VerticalAlignment="Center" />
+                    <ComboBox
+                        x:Name="LanguageSelector"
+                        Width="100"
+                        SelectionChanged="onLanguageSelectionChanged"
+                    />
+                </StackPanel>
             </Grid>
 
             <!-- Board columns (stub data) -->

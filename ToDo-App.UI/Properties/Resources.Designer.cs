@@ -447,6 +447,24 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Danish.
+        /// </summary>
+        internal static string language_danish {
+            get {
+                return ResourceManager.GetString("language/danish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to English.
+        /// </summary>
+        internal static string language_english {
+            get {
+                return ResourceManager.GetString("language/english", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Column title.
         /// </summary>
         internal static string todo_column_title {
