@@ -7,6 +7,9 @@ using ToDo_App.Interfaces;
 using ToDo_App.UI.Controls;
 using Windows.ApplicationModel.DataTransfer;
 using Res = ToDo_App.UI.Resources;
+using Microsoft.UI;
+using Microsoft.UI.Xaml.Media;
+using static ToDo_App.UI.Resources;
 
 namespace ToDo_App.UI.Views
 {
@@ -14,7 +17,8 @@ namespace ToDo_App.UI.Views
     {
         private const string DefaultJsonPath = "Assets/default_board.json";
         private const string UserJsonPath = "board.json";
-        private const double ScrollSpeed = 30;
+        private const double ScrollSpeed = 60;
+        private const double ScrollTickSpeed = 10;
 
         private static readonly Dictionary<string, string> Languages = new()
         {
@@ -30,8 +34,12 @@ namespace ToDo_App.UI.Views
 
         List<Guid> columns = new List<Guid>();
 
-        DispatcherTimer scrollTimer = new DispatcherTimer();
+        DispatcherTimer horizontalScrollTimer = new DispatcherTimer();
         double scrollDirection = 0;
+        private const double VerticalZoneHeight = 80;
+        DispatcherTimer verticalScrollTimer = new DispatcherTimer();
+        double verticalScrollDirection = 0;
+        ScrollViewer? verticalScrollTarget = null;
 
         
         CultureInfo _currentCulture;
@@ -46,14 +54,17 @@ namespace ToDo_App.UI.Views
             boardController.ColumnContentChanged += onColumnContentChanged;
             boardController.BoardChanged += onBoardChanged;
             boardController.ColumnOrderChanged += onColumnOrderChanged;
+            boardController.TagChanged += onTagChanged;
             BoardScrollViewer.DragOver += onBoardDragOver;
             BoardScrollViewer.AllowDrop = true;
             this.Content.AllowDrop = true;
             this.Content.DragOver += onBoardDragOver;
             this.Content.DragLeave += (s, e) => stopAutoScroll();
-            scrollTimer.Interval = TimeSpan.FromMilliseconds(20);
-            scrollTimer.Tick += onScrollTimerTick;
+            horizontalScrollTimer.Interval = TimeSpan.FromMilliseconds(ScrollTickSpeed);
+            horizontalScrollTimer.Tick += onHorizontalScrollTimerTick;
             BoardScrollViewer.DragLeave += (s, e) => stopAutoScroll();
+            verticalScrollTimer.Interval = TimeSpan.FromMilliseconds(ScrollTickSpeed);
+            verticalScrollTimer.Tick += onVerticalScrollTimerTick;
 
             this.Loaded += onPageInitialized;
         }
@@ -247,6 +258,24 @@ namespace ToDo_App.UI.Views
             populateStatusColumn(args.ColumnId);
         }
 
+        private void onTagChanged(object? sender, EventArgs eventArgs)
+        {
+            if (eventArgs is not TagChangedEventArgs args)
+            {
+                throw new ArgumentException("Wrong EventArgs type");
+            }
+
+            // Redraw every column with a card that shows the tag
+            foreach (Guid columnId in columns)
+            {
+                if (boardController.GetNotesInColumn(columnId).Exists(note => note.Tags.Exists(tag => tag.Id == args.TagId)))
+                {
+                    clearColumnItems(columnId);
+                    populateStatusColumn(columnId);
+                }
+            }
+        }
+
         private void onColumnOrderChanged(object? sender, EventArgs e)
         {
             if (e is not ColumnOrderChangedEventArgs args)
@@ -395,6 +424,10 @@ namespace ToDo_App.UI.Views
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                 Content = cardPanel
             };
+            scrollViewer.Background = new SolidColorBrush(Colors.Transparent);
+            scrollViewer.AllowDrop = true;
+            scrollViewer.DragOver += (s, e) => onColumnScrollDragOver(scrollViewer, e);
+            scrollViewer.DragLeave += (s, e) => stopAutoScroll();
 
             Grid.SetColumn(addTodoToColumnButton, 1);
             Grid.SetRow(scrollViewer, 1);
@@ -407,6 +440,44 @@ namespace ToDo_App.UI.Views
             column.Child = columnGrid;
 
             return column;
+        }
+
+        private void onColumnScrollDragOver(ScrollViewer column, DragEventArgs e)
+        {
+            if (!e.DataView.Properties.ContainsKey("noteId"))
+            {
+                return;
+            }
+
+            double y = e.GetPosition(column).Y;
+
+            const double fastZone = VerticalZoneHeight/2;
+
+            if (y < fastZone)
+            {
+                verticalScrollDirection = -ScrollSpeed * 2;
+            }
+            else if (y < VerticalZoneHeight && y >= fastZone)
+            {
+                verticalScrollDirection = -ScrollSpeed;
+            }
+            else if (y > column.ActualHeight - VerticalZoneHeight && y <= column.ActualHeight - fastZone)
+            {
+                verticalScrollDirection = ScrollSpeed;
+            }
+            else if (y > column.ActualHeight - fastZone)
+            {
+                verticalScrollDirection = ScrollSpeed * 2;
+            }
+            else
+            {
+                verticalScrollDirection = 0;
+            }
+            verticalScrollTarget = column;
+            if (!verticalScrollTimer.IsEnabled)
+            {
+                verticalScrollTimer.Start();
+            }
         }
 
         private void onColumnDragOver(object sender, DragEventArgs e)
@@ -445,26 +516,40 @@ namespace ToDo_App.UI.Views
             {
                 scrollDirection = 0;
             }
-            if (!scrollTimer.IsEnabled)
+            if (!horizontalScrollTimer.IsEnabled)
             {
-                scrollTimer.Start();
+                horizontalScrollTimer.Start();
             }
         }
 
-        private void onScrollTimerTick(object? sender, object e)
+        private void onHorizontalScrollTimerTick(object? sender, object e)
         {
             if (scrollDirection == 0)
             {
-                scrollTimer.Stop();
+                horizontalScrollTimer.Stop();
                 return;
             }
-            BoardScrollViewer.ChangeView(BoardScrollViewer.HorizontalOffset + scrollDirection, null, null, true);
+            BoardScrollViewer.ChangeView(BoardScrollViewer.HorizontalOffset + scrollDirection, null, null, false);
+        }
+
+        private void onVerticalScrollTimerTick(object? sender, object e)
+        {
+            if (verticalScrollDirection == 0 || verticalScrollTarget == null)
+            {
+                verticalScrollTimer.Stop();
+                return;
+            }
+
+            verticalScrollTarget.ChangeView(null, verticalScrollTarget.VerticalOffset + verticalScrollDirection, null, false);
         }
 
         private void stopAutoScroll()
         {
             scrollDirection = 0;
-            scrollTimer.Stop();
+            horizontalScrollTimer.Stop();
+            verticalScrollDirection = 0;
+            verticalScrollTarget = null;
+            verticalScrollTimer.Stop();
         }
 
         private void onColumnDrop(Guid columnId, StackPanel panel, DragEventArgs e)
@@ -574,13 +659,7 @@ namespace ToDo_App.UI.Views
                 MinHeight = 100
             };
 
-            var tagStrings = new Dictionary<string, string>
-            {
-                { "todo/property_tags", Res.ResourceManager.GetString("todo/property_tags", _currentCulture) },
-                { "dialog/add_tag_placeholder", Res.ResourceManager.GetString("dialog/add_tag_placeholder", _currentCulture) },
-                { "dialog/remove_tag", Res.ResourceManager.GetString("dialog/remove_tag", _currentCulture) }
-            };
-            var tagEditor = new TagEditor(Array.Empty<string>(), boardTagNames(), tagStrings);
+            var tagEditor = new TagEditor(boardController, Array.Empty<NoteTag>(), tagEditorStrings());
 
             var dialog = new ContentDialog
             {
@@ -750,13 +829,7 @@ namespace ToDo_App.UI.Views
                 MinHeight = 100
             };
             
-            var tagStrings = new Dictionary<string, string>
-            {
-                { "todo/property_tags", Res.ResourceManager.GetString("todo/property_tags", _currentCulture) },
-                { "dialog/add_tag_placeholder", Res.ResourceManager.GetString("dialog/add_tag_placeholder", _currentCulture) },
-                { "dialog/remove_tag", Res.ResourceManager.GetString("dialog/remove_tag", _currentCulture) }
-            };
-            var tagEditor = new TagEditor(note.Tags.Select(tag => tag.Name), boardTagNames(), tagStrings);
+            var tagEditor = new TagEditor(boardController, note.Tags, tagEditorStrings());
 
             var dialog = new ContentDialog
             {
@@ -1035,9 +1108,16 @@ namespace ToDo_App.UI.Views
             return tagsRow;
         }
 
-        private List<string> boardTagNames()
+        private Dictionary<string, string> tagEditorStrings()
         {
-            return boardController.GetTags().Select(tag => tag.Name).ToList();
+            string[] keys =
+            {
+                "todo/property_tags", "dialog/add_tag_placeholder", "dialog/remove_tag", "dialog/edit_tag",
+                "dialog/new_tag_tooltip", "dialog/tag_name", "dialog/tag_used_on", "dialog/tag_new_info",
+                "dialog/tag_name_taken", "dialog/rename", "dialog/delete", "dialog/cancel", "dialog/delete_tag_confirm"
+            };
+            // A missing translation shows the key instead of crashing the dialog
+            return keys.ToDictionary(key => key, key => Res.ResourceManager.GetString(key, _currentCulture) ?? key);
         }
 
         private void onNote_DragStarting(ToDoNote note, DragStartingEventArgs args)

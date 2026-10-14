@@ -17,6 +17,7 @@ public class BoardController : ITodoBoard
     public event EventHandler? ColumnContentChanged;
     public event EventHandler? BoardChanged;
     public event EventHandler? ColumnOrderChanged;
+    public event EventHandler? TagChanged;
     private void onColumnCreated(ColumnCreatedEventArgs e)
     {
         ColumnCreated?.Invoke(this, e);
@@ -44,6 +45,10 @@ public class BoardController : ITodoBoard
     private void onColumnOrderChanged(ColumnOrderChangedEventArgs e)
     {
         ColumnOrderChanged?.Invoke(this, e);
+    }
+    private void onTagChanged(TagChangedEventArgs e)
+    {
+        TagChanged?.Invoke(this, e);
     }
     
 
@@ -170,6 +175,30 @@ public class BoardController : ITodoBoard
     public List<NoteTag> GetTags()
     {
         return _board.GetTags();
+    }
+
+    public int CountNotesWithTag(Guid tagId)
+    {
+        return _board.CountNotesWithTag(tagId);
+    }
+
+    public void RenameTag(Guid tagId, string newName)
+    {
+        string name = _board.RenameTag(tagId, newName);
+        // One event for the tag, so every card showing it can update, whichever columns they're in
+        onTagChanged(new TagChangedEventArgs(tagId, name));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void DeleteTag(Guid tagId)
+    {
+        List<Guid> affectedColumnIds = _board.GetColumnIdsWithTag(tagId);
+        _board.DeleteTag(tagId);
+        foreach (Guid columnId in affectedColumnIds)
+        {
+            onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        }
+        onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
     public void SetNoteFileAttachment(Guid id, string newFilePath)

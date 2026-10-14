@@ -29,6 +29,12 @@ public class BoardChangedEventArgs(ToDoBoard board) : EventArgs
     public ToDoBoard Board = board;
 }
 
+public class TagChangedEventArgs(Guid tagId, string name) : EventArgs
+{
+    public Guid TagId = tagId;
+    public string Name = name;
+}
+
 public class ColumnOrderChangedEventArgs(List<Guid> columnIds) : EventArgs
 {
     public List<Guid> ColumnIds = columnIds;
