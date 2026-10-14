@@ -1,0 +1,152 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="language/klingon" xml:space="preserve">
+        <value>tlhIngan Hol</value>
+    </data>
+    <data name="language/navi" xml:space="preserve">
+        <value>na'vIy Hol</value>
+    </data>
+    <data name="language/danish" xml:space="preserve">
+        <value>Denmargh Hol</value>
+    </data>
+    <data name="language/english" xml:space="preserve">
+        <value>DIvI' Hol</value>
+    </data>
+    <data name="todo/property_title" xml:space="preserve">
+        <value>pong</value>
+    </data>
+    <data name="todo/property_description" xml:space="preserve">
+        <value>mu'mey</value>
+    </data>
+    <data name="dialog/ok" xml:space="preserve">
+        <value>lu'</value>
+    </data>
+    <data name="dialog/save" xml:space="preserve">
+        <value>yIpol</value>
+    </data>
+    <data name="dialog/delete" xml:space="preserve">
+        <value>yIteq</value>
+    </data>
+    <data name="dialog/add" xml:space="preserve">
+        <value>yIchel</value>
+    </data>
+    <data name="dialog/cancel" xml:space="preserve">
+        <value>yIqIl</value>
+    </data>
+    <data name="button/delete_tooltip" xml:space="preserve">
+        <value>yIteq</value>
+    </data>
+    <data name="button/tooltip_dark" xml:space="preserve">
+        <value>Hurgh</value>
+    </data>
+    <data name="button/tooltip_light" xml:space="preserve">
+        <value>wov</value>
+    </data>
+    <data name="button/edit_tooltip" xml:space="preserve">
+        <value>yIDI'</value>
+    </data>
+    <data name="button/edit_column_title_tooltip" xml:space="preserve">
+        <value>war pong yIDI'</value>
+    </data>
+    <data name="button/delete_column_tooltip" xml:space="preserve">
+        <value>war yIteq</value>
+    </data>
+    <data name="button/add_todo" xml:space="preserve">
+        <value>ghu'lIS yIchel</value>
+    </data>
+    <data name="button/add_column" xml:space="preserve">
+        <value>war yIchel</value>
+    </data>
+    <data name="button/add_note_tooltip" xml:space="preserve">
+        <value>ghu'lIS chu' yIchel</value>
+    </data>
+    <data name="dialog/delete_the_todos" xml:space="preserve">
+        <value>ghu'lIS(mey) yIteq</value>
+    </data>
+    <data name="dialog/title_add_new_column" xml:space="preserve">
+        <value>war chu' yIchel</value>
+    </data>
+    <data name="dialog/title_add_new_note" xml:space="preserve">
+        <value>ghu'lIS chu' yIchel</value>
+    </data>
+    <data name="dialog/title_delete_column_q" xml:space="preserve">
+        <value>war teq'a'?</value>
+    </data>
+    <data name="dialog/title_delete_note_q" xml:space="preserve">
+        <value>ghu'lIS teq'a'?</value>
+    </data>
+    <data name="dialog/title_edit_column" xml:space="preserve">
+        <value>war yIDI'</value>
+    </data>
+    <data name="dialog/title_edit_note" xml:space="preserve">
+        <value>ghu'lIS yIDI'</value>
+    </data>
+    <data name="todo/column_title" xml:space="preserve">
+        <value>war pong</value>
+    </data>
+    <data name="todo/default_title" xml:space="preserve">
+        <value>ghu'lIS chu'</value>
+    </data>
+    <data name="todo/default_description" xml:space="preserve">
+        <value>ghu'lIS chu' 'oH</value>
+    </data>
+    <data name="language/german" xml:space="preserve">
+        <value>DoyIchlan Hol</value>
+    </data>
+    <data name="dialog/option_move_to_column" xml:space="preserve">
+        <value>"{0}"Daq yIqem</value>
+    </data>
+    <data name="language/faroese" xml:space="preserve">
+        <value>va'ro' 'ambaymey Hol</value>
+    </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>"{0}" yIteq</value>
+    </data>
+    <data name="button/attach_file_tooltip" xml:space="preserve">
+        <value>ta yIvev</value>
+    </data>
+    <data name="button/remove_attached_file_tooltip" xml:space="preserve">
+        <value>ghu'lIS ta yIteq</value>
+    </data>
+    <data name="dialog/json_files" xml:space="preserve">
+        <value>JSON De'</value>
+    </data>
+    <data name="button/export" xml:space="preserve">
+        <value>yIngeH</value>
+    </data>
+    <data name="button/import" xml:space="preserve">
+        <value>yIHev</value>
+    </data>
+    <data name="button/tooltip_accent_color" xml:space="preserve">
+        <value>qalmuS</value>
+    </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>permey</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>per pong yIghItlh 'ej Enter leQ yIyuv</value>
+    </data>
+    <data name="button/tooltip_system_default" xml:space="preserve">
+        <value>pat DuH motlh</value>
+    </data>
+    <data name="dialog/attach_file" xml:space="preserve">
+        <value>ta yIvev</value>
+    </data>
+    <data name="dialog/export_board" xml:space="preserve">
+        <value>teywI' 'echlet yIngeH</value>
+    </data>
+    <data name="dialog/import_board" xml:space="preserve">
+        <value>teywI' 'echlet yIHev</value>
+    </data>
+</root>

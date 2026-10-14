@@ -32,6 +32,14 @@ namespace ToDo_App.UI.Controls
             sync();
         }
 
+        public void SetStrings(string light, string system, string dark, string accent_color)
+        {
+            ToolTipService.SetToolTip(LightButton, light);
+            ToolTipService.SetToolTip(SystemButton, system);
+            ToolTipService.SetToolTip(DarkButton, dark);
+            ToolTipService.SetToolTip(Accent, accent_color);
+        }
+
         private void OnThemeClicked(object sender, RoutedEventArgs e)
         {
             var theme = Enum.Parse<ThemePreference>((string)((ToggleButton)sender).Tag);
