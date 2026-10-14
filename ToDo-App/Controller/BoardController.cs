@@ -116,9 +116,11 @@ public class BoardController : ITodoBoard
         throw new NotImplementedException();
     }
 
-    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null)
+    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null)
     {
-        var noteId = _board.AddNote(columnId, new ToDoNote(title, content, file));
+        // Resolve tags before adding the note, so an invalid tag name leaves the board unchanged
+        var note = new ToDoNote(title, content, file) { Tags = _board.ResolveTags(tagNames ?? []) };
+        var noteId = _board.AddNote(columnId, note);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
         return noteId;
@@ -157,6 +159,19 @@ public class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
+    public void SetNoteTags(Guid id, IEnumerable<string> tagNames)
+    {
+        _board.SetNoteTags(id, tagNames);
+        Guid columnId = _board.GetColumnIdFromNoteId(id);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public List<NoteTag> GetTags()
+    {
+        return _board.GetTags();
+    }
+
     public void SetNoteFileAttachment(Guid id, string newFilePath)
     {
         var fileInfo = new FileInfo(newFilePath);
@@ -178,7 +193,15 @@ public class BoardController : ITodoBoard
 
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
     {
-        _board.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos);
+        bool sourceExists = fromColumnIndex >= 0 && fromColumnIndex < _board.StatusColumns.Count
+                            && fromPos >= 0 && fromPos < _board.StatusColumns[fromColumnIndex].Notes.Count;
+        if (!sourceExists)
+        {
+            return; // nothing to move, so nothing changes (ToDoBoard.MoveNote ignores it too)
+        }
+
+        Guid noteId = _board.StatusColumns[fromColumnIndex].Notes[fromPos].Id;
+        moveNoteAndNotify(noteId, () => _board.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos));
     }
 
     public void RemoveNote(Guid noteId)
@@ -199,11 +222,21 @@ public class BoardController : ITodoBoard
     public void LoadBoardFromJson(string jsonPath)
     {
         var storeJson = new StoreJson<ToDoBoard>(jsonPath);
-        _board = storeJson.Load();
+        // Load first, so a file that can't be read leaves the current board and UI untouched
+        ToDoBoard loadedBoard = storeJson.Load();
+        loadedBoard.NormalizeTags();
+        List<Guid> replacedColumnIds = GetStatusColumnIds();
+        _board = loadedBoard;
+
+        foreach (Guid columnId in replacedColumnIds)
+        {
+            onColumnRemoved(new ColumnRemovedEventArgs(columnId));
+        }
         foreach (var column in _board.StatusColumns)
         {
             onColumnCreated(new ColumnCreatedEventArgs(column.Id, column.Title, column.Notes));
         }
+        onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
     private void moveNoteAndNotify(Guid noteId, Action move)

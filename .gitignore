@@ -77,3 +77,7 @@ BundleArtifacts/
 
 # Signing certificates
 *.pfx
+
+# Local test coverage reports
+coverage/
+TestResults/
