@@ -30,7 +30,7 @@
         <value>Tilføj Kolonne</value>
     </data>
     <data name="button/add_todo" xml:space="preserve">
-        <value>Tilføj ToDo</value>
+        <value>Tilføj Note</value>
     </data>
     <data name="dialog/delete" xml:space="preserve">
         <value>Slet</value>
@@ -45,7 +45,7 @@
         <value>Ny ToDo</value>
     </data>
     <data name="todo/default_description" xml:space="preserve">
-        <value>Dette er et nyt ToDo kort.</value>
+        <value>Dette er en ny ToDo note.</value>
     </data>
     <data name="dialog/export_board" xml:space="preserve">
         <value>Eksportér Tavle</value>
@@ -75,7 +75,7 @@
         <value>Den vedhæftede fil kunne ikke fjernes.</value>
     </data>
     <data name="button/add_note_tooltip" xml:space="preserve">
-        <value>Tilføj en ny note</value>
+        <value>Tilføj en ny ToDo note</value>
     </data>
     <data name="button/attach_file_tooltip" xml:space="preserve">
         <value>Vedhæft en fil</value>

@@ -37,7 +37,7 @@
         <value>Add Column</value>
     </data>
     <data name="button/add_todo" xml:space="preserve">
-        <value>Add ToDo</value>
+        <value>Add Note</value>
     </data>
     <data name="dialog/delete" xml:space="preserve">
         <value>Delete</value>
@@ -52,7 +52,7 @@
         <value>New ToDo</value>
     </data>
     <data name="todo/default_description" xml:space="preserve">
-        <value>This is a new ToDo card.</value>
+        <value>This is a new ToDo note.</value>
     </data>
     <data name="dialog/import_board" xml:space="preserve">
         <value>Import Board</value>
@@ -79,7 +79,7 @@
         <value>Delete column</value>
     </data>
     <data name="button/add_note_tooltip" xml:space="preserve">
-        <value>Add a new note</value>
+        <value>Add a new ToDo note</value>
     </data>
     <data name="todo/property_title" xml:space="preserve">
         <value>Title</value>

@@ -69,7 +69,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add a new note.
+        ///   Looks up a localized string similar to Add a new ToDo note.
         /// </summary>
         internal static string button_add_note_tooltip {
             get {
@@ -78,7 +78,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add ToDo.
+        ///   Looks up a localized string similar to Add Note.
         /// </summary>
         internal static string button_add_todo {
             get {
@@ -411,7 +411,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This is a new ToDo card..
+        ///   Looks up a localized string similar to This is a new ToDo note..
         /// </summary>
         internal static string todo_default_description {
             get {
