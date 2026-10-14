@@ -14,6 +14,7 @@ namespace ToDo_App.UI.Views
     {
         private const string DefaultJsonPath = "Assets/default_board.json";
         private const string UserJsonPath = "board.json";
+        private const double ScrollSpeed = 30;
 
         private static readonly Dictionary<string, string> Languages = new()
         {
@@ -26,22 +27,34 @@ namespace ToDo_App.UI.Views
         };
 
         ITodoBoard boardController = new BoardController();
-        
+
         List<Guid> columns = new List<Guid>();
+
+        DispatcherTimer scrollTimer = new DispatcherTimer();
+        double scrollDirection = 0;
+
         
         CultureInfo _currentCulture;
         
         public MainPage()
         {
             InitializeComponent();
-            
+
             boardController.ColumnCreated += onColumnCreated;
             boardController.ColumnNameChanged += onColumnNameChanged;
             boardController.ColumnRemoved += onColumnRemoved;
             boardController.ColumnContentChanged += onColumnContentChanged;
             boardController.BoardChanged += onBoardChanged;
             boardController.ColumnOrderChanged += onColumnOrderChanged;
-            
+            BoardScrollViewer.DragOver += onBoardDragOver;
+            BoardScrollViewer.AllowDrop = true;
+            this.Content.AllowDrop = true;
+            this.Content.DragOver += onBoardDragOver;
+            this.Content.DragLeave += (s, e) => stopAutoScroll();
+            scrollTimer.Interval = TimeSpan.FromMilliseconds(20);
+            scrollTimer.Tick += onScrollTimerTick;
+            BoardScrollViewer.DragLeave += (s, e) => stopAutoScroll();
+
             this.Loaded += onPageInitialized;
         }
 
@@ -242,16 +255,16 @@ namespace ToDo_App.UI.Views
             }
 
             columns = new List<Guid>(args.ColumnIds);
-            
-            for (int i =0; i<columns.Count; i++)
+
+            for (int i = 0; i < columns.Count; i++)
             {
-                string borderName =$"ROOT{columns[i]}";
+                string borderName = $"ROOT{columns[i]}";
 
                 foreach (UIElement child in ColumnsPanel.Children)
                 {
                     if (child is Border border && border.Name == borderName)
                     {
-                        Grid.SetColumn(border,i);
+                        Grid.SetColumn(border, i);
                         break;
                     }
                 }
@@ -344,6 +357,7 @@ namespace ToDo_App.UI.Views
                 VerticalAlignment = VerticalAlignment.Center
             };
             header.DragStarting += (s, e) => onColumn_DragStarting(columnId, e);
+            header.DropCompleted += (s, e) => stopAutoScroll();
 
             // Stack the edit and delete buttons vertically
             StackPanel columnActions = new StackPanel
@@ -394,26 +408,76 @@ namespace ToDo_App.UI.Views
 
             return column;
         }
-        
+
         private void onColumnDragOver(object sender, DragEventArgs e)
         {
-            if (e.DataView.Properties.ContainsKey("noteId")|| 
+            if (e.DataView.Properties.ContainsKey("noteId") ||
                 e.DataView.Properties.ContainsKey("columnId"))
             {
                 e.AcceptedOperation = DataPackageOperation.Move;
             }
         }
 
+        private void onBoardDragOver(object sender, DragEventArgs e)
+        {
+
+            double x = e.GetPosition(BoardScrollViewer).X;
+            const double zoneWidth = 60;
+            const double fastZone = 20;
+
+            if (x < fastZone)
+            {
+                scrollDirection = -ScrollSpeed * 2;
+            }
+            else if (x < zoneWidth && x >= fastZone)
+            {
+                scrollDirection = -ScrollSpeed;
+            }
+            else if (x > BoardScrollViewer.ActualWidth - zoneWidth && x <= BoardScrollViewer.ActualWidth - fastZone)
+            {
+                scrollDirection = ScrollSpeed;
+            }
+            else if (x > BoardScrollViewer.ActualWidth - fastZone)
+            {
+                scrollDirection = ScrollSpeed*2;
+            }
+            else
+            {
+                scrollDirection = 0;
+            }
+            if (!scrollTimer.IsEnabled)
+            {
+                scrollTimer.Start();
+            }
+        }
+
+        private void onScrollTimerTick(object? sender, object e)
+        {
+            if (scrollDirection == 0)
+            {
+                scrollTimer.Stop();
+                return;
+            }
+            BoardScrollViewer.ChangeView(BoardScrollViewer.HorizontalOffset + scrollDirection, null, null, true);
+        }
+
+        private void stopAutoScroll()
+        {
+            scrollDirection = 0;
+            scrollTimer.Stop();
+        }
+
         private void onColumnDrop(Guid columnId, StackPanel panel, DragEventArgs e)
         {
+            stopAutoScroll();
             if (e.DataView.Properties.TryGetValue("noteId", out object? noteValue) && noteValue is Guid noteId)
             {
                 double y = e.GetPosition(panel).Y;
                 int dropIndex = panel.Children.Count;
-                for (int i=0; i<panel.Children.Count; i++)
+                for (int i = 0; i < panel.Children.Count; i++)
                 {
                     UIElement card = panel.Children[i];
-                    double midpoint = card.ActualOffset.Y + card.ActualSize.Y /2;
+                    double midpoint = card.ActualOffset.Y + card.ActualSize.Y / 2;
                     if (y < midpoint)
                     {
                         dropIndex = i;
@@ -425,7 +489,7 @@ namespace ToDo_App.UI.Views
                 if (currentIndex != -1 && currentIndex < dropIndex)
                 {
                     dropIndex--;
-                }        
+                }
                 boardController.MoveNoteToColumn(noteId, columnId, dropIndex);
             }
             else if (e.DataView.Properties.TryGetValue("columnId", out object? columnValue) && columnValue is Guid draggedColumnId)
@@ -946,6 +1010,7 @@ namespace ToDo_App.UI.Views
                 Child = cardContent
             };
             card.DragStarting += (s, e) => onNote_DragStarting(note, e);
+            card.DropCompleted += (s, e) => stopAutoScroll();
             return card;
         }
 
