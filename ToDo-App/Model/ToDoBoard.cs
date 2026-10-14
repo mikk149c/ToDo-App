@@ -114,6 +114,19 @@ public class ToDoBoard
         StatusColumns[columnIndex].RemoveNote(noteIndex);
     }
 
+    public void RemoveNoteFromTrashBin(Guid noteId)
+    {
+        for (int i = 0; i < TrashBin.Notes.Count; i++)
+        {
+            if(TrashBin.Notes[i].Id == noteId) 
+            {
+                TrashBin.RemoveNote(i);
+                return;
+            }
+        }
+        
+    }
+
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
     {
         if (fromColumnIndex == toColumnIndex && fromPos == toPos)
