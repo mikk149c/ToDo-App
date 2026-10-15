@@ -24,7 +24,8 @@ public class Localizer
 
     public static string HandlePlurals(string localizedString, int number, string language, int variableIndex = 0)
     {
-        var stringWithNumber = localizedString.Replace($"{{{variableIndex}}}", $"{number}");
+        var numberString = language == "naq" ? Convert.ToString(number, 8) : $"{number}";
+        var stringWithNumber = localizedString.Replace($"{{{variableIndex}}}", numberString);
 
         var startPos = stringWithNumber.IndexOf("[[");
         var endPos = stringWithNumber.IndexOf("]]");
