@@ -111,7 +111,15 @@ public class ToDoBoard
         int columnIndex = notePosTuple.columnIndex;
         int noteIndex = notePosTuple.noteIndex;
         TrashBin.AddNote(StatusColumns[columnIndex].Notes[noteIndex]);
-        Console.WriteLine("Trash bin size: " + TrashBin.Notes.Count.ToString());
+    }
+
+    public void AddColumnNotesToTrashBin(Guid columnId)
+    {
+        int columnIndex = GetColumnIndexFromId(columnId);
+        foreach(ToDoNote note in StatusColumns[columnIndex].Notes)
+        {
+            TrashBin.AddNote(note);
+        }
     }
 
     public void RemoveNoteFromTrashBin(Guid noteId)

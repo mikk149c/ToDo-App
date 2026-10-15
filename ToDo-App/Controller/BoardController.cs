@@ -84,8 +84,7 @@ public class BoardController : ITodoBoard
 
     public void RemoveColumn(Guid columnId)
     {
-        _board.TrashBin.Notes.AddRange(GetNotesInColumn(columnId));
-        Console.WriteLine("Trash bin size: " + _board.TrashBin.Notes.Count.ToString());
+        _board.AddColumnNotesToTrashBin(columnId);
         _board.RemoveColumn(columnId);
         onColumnRemoved(new ColumnRemovedEventArgs(columnId));
         onBoardChanged(new BoardChangedEventArgs(_board));
