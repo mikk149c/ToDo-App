@@ -21,16 +21,6 @@ namespace ToDo_App.UI.Views
         private const double ScrollSpeed = 60;
         private const double ScrollTickSpeed = 10;
 
-        private static readonly Dictionary<string, string> Languages = new()
-        {
-            {"en-US", "language/english"},
-            {"da-DK", "language/danish"},
-            {"de", "language/german"},
-            {"fo", "language/faroese"},
-            {"kln", "language/klingon"},
-            {"naq", "language/navi"}
-        };
-
         ITodoBoard boardController = new BoardController();
 
         List<Guid> columns = new List<Guid>();
@@ -1179,7 +1169,7 @@ namespace ToDo_App.UI.Views
             
             _currentCulture = new CultureInfo(selectedLanguage);
             
-            foreach (var language in Languages)
+            foreach (var language in Localizer.Languages)
             {
                 LanguageSelector.Items.Add(new ComboBoxItem
                 {
@@ -1189,7 +1179,7 @@ namespace ToDo_App.UI.Views
             }
             
             var initialIndex = 0;
-            if (Languages.ContainsKey(selectedLanguage))
+            if (Localizer.Languages.ContainsKey(selectedLanguage))
             {
                 for (int i = 0; i < LanguageSelector.Items.Count; i++)
                 {
@@ -1232,7 +1222,7 @@ namespace ToDo_App.UI.Views
 
             foreach (ComboBoxItem item in LanguageSelector.Items)
             {
-                var languageStringName = Languages[item.Tag.ToString()];
+                var languageStringName = Localizer.Languages[item.Tag.ToString()];
                 item.Content = Res.ResourceManager.GetString(languageStringName, _currentCulture);
             }
             
