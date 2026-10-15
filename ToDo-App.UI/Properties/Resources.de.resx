@@ -182,4 +182,28 @@
     <data name="error/failed_to_save_board" xml:space="preserve">
         <value>Die Tafel konnte nicht gespeichert werden.</value>
     </data>
+    <data name="dialog/delete_tag_confirm" xml:space="preserve">
+        <value>"{0}" von alle {1} Notiz(en) entfernen?</value>
+    </data>
+    <data name="dialog/edit_tag" xml:space="preserve">
+        <value>"{0}" bearbeiten</value>
+    </data>
+    <data name="dialog/new_tag_tooltip" xml:space="preserve">
+        <value>Neuer Tag "{0}", wird beim Speichern der Notiz gespeichert.</value>
+    </data>
+    <data name="dialog/rename" xml:space="preserve">
+        <value>Umbenennen</value>
+    </data>
+    <data name="dialog/tag_name" xml:space="preserve">
+        <value>Name</value>
+    </data>
+    <data name="dialog/tag_name_taken" xml:space="preserve">
+        <value>Es gibt schon ein Tag mit dem Namen "{0}".</value>
+    </data>
+    <data name="dialog/tag_new_info" xml:space="preserve">
+        <value>Neuer Tag, wird beim Speichern der Notiz hinzugefügt.</value>
+    </data>
+    <data name="dialog/tag_used_on" xml:space="preserve">
+        <value>{0} Notiz(en) benutzt es</value>
+    </data>
 </root>

@@ -81,10 +81,10 @@
         <value>ghu'lIS chu' yIchel</value>
     </data>
     <data name="dialog/title_delete_column_q" xml:space="preserve">
-        <value>war teq'a'?</value>
+        <value>war luteqlu' DaneH'a'?</value>
     </data>
     <data name="dialog/title_delete_note_q" xml:space="preserve">
-        <value>ghu'lIS teq'a'?</value>
+        <value>ghu'lIS luteqlu' DaneH'a'?</value>
     </data>
     <data name="dialog/title_edit_column" xml:space="preserve">
         <value>war yIDI'</value>
@@ -150,13 +150,13 @@
         <value>teywI' 'echlet yIHev</value>
     </data>
     <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>"{0}" luteqlu''a' DaneH? DateqHa'laHbe'.</value>
+        <value>"{0}" luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>"{0}" luteqlu''a' DaneH? DateqHa'laHbe'.</value>
+        <value>"{0}" luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
-        <value>"{0}" {1} ghu'lIS rarchuq je vIteq'a' DaneH? DateqHa'laHbe'.</value>
+        <value>"{0}" {1} ghu'lIS rarchuq je luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
         <value>nuqDaq jaH warvam {0} ghu'lIS?</value>
@@ -181,5 +181,29 @@
     </data>
     <data name="error/failed_to_remove_attached_file" xml:space="preserve">
         <value>ghu'lIS ta luteqlaHbe'.</value>
+    </data>
+    <data name="dialog/tag_name" xml:space="preserve">
+        <value>pong</value>
+    </data>
+    <data name="dialog/rename" xml:space="preserve">
+        <value>yIpongqa'</value>
+    </data>
+    <data name="dialog/tag_name_taken" xml:space="preserve">
+        <value>wejHa' latlhvaD "{0}" ponglu' neH.</value>
+    </data>
+    <data name="dialog/tag_new_info" xml:space="preserve">
+        <value>per chu'. ghu'lIS DapolDI' per luchellu'</value>
+    </data>
+    <data name="dialog/tag_used_on" xml:space="preserve">
+        <value>lulo' {0} ghu'lIS</value>
+    </data>
+    <data name="dialog/new_tag_tooltip" xml:space="preserve">
+        <value>per chu' "{0}", ghu'lIS DapolDI' per lupollu'</value>
+    </data>
+    <data name="dialog/delete_tag_confirm" xml:space="preserve">
+        <value>{1} ghu'lISvo' "{0}" luteqlu' DaneH'a'?</value>
+    </data>
+    <data name="dialog/edit_tag" xml:space="preserve">
+        <value>"{0}" yIDI'</value>
     </data>
 </root>

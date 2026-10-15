@@ -182,4 +182,28 @@
     <data name="dialog/remove_tag" xml:space="preserve">
         <value>'Aku "{0}"ti</value>
     </data>
+    <data name="dialog/tag_name" xml:space="preserve">
+        <value>Tstxo</value>
+    </data>
+    <data name="dialog/rename" xml:space="preserve">
+        <value>Tìng mipa tstxot</value>
+    </data>
+    <data name="dialog/tag_used_on" xml:space="preserve">
+        <value>Tok {0}a sätserit</value>
+    </data>
+    <data name="dialog/tag_name_taken" xml:space="preserve">
+        <value>Li fkeytok syon alu "{0}".</value>
+    </data>
+    <data name="dialog/new_tag_tooltip" xml:space="preserve">
+        <value>Mipa syon alu "{0}", sweyn tsat fkol krra sweyn sätserit</value>
+    </data>
+    <data name="dialog/delete_tag_confirm" xml:space="preserve">
+        <value>'Aku "{0}"ti ta {1}a sätseri srak?</value>
+    </data>
+    <data name="dialog/tag_new_info" xml:space="preserve">
+        <value>Mipa syon, sung tsat fkol krra sweyn sätserit</value>
+    </data>
+    <data name="dialog/edit_tag" xml:space="preserve">
+        <value>Leykatem "{0}"ti</value>
+    </data>
 </root>

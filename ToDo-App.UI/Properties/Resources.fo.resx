@@ -182,4 +182,28 @@
     <data name="error/failed_to_remove_attached_file" xml:space="preserve">
         <value>Tann viðfestaða fílan kundi ikki takast burtur.</value>
     </data>
+    <data name="dialog/delete_tag_confirm" xml:space="preserve">
+        <value>Tak "{0}" burtur úr øllum {1} uppritunum?</value>
+    </data>
+    <data name="dialog/edit_tag" xml:space="preserve">
+        <value>Rætta "{0}"</value>
+    </data>
+    <data name="dialog/tag_name" xml:space="preserve">
+        <value>Navn</value>
+    </data>
+    <data name="dialog/rename" xml:space="preserve">
+        <value>Nýnevna</value>
+    </data>
+    <data name="dialog/new_tag_tooltip" xml:space="preserve">
+        <value>Nýtt frámerki, verður goymt tá tú goymir uppritið</value>
+    </data>
+    <data name="dialog/tag_name_taken" xml:space="preserve">
+        <value>Eitt annað frámerki eitur longu "{0}".</value>
+    </data>
+    <data name="dialog/tag_new_info" xml:space="preserve">
+        <value>Nýtt frámerki, verður lagt afturat tá tú goymir uppritið</value>
+    </data>
+    <data name="dialog/tag_used_on" xml:space="preserve">
+        <value>{0} upprit nýta hetta</value>
+    </data>
 </root>
