@@ -105,13 +105,13 @@
         <value>DoyIchlan Hol</value>
     </data>
     <data name="dialog/option_move_to_column" xml:space="preserve">
-        <value>"{0}"Daq yIqem</value>
+        <value>«{0}»Daq yIqem</value>
     </data>
     <data name="language/faroese" xml:space="preserve">
         <value>va'ro' 'ambaymey Hol</value>
     </data>
     <data name="dialog/remove_tag" xml:space="preserve">
-        <value>"{0}" yIteq</value>
+        <value>«{0}» yIteq</value>
     </data>
     <data name="button/attach_file_tooltip" xml:space="preserve">
         <value>ta yIvev</value>
@@ -150,13 +150,13 @@
         <value>teywI' 'echlet yIHev</value>
     </data>
     <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>"{0}" luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>«{0}» luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>"{0}" luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>«{0}» luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
-        <value>"{0}" [[ghu'lIS|{1} ghu'lISmey]] rarchuq je luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>«{0}» [[ghu'lIS|{1} ghu'lISmey]] rarchuq je luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
         <value>nuqDaq jaH warvam [[ghu'lIS|{0} ghu'lISmey]]?</value>
@@ -189,7 +189,7 @@
         <value>yIpongqa'</value>
     </data>
     <data name="dialog/tag_name_taken" xml:space="preserve">
-        <value>wejHa' latlhvaD "{0}" ponglu' neH.</value>
+        <value>wejHa' latlhvaD «{0}» ponglu' neH.</value>
     </data>
     <data name="dialog/tag_new_info" xml:space="preserve">
         <value>per chu'. ghu'lIS DapolDI' per luchellu'</value>
@@ -198,13 +198,13 @@
         <value>[[lo' {0} ghu'lIS|lulo' {0} ghu'lISmey]]</value>
     </data>
     <data name="dialog/new_tag_tooltip" xml:space="preserve">
-        <value>per chu' "{0}", ghu'lIS DapolDI' per lupollu'</value>
+        <value>per chu' «{0}», ghu'lIS DapolDI' per lupollu'</value>
     </data>
     <data name="dialog/delete_tag_confirm" xml:space="preserve">
-        <value>[[ghu'lIS|{1} ghu'lISmey]]vo' "{0}" luteqlu' DaneH'a'?</value>
+        <value>[[ghu'lIS|{1} ghu'lISmey]]vo' «{0}» luteqlu' DaneH'a'?</value>
     </data>
     <data name="dialog/edit_tag" xml:space="preserve">
-        <value>"{0}" yIDI'</value>
+        <value>«{0}» yIDI'</value>
     </data>
     <data name="dialog/tag_colour" xml:space="preserve">
         <value>qalmuS</value>
