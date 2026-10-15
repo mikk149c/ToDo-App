@@ -99,18 +99,6 @@
                         Content="Add new ToDo"
                         Style="{StaticResource PrimaryAction}" />
 
-                    <!-- Choose the tags to filter the board by. The list is built when it opens -->
-                    <DropDownButton x:Name="FilterButton" Content="Filter">
-                        <DropDownButton.Flyout>
-                            <Flyout x:Name="FilterFlyout" Opening="onFilterFlyoutOpening" Placement="BottomEdgeAlignedLeft">
-                                <StackPanel
-                                    x:Name="FilterFlyoutContent"
-                                    Width="260"
-                                    Spacing="8" />
-                            </Flyout>
-                        </DropDownButton.Flyout>
-                    </DropDownButton>
-
                     <Button
                         x:Name="ImportButton"
                         Click="onImportBoardClicked"
@@ -137,6 +125,20 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <!-- Choose the tags to filter the board by. The list is built when it opens -->
+                    <DropDownButton
+                        x:Name="FilterButton"
+                        VerticalAlignment="Center"
+                        Content="Filter">
+                        <DropDownButton.Flyout>
+                            <Flyout x:Name="FilterFlyout" Opening="onFilterFlyoutOpening" Placement="BottomEdgeAlignedRight">
+                                <StackPanel
+                                    x:Name="FilterFlyoutContent"
+                                    Width="260"
+                                    Spacing="8" />
+                            </Flyout>
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
                     <controls:AppearanceSelector x:Name="AppearanceSelector" VerticalAlignment="Center" />
                     <ComboBox
                         x:Name="LanguageSelector"
