@@ -1171,8 +1171,18 @@ namespace ToDo_App.UI.Views
 
         private void initializeLanguageSettings()
         {
-            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-            var selectedLanguage = localSettings.Values["selectedLanguage"]?.ToString();
+            // ApplicationData needs a packaged app. When the app runs unpackaged (from an IDE or `dotnet run`)
+            // it throws, so the language can't be remembered there and the default language is used
+            string? selectedLanguage = null;
+            try
+            {
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                selectedLanguage = localSettings.Values["selectedLanguage"]?.ToString();
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Could not load the selected language: {e.Message}");
+            }
 
             if (selectedLanguage == null)
                 selectedLanguage = "en-US";
@@ -1219,8 +1229,16 @@ namespace ToDo_App.UI.Views
                 rebuildColumn(guid, boardController.GetStatusColumnName(guid));
             }
             
-            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-            localSettings.Values["selectedLanguage"] = language;
+            // Only remembered in a packaged app, see initializeLanguageSettings
+            try
+            {
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                localSettings.Values["selectedLanguage"] = language;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Could not save the selected language: {e.Message}");
+            }
         }
         
         private void localizeXaml()
