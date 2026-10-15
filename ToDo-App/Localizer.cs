@@ -22,21 +22,29 @@ public class Localizer
         {"naq",   [x => x == 1, x => x == 2, x => x == 3]}
     };
 
-    public static string HandlePlurals(string localizedString, int number, string language)
+    public static string HandlePlurals(string localizedString, int number, string language, int variableIndex = 0)
     {
+        var stringWithNumber = localizedString.Replace($"{{{variableIndex}}}", $"{number}");
+
+        var startPos = stringWithNumber.IndexOf("[[");
+        var endPos = stringWithNumber.IndexOf("]]");
+        
+        var beforeString = stringWithNumber.Substring(0,startPos);
+        var matchedString = stringWithNumber.Substring(startPos + 2, endPos - startPos - 2);
+        var afterString = stringWithNumber.Substring(endPos + 2, stringWithNumber.Length - endPos - 2);
+        
+        var forms = matchedString.Split('|');
+
         var pattern = PluralityPatterns[language];
-
-        var s = "you have learned [[%1 word|%1 words]] so far.";
-        var s2 = "tsole'a [['awa 'uti|meuti|pxeuti|%1a 'uti]] so far.";
-
         for (int i = 0; i < pattern.Count; i++)
         {
             if (pattern[i].Invoke(number))
             {
-                return localizedString; //use pattern
+                return $"{beforeString}{forms[i]}{afterString}";
             }
         }
         
-        return "Nope";
+        // if there is no match, use the final form
+        return $"{beforeString}{forms[^1]}{afterString}";
     }
 }
