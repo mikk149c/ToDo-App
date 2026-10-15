@@ -83,7 +83,7 @@ namespace ToDo_App.UI.Views
             StackPanel restorePanel,
             TextBlock restoreHeading,
             StackPanel restoreColumnButtons,
-            StackPanel confirmationPanel) 
+            Grid confirmationPanel) 
         {
             listPanel.Children.Clear();
 
@@ -288,9 +288,13 @@ namespace ToDo_App.UI.Views
             restorePanel.Children.Add(cancelRestoreButton);
 
             //Confirm delete section
-            StackPanel confirmationPanel = new StackPanel {
-                Spacing = 12,
-                Visibility = Visibility.Collapsed
+            Grid confirmationPanel = new Grid {
+                Visibility = Visibility.Collapsed,
+                MinHeight = 180,
+                RowDefinitions = {
+                    new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
+                    new RowDefinition { Height = GridLength.Auto }
+                }
             };
 
             TextBlock confirmationText = new TextBlock {
@@ -298,16 +302,19 @@ namespace ToDo_App.UI.Views
                 TextWrapping = TextWrapping.Wrap
             };
 
-            StackPanel confirmationButtons = new StackPanel {
-                Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Spacing = 8
+            Grid confirmationButtons = new Grid {
+                ColumnDefinitions = {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                },
+                ColumnSpacing = 8,
+                Margin = new Thickness(0, 12, 0, 0)
             };
 
             Button cancelDeleteFromTrashButton = new Button { 
                 Content = "Cancel",
-                Width = 100, Height = 40,
-                //Style = (Style)Application.Current.Resources["DefaultButtonStyle"]
+                Height = 40,
+                HorizontalAlignment = HorizontalAlignment.Stretch
             };
             cancelDeleteFromTrashButton.Click += (sender, e) => {
                 selectedTrashNoteId = Guid.Empty;
@@ -317,7 +324,8 @@ namespace ToDo_App.UI.Views
 
             Button confirmDeleteFromTrashButton = new Button {
                 Content = "Delete",
-                Width = 100, Height = 40,
+                Height = 40,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
                 Style = (Style)Application.Current.Resources["PrimaryAction"]
             };
             confirmDeleteFromTrashButton.Click += (sender, e) => {
@@ -328,10 +336,14 @@ namespace ToDo_App.UI.Views
                 confirmationPanel.Visibility = Visibility.Collapsed;
                 trashListView.Visibility = Visibility.Visible;
             };
+            Grid.SetColumn(confirmDeleteFromTrashButton, 0);
+            Grid.SetColumn(cancelDeleteFromTrashButton, 1);
 
             confirmationButtons.Children.Add(confirmDeleteFromTrashButton);
             confirmationButtons.Children.Add(cancelDeleteFromTrashButton);
 
+            Grid.SetRow(confirmationText, 0);
+            Grid.SetRow(confirmationButtons, 1);
             confirmationPanel.Children.Add(confirmationText);
             confirmationPanel.Children.Add(confirmationButtons);
 
