@@ -122,36 +122,7 @@ public class ToDoBoard
         }
     }
 
-    public void RemoveNoteFromTrashBin(Guid noteId)
-    {
-        for (int i = 0; i < TrashBin.Notes.Count; i++)
-        {
-            if(TrashBin.Notes[i].Id == noteId) 
-            {
-                TrashBin.RemoveNote(i);
-                return;
-            }
-        }
-        
-    }
-
-    public void RestoreNoteFromTrashBin(Guid noteId, Guid columnId)
-    {
-        int columnIndex = GetColumnIndexFromId(columnId);
-
-        for (int i = 0; i < TrashBin.Notes.Count; i++)
-        {
-            if (TrashBin.Notes[i].Id == noteId)
-            {
-                ToDoNote note = TrashBin.Notes[i];
-
-                StatusColumns[columnIndex].Notes.Add(note);
-                TrashBin.RemoveNote(i);
-
-                return;
-            }
-        }
-    }
+    public void EmptyTrashBin() { TrashBin.Notes.Clear(); }
 
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
     {
@@ -205,6 +176,37 @@ public class ToDoBoard
         int startColumn = notePosTuple.columnIndex;
         int startPos = notePosTuple.noteIndex;
         MoveNote(startColumn, startPos, startColumn - 1, 0);
+    }
+
+    public void RemoveNoteFromTrashBin(Guid noteId)
+    {
+        for (int i = 0; i < TrashBin.Notes.Count; i++)
+        {
+            if(TrashBin.Notes[i].Id == noteId) 
+            {
+                TrashBin.RemoveNote(i);
+                return;
+            }
+        }
+        
+    }
+
+    public void RestoreNoteFromTrashBin(Guid noteId, Guid columnId)
+    {
+        int columnIndex = GetColumnIndexFromId(columnId);
+
+        for (int i = 0; i < TrashBin.Notes.Count; i++)
+        {
+            if (TrashBin.Notes[i].Id == noteId)
+            {
+                ToDoNote note = TrashBin.Notes[i];
+
+                StatusColumns[columnIndex].Notes.Add(note);
+                TrashBin.RemoveNote(i);
+
+                return;
+            }
+        }
     }
 
     public void SetNoteContent(Guid noteId, string content)

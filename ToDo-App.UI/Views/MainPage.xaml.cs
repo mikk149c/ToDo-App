@@ -329,10 +329,15 @@ namespace ToDo_App.UI.Views
                 Style = (Style)Application.Current.Resources["PrimaryAction"]
             };
             confirmDeleteFromTrashButton.Click += (sender, e) => {
-                OnClickConfirmDeleteFromTrashButton(sender, e, selectedTrashNoteId);
+                if (selectedTrashNoteId == Guid.Empty) { 
+                    boardController.EmptyTrashBin(); 
+                }
+                else {
+                    boardController.RemoveNoteFromTrashBin(selectedTrashNoteId);
+                    selectedTrashNoteId = Guid.Empty;   
+                }
                 RefreshTrashBin(listPanel, confirmationText,trashListView, restorePanel, 
                                 restoreHeading, restoreColumnButtons, confirmationPanel);
-                selectedTrashNoteId = Guid.Empty;
                 confirmationPanel.Visibility = Visibility.Collapsed;
                 trashListView.Visibility = Visibility.Visible;
             };
@@ -342,21 +347,42 @@ namespace ToDo_App.UI.Views
             confirmationButtons.Children.Add(confirmDeleteFromTrashButton);
             confirmationButtons.Children.Add(cancelDeleteFromTrashButton);
 
-            Grid.SetRow(confirmationText, 0);
-            Grid.SetRow(confirmationButtons, 1);
+            Grid.SetRow(confirmationText, 0); Grid.SetRow(confirmationButtons, 1);
             confirmationPanel.Children.Add(confirmationText);
             confirmationPanel.Children.Add(confirmationButtons);
 
             //Build the trash bin
+            Grid trashFooter = new Grid {
+                ColumnDefinitions = {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = GridLength.Auto }
+                }
+            };
+
+            Button emptyTrashButton = new Button {
+                Content = "Empty trash",
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+            emptyTrashButton.Click += (sender, e) => {
+                selectedTrashNoteId = Guid.Empty;
+                confirmationText.Text = "Are you sure you want to permanently delete all notes in the trash bin?";
+
+                confirmationPanel.Visibility = Visibility.Visible;
+                trashListView.Visibility = Visibility.Collapsed;
+            };
+
             Button closeTrashBinButton = new Button {
                 Content = "Close",
                 HorizontalAlignment = HorizontalAlignment.Right
             };
+
+            Grid.SetColumn(emptyTrashButton, 0); Grid.SetColumn(closeTrashBinButton, 1);
+            trashFooter.Children.Add(emptyTrashButton);
+            trashFooter.Children.Add(closeTrashBinButton);
             
-            Grid.SetRow(trashScrollViewer, 0);
-            Grid.SetRow(closeTrashBinButton, 1);
+            Grid.SetRow(trashScrollViewer, 0); Grid.SetRow(trashFooter, 1);
             trashListView.Children.Add(trashScrollViewer);
-            trashListView.Children.Add(closeTrashBinButton);
+            trashListView.Children.Add(trashFooter);
 
             Grid dialogContent = new Grid { Width = 500 };
             dialogContent.Children.Add(trashListView);
@@ -385,11 +411,6 @@ namespace ToDo_App.UI.Views
 
             Guid firstColumn = columns[0];
             boardController.CreateNote(firstColumn, "New ToDo", "This is a new ToDo item.");
-        }
-
-        private void OnClickConfirmDeleteFromTrashButton(object sender, RoutedEventArgs e, Guid noteId)
-        {
-            boardController.PermanentlyRemoveNote(noteId);
         }
 
         private async void onImportBoardClicked(object sender, RoutedEventArgs e)

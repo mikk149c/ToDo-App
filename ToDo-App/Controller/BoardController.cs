@@ -134,17 +134,8 @@ public class BoardController : ITodoBoard
         throw new Exception($"Note not found (GUID {id})");
     }
 
-    public List<ToDoNote> GetTrashBinNotes()
-    {
-        return _board.TrashBin.Notes;
-    }
-
-    public void RestoreNote(Guid noteId, Guid columnId)
-    {
-        _board.RestoreNoteFromTrashBin(noteId, columnId);
-        onColumnContentChanged( new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
-        onBoardChanged(new BoardChangedEventArgs(_board));
-    }
+    public void EmptyTrashBin() { _board.EmptyTrashBin(); }
+    public List<ToDoNote> GetTrashBinNotes() { return _board.TrashBin.Notes; }
 
     public void SetNoteContent(Guid id, string newContent)
     {
@@ -223,10 +214,15 @@ public class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    public void PermanentlyRemoveNote(Guid noteId)
+    public void RemoveNoteFromTrashBin(Guid noteId) { _board.RemoveNoteFromTrashBin(noteId); }
+
+    public void RestoreNote(Guid noteId, Guid columnId)
     {
-        _board.RemoveNoteFromTrashBin(noteId);
+        _board.RestoreNoteFromTrashBin(noteId, columnId);
+        onColumnContentChanged( new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
     }
+
 
     public void SaveBoardToJson(string jsonPath)
     {
@@ -238,7 +234,7 @@ public class BoardController : ITodoBoard
     {
         var storeJson = new StoreJson<ToDoBoard>(jsonPath);
         //_board = storeJson.Load();
-        _board = new ToDoBoard();
+        _board = new ToDoBoard();  //do this instead, if the ToDoBoard class has changed
         foreach (var column in _board.StatusColumns)
         {
             onColumnCreated(new ColumnCreatedEventArgs(column.Id, column.Title, column.Notes));
