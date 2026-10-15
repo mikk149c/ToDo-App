@@ -27,8 +27,13 @@ public class Localizer
         var numberString = language == "naq" ? Convert.ToString(number, 8) : $"{number}";
         var stringWithNumber = localizedString.Replace($"{{{variableIndex}}}", numberString);
 
-        var startPos = stringWithNumber.IndexOf("[[");
-        var endPos = stringWithNumber.IndexOf("]]");
+        var startPos = stringWithNumber.IndexOf("[[", StringComparison.Ordinal);
+        var endPos = stringWithNumber.IndexOf("]]", StringComparison.Ordinal);
+
+        if (startPos == -1 || endPos == -1)
+        {
+            return stringWithNumber;
+        }
         
         var beforeString = stringWithNumber.Substring(0,startPos);
         var matchedString = stringWithNumber.Substring(startPos + 2, endPos - startPos - 2);

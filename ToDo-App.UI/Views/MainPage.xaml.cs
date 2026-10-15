@@ -725,9 +725,15 @@ namespace ToDo_App.UI.Views
             ComboBox? todoActionBox = null;
             if (noteCount > 0 && otherColumns.Count > 0)
             {
+                var headerText = Localizer.HandlePlurals(
+                    Res.ResourceManager.GetString("dialog/content_delete_column_consequence", _currentCulture),
+                    noteCount, _currentCulture.Name);
+                var deleteText = Localizer.HandlePlurals(
+                    Res.ResourceManager.GetString("dialog/delete_the_todos", _currentCulture),
+                    noteCount, _currentCulture.Name);
                 todoActionBox = new ComboBox
                 {
-                    Header = String.Format(Res.ResourceManager.GetString("dialog/content_delete_column_consequence", _currentCulture), noteCount),
+                    Header = headerText,
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
                 foreach (Guid otherColumn in otherColumns)
@@ -738,12 +744,15 @@ namespace ToDo_App.UI.Views
                         Tag = otherColumn
                     });
                 }
-                todoActionBox.Items.Add(new ComboBoxItem { Content = Res.ResourceManager.GetString("dialog/delete_the_todos", _currentCulture) });
+                todoActionBox.Items.Add(new ComboBoxItem { Content = deleteText });
                 todoActionBox.SelectedIndex = 0;
             }
             else if (noteCount > 0)
             {
-                message.Text = String.Format(Res.ResourceManager.GetString("dialog/content_delete_column_no_space", _currentCulture), columnName, noteCount);
+                var textWithNumber = Localizer.HandlePlurals(
+                    Res.ResourceManager.GetString("dialog/content_delete_column_no_space", _currentCulture),
+                    noteCount, _currentCulture.Name, 1);
+                message.Text = String.Format(textWithNumber, columnName);
             }
 
             StackPanel content = new StackPanel { Spacing = 12 };
@@ -1115,7 +1124,9 @@ namespace ToDo_App.UI.Views
                 "dialog/tag_name_taken", "dialog/tag_colour", "dialog/rename", "dialog/delete", "dialog/cancel", "dialog/delete_tag_confirm"
             };
             // A missing translation shows the key instead of crashing the dialog
-            return keys.ToDictionary(key => key, key => Res.ResourceManager.GetString(key, _currentCulture) ?? key);
+            var dict = keys.ToDictionary(key => key, key => Res.ResourceManager.GetString(key, _currentCulture) ?? key);
+            dict.Add("lang_code", _currentCulture.Name);
+            return dict;
         }
 
         private void onNote_DragStarting(ToDoNote note, DragStartingEventArgs args)

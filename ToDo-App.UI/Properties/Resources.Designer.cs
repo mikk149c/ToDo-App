@@ -240,7 +240,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to What should happen to the {0} note(s) in this column?.
+        ///   Looks up a localized string similar to What should happen to the [[{0} note|{0} notes]] in this column?.
         /// </summary>
         internal static string dialog_content_delete_column_consequence {
             get {
@@ -249,7 +249,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete &quot;{0}&quot; and the {1} note(s) in it? This can&apos;t be undone..
+        ///   Looks up a localized string similar to Delete &quot;{0}&quot; and the [[{1} note|{1} notes]] in it? This can&apos;t be undone..
         /// </summary>
         internal static string dialog_content_delete_column_no_space {
             get {
@@ -276,7 +276,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove &quot;{0}&quot; from all {1} note(s)?.
+        ///   Looks up a localized string similar to Remove &quot;{0}&quot; from [[the note|all {1} notes]]?.
         /// </summary>
         internal static string dialog_delete_tag_confirm {
             get {
@@ -285,7 +285,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete the note(s).
+        ///   Looks up a localized string similar to Delete the [[note|notes]].
         /// </summary>
         internal static string dialog_delete_the_todos {
             get {
@@ -420,7 +420,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Used on {0} note(s).
+        ///   Looks up a localized string similar to Used on {0} [[note|notes]].
         /// </summary>
         internal static string dialog_tag_used_on {
             get {
