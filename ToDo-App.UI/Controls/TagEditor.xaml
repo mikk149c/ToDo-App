@@ -24,6 +24,23 @@
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         TextWrapping="Wrap" />
 
+                    <!-- Only for tags on the board. Picking a colour applies to every todo with the tag -->
+                    <StackPanel x:Name="ColorPanel" Spacing="4">
+                        <TextBlock x:Name="ColorHeader" />
+                        <GridView
+                            x:Name="ColorGrid"
+                            AutomationProperties.Name="Colour"
+                            IsItemClickEnabled="False"
+                            SelectionChanged="OnColorSelectionChanged"
+                            SelectionMode="Single">
+                            <GridView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </GridView.ItemsPanel>
+                        </GridView>
+                    </StackPanel>
+
                     <TextBlock
                         x:Name="FlyoutErrorText"
                         Foreground="{ThemeResource SystemFillColorCriticalBrush}"

@@ -184,9 +184,21 @@ public class BoardController : ITodoBoard
 
     public void RenameTag(Guid tagId, string newName)
     {
-        string name = _board.RenameTag(tagId, newName);
-        // One event for the tag, so every card showing it can update, whichever columns they're in
-        onTagChanged(new TagChangedEventArgs(tagId, name));
+        _board.RenameTag(tagId, newName);
+        notifyTagChanged(tagId);
+    }
+
+    public void SetTagColor(Guid tagId, string color)
+    {
+        _board.SetTagColor(tagId, color);
+        notifyTagChanged(tagId);
+    }
+
+    // One event for the tag, so every card showing it can update, whichever columns they're in
+    private void notifyTagChanged(Guid tagId)
+    {
+        NoteTag tag = _board.GetTags().Single(candidate => candidate.Id == tagId);
+        onTagChanged(new TagChangedEventArgs(tagId, tag.Name, tag.Color));
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 

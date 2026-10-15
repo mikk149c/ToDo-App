@@ -40,6 +40,8 @@ public interface ITodoBoard
 
     public void RenameTag(Guid tagId, string newName);
 
+    public void SetTagColor(Guid tagId, string color);
+
     public void DeleteTag(Guid tagId);
 
     public void SetNoteFileAttachment(Guid id, string newFilePath);

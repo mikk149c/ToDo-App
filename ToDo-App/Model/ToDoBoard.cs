@@ -224,7 +224,9 @@ public class ToDoBoard
             }
 
             NoteTag? existing = existingTags.Find(tag => NoteTag.NamesMatch(tag.Name, name));
-            resolved.Add(existing != null ? new NoteTag(existing.Name) { Id = existing.Id } : new NoteTag(name));
+            resolved.Add(existing != null
+                ? new NoteTag(existing.Name) { Id = existing.Id, Color = existing.Color }
+                : new NoteTag(name));
         }
 
         return resolved;
@@ -232,11 +234,12 @@ public class ToDoBoard
 
     /// <summary>
     /// Makes loaded tag data consistent: missing tag lists become empty, a note keeps each tag once,
-    /// and when copies of a tag have different names, the first one found wins.
+    /// and when copies of a tag have different names or colours, the first one found wins.
     /// </summary>
     internal void NormalizeTags()
     {
         var namesById = new Dictionary<Guid, string>();
+        var colorsById = new Dictionary<Guid, string?>();
         foreach (ToDoNote note in AllNotes())
         {
             note.Tags = (note.Tags ?? new List<NoteTag>()).DistinctBy(tag => tag.Id).ToList();
@@ -245,6 +248,10 @@ public class ToDoBoard
                 if (!namesById.TryAdd(tag.Id, tag.Name))
                 {
                     tag.Name = namesById[tag.Id];
+                }
+                if (!colorsById.TryAdd(tag.Id, tag.Color))
+                {
+                    tag.Color = colorsById[tag.Id];
                 }
             }
         }
@@ -270,6 +277,21 @@ public class ToDoBoard
             copy.Name = name;
         }
         return name;
+    }
+
+    /// <summary>Sets the colour of a tag on every note that has it, and returns the colour that was stored.</summary>
+    /// <exception cref="KeyNotFoundException">No note has the tag.</exception>
+    /// <exception cref="ArgumentException">The colour isn't a "#RRGGBB" hex colour.</exception>
+    public string SetTagColor(Guid tagId, string color)
+    {
+        List<NoteTag> copies = GetTagCopies(tagId);
+        string normalized = NoteTag.NormalizeColor(color);
+
+        foreach (NoteTag copy in copies)
+        {
+            copy.Color = normalized;
+        }
+        return normalized;
     }
 
     /// <summary>Removes a tag from every note that has it. The notes themselves are kept.</summary>

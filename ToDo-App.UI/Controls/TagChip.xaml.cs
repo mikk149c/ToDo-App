@@ -1,4 +1,6 @@
 using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Media;
+using ToDo_App.UI.Appearance;
 
 namespace ToDo_App.UI.Controls
 {
@@ -17,10 +19,14 @@ namespace ToDo_App.UI.Controls
             InitializeComponent();
         }
 
-        /// <summary>Shows a tag's name and whether it's new, with the texts for tooltips and screen readers.</summary>
-        public void Show(string name, bool isNew, string editLabel, string removeLabel)
+        /// <summary>
+        /// Shows a tag's name, colour and whether it's new, with the texts for tooltips and screen readers.
+        /// A new tag has no colour yet, so the colour isn't shown for it.
+        /// </summary>
+        public void Show(string name, bool isNew, string? color, string editLabel, string removeLabel)
         {
             NameText.Text = name;
+            ColorDot.Fill = new SolidColorBrush(AccentPalette.Find(color).Color);
             VisualStateManager.GoToState(this, isNew ? "New" : "Saved", false);
 
             AutomationProperties.SetName(EditButton, editLabel);
