@@ -119,6 +119,22 @@ namespace ToDo_App.UI.Views
                     Children = { description }
                 };
 
+                if (note.File != null) {
+                    var attachedFileButton = new Button {
+                        Style = (Style)Application.Current.Resources["AttachedFile"],
+                        Content = new StackPanel {
+                            Orientation = Orientation.Horizontal,
+                            Spacing = 8,
+                            Children = {
+                                new SymbolIcon(Symbol.Attach),
+                                new TextBlock { Text = note.File.Name }
+                            }
+                        }
+                    };
+                    attachedFileButton.Click += (s, e) => onAttachmentClicked(note);
+                    expandedContent.Children.Add(attachedFileButton);
+                }
+
                 Button titleButton = new Button {
                     Content = titleRow,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
