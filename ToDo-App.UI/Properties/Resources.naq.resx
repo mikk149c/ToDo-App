@@ -69,7 +69,7 @@
         <value>'Aku</value>
     </data>
     <data name="dialog/delete_the_todos" xml:space="preserve">
-        <value>'Aku (ay)sätseriti</value>
+        <value>'Aku [[|me|pxe|{0}a ]]sätseriti</value>
     </data>
     <data name="dialog/export_board" xml:space="preserve">
         <value>Sweyn tìtserit</value>
@@ -153,10 +153,10 @@
         <value>'Aku "{0}"ti srak? Zene livu am'ake.</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
-        <value>{0}a sätseriri sweylu txo pehem si?</value>
+        <value>[[S|Mes|Pxes|{0}a s]]ätseriri sweylu txo pehem si?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
-        <value>'Aku "{0}"ti sì {1}a sätserit a tok tsat srak? Zene livu am'ake.</value>
+        <value>'Aku "{0}"ti sì [[|me|pxe|{1}a ]]sätserit a tok tsat srak? Zene livu am'ake.</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
         <value>'Aku "{0}"ti srak? Zene livu am'ake.</value>
@@ -189,7 +189,7 @@
         <value>Tìng mipa tstxot</value>
     </data>
     <data name="dialog/tag_used_on" xml:space="preserve">
-        <value>Tok {0}a sätserit</value>
+        <value>Tok [['awa |me|pxe|{0}a ]]sätserit</value>
     </data>
     <data name="dialog/tag_name_taken" xml:space="preserve">
         <value>Li fkeytok syon alu "{0}".</value>
@@ -198,7 +198,7 @@
         <value>Mipa syon alu "{0}", sweyn tsat fkol krra sweyn sätserit</value>
     </data>
     <data name="dialog/delete_tag_confirm" xml:space="preserve">
-        <value>'Aku "{0}"ti ta {1}a sätseri srak?</value>
+        <value>'Aku "{0}"ti ta [[|me|pxe|{1}a ]]sätseri srak?</value>
     </data>
     <data name="dialog/tag_new_info" xml:space="preserve">
         <value>Mipa syon, sung tsat fkol krra sweyn sätserit</value>

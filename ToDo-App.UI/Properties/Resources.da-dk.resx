@@ -99,7 +99,7 @@
         <value>Vedhæft en fil</value>
     </data>
     <data name="dialog/delete_the_todos" xml:space="preserve">
-        <value>Slet note(rne)</value>
+        <value>Slet [[noten|noterne]]</value>
     </data>
     <data name="dialog/title_add_new_note" xml:space="preserve">
         <value>Tilføj Ny Note</value>
@@ -144,10 +144,10 @@
         <value>Slet "{0}"? Dette kan ikke fortrydes.</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
-        <value>Slet "{0}" og de(n) {1} note(r) der ligger i den? Dette kan ikke fortrydes.</value>
+        <value>Slet "{0}" og [[noten|de {1} noter]] der ligger i den? Dette kan ikke fortrydes.</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
-        <value>Hvad skal der ske med de(n) {0} note(r) i denne kolonne?</value>
+        <value>Hvad skal der ske med [[noten|de {0} noter]] i denne kolonne?</value>
     </data>
     <data name="dialog/option_move_to_column" xml:space="preserve">
         <value>Flyt til "{0}"</value>
@@ -192,7 +192,7 @@
         <value>Navn</value>
     </data>
     <data name="dialog/tag_used_on" xml:space="preserve">
-        <value>Bruges på {0} note(r)</value>
+        <value>Bruges af [[{0} note|{0} noter]]</value>
     </data>
     <data name="dialog/tag_new_info" xml:space="preserve">
         <value>Nyt tag, tilføjes når du gemmer noten</value>
@@ -207,6 +207,6 @@
         <value>Omdøb</value>
     </data>
     <data name="dialog/delete_tag_confirm" xml:space="preserve">
-        <value>Fjern "{0}" fra alle {1} note(r)?</value>
+        <value>Fjern "{0}" fra [[noten|alle {1} noter]]?</value>
     </data>
 </root>

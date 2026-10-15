@@ -63,7 +63,7 @@
         <value>Strika</value>
     </data>
     <data name="dialog/delete_the_todos" xml:space="preserve">
-        <value>Strika uppriti(ni)</value>
+        <value>Strika [[uppriti|uppritini]]</value>
     </data>
     <data name="dialog/json_files" xml:space="preserve">
         <value>JSON-fílur</value>
@@ -156,10 +156,10 @@
         <value>Strika "{0}"? Hetta kann ikki angrast.</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
-        <value>Strika "{0}" og tey {1} uppriti(ni) inni í? Hetta kann ikki angrast.</value>
+        <value>Strika "{0}" og [[uppriti|tey {1} uppritini]] inni í? Hetta kann ikki angrast.</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
-        <value>Hvat skal henda við tey {0} uppriti(ni) í hesu teiginum?</value>
+        <value>Hvat skal henda við [[uppriti|tey {0} uppritini]] í hesum teiginum?</value>
     </data>
     <data name="error/failed_to_attach_file" xml:space="preserve">
         <value>Fílan kundi ikki viðfestast.</value>
@@ -183,7 +183,7 @@
         <value>Tann viðfestaða fílan kundi ikki takast burtur.</value>
     </data>
     <data name="dialog/delete_tag_confirm" xml:space="preserve">
-        <value>Tak "{0}" burtur úr øllum {1} uppritunum?</value>
+        <value>Tak "{0}" burtur úr [[uppritinum|øllum {1} uppritunum]]?</value>
     </data>
     <data name="dialog/edit_tag" xml:space="preserve">
         <value>Rætta "{0}"</value>
@@ -204,7 +204,7 @@
         <value>Nýtt frámerki, verður lagt afturat tá tú goymir uppritið</value>
     </data>
     <data name="dialog/tag_used_on" xml:space="preserve">
-        <value>{0} upprit nýta hetta</value>
+        <value>{0} upprit [[nýtir|nýta]] hetta</value>
     </data>
     <data name="dialog/tag_colour" xml:space="preserve">
         <value>Litur</value>

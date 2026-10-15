@@ -72,7 +72,7 @@
         <value>ghu'lIS chu' yIchel</value>
     </data>
     <data name="dialog/delete_the_todos" xml:space="preserve">
-        <value>ghu'lIS(mey) yIteq</value>
+        <value>[[ghu'lIS|ghu'lISmey]] yIteq</value>
     </data>
     <data name="dialog/title_add_new_column" xml:space="preserve">
         <value>war chu' yIchel</value>
@@ -156,10 +156,10 @@
         <value>"{0}" luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
-        <value>"{0}" {1} ghu'lIS rarchuq je luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>"{0}" [[ghu'lIS|{1} ghu'lISmey]] rarchuq je luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
-        <value>nuqDaq jaH warvam {0} ghu'lIS?</value>
+        <value>nuqDaq jaH warvam [[ghu'lIS|{0} ghu'lISmey]]?</value>
     </data>
     <data name="error/failed_to_attach_file" xml:space="preserve">
         <value>ta luvevlaHbe'.</value>
@@ -195,13 +195,13 @@
         <value>per chu'. ghu'lIS DapolDI' per luchellu'</value>
     </data>
     <data name="dialog/tag_used_on" xml:space="preserve">
-        <value>lulo' {0} ghu'lIS</value>
+        <value>[[lo' {0} ghu'lIS|lulo' {0} ghu'lISmey]]</value>
     </data>
     <data name="dialog/new_tag_tooltip" xml:space="preserve">
         <value>per chu' "{0}", ghu'lIS DapolDI' per lupollu'</value>
     </data>
     <data name="dialog/delete_tag_confirm" xml:space="preserve">
-        <value>{1} ghu'lISvo' "{0}" luteqlu' DaneH'a'?</value>
+        <value>[[ghu'lIS|{1} ghu'lISmey]]vo' "{0}" luteqlu' DaneH'a'?</value>
     </data>
     <data name="dialog/edit_tag" xml:space="preserve">
         <value>"{0}" yIDI'</value>
