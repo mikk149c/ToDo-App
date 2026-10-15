@@ -222,9 +222,14 @@ namespace ToDo_App.UI.Views
                 throw new ArgumentException("Wrong EventArgs type");
             }
             
-            removeColumn(args.ColumnId);
-            var column = buildColumn(args.ColumnId, args.NewName);
-            AddColumnToUI(column, args.ColumnId);
+            rebuildColumn(args.ColumnId, args.NewName);
+        }
+
+        private void rebuildColumn(Guid id, string name)
+        {
+            removeColumn(id);
+            var column = buildColumn(id, name);
+            AddColumnToUI(column, id);
         }
 
         private void onColumnRemoved(object? sender, EventArgs eventArgs)
@@ -1208,8 +1213,7 @@ namespace ToDo_App.UI.Views
             // Refresh dynamic UI elements for each column
             foreach (var guid in columns)
             {
-                clearColumnItems(guid);
-                populateStatusColumn(guid);
+                rebuildColumn(guid, boardController.GetStatusColumnName(guid));
             }
             
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
