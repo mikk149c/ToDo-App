@@ -4,6 +4,7 @@ using System.Globalization;
 using Microsoft.Windows.Storage.Pickers;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
+using ToDo_App.UI.Appearance;
 using ToDo_App.UI.Controls;
 using Windows.ApplicationModel.DataTransfer;
 using Res = ToDo_App.UI.Resources;
@@ -689,7 +690,8 @@ namespace ToDo_App.UI.Views
                     columnId,
                     string.IsNullOrWhiteSpace(titleBox.Text) ? defaultTitle : titleBox.Text,
                     string.IsNullOrWhiteSpace(contentBox.Text) ? defaultContent : contentBox.Text,
-                    tagNames: tagEditor.TagNames);
+                    tagNames: tagEditor.TagNames,
+                    newTagColors: tagEditor.NewTagColors);
             }
         }
 
@@ -858,7 +860,7 @@ namespace ToDo_App.UI.Views
             {
                 boardController.SetNoteTitle(note.Id, titleBox.Text);
                 boardController.SetNoteContent(note.Id, contentBox.Text);
-                boardController.SetNoteTags(note.Id, tagEditor.TagNames);
+                boardController.SetNoteTags(note.Id, tagEditor.TagNames, tagEditor.NewTagColors);
             }
         }
 
@@ -1102,6 +1104,7 @@ namespace ToDo_App.UI.Views
                 tagsRow.Children.Add(new Border
                 {
                     Style = (Style)Resources["TodoTag"],
+                    Background = new SolidColorBrush(AccentPalette.Find(tag.Color).Color),
                     Child = new TextBlock
                     {
                         Style = (Style)Resources["TodoTagText"],
@@ -1119,7 +1122,7 @@ namespace ToDo_App.UI.Views
             {
                 "todo/property_tags", "dialog/add_tag_placeholder", "dialog/remove_tag", "dialog/edit_tag",
                 "dialog/new_tag_tooltip", "dialog/tag_name", "dialog/tag_used_on", "dialog/tag_new_info",
-                "dialog/tag_name_taken", "dialog/rename", "dialog/delete", "dialog/cancel", "dialog/delete_tag_confirm"
+                "dialog/tag_name_taken", "dialog/tag_colour", "dialog/rename", "dialog/delete", "dialog/cancel", "dialog/delete_tag_confirm"
             };
             // A missing translation shows the key instead of crashing the dialog
             return keys.ToDictionary(key => key, key => Res.ResourceManager.GetString(key, _currentCulture) ?? key);

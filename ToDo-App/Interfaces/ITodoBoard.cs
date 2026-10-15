@@ -26,19 +26,21 @@ public interface ITodoBoard
 
     public void MoveColumnRight(Guid columnId);
 
-    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null);
+    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null, IReadOnlyDictionary<string, string>? newTagColors = null);
 
     public void SetNoteContent(Guid id, string newContent);
 
     public void SetNoteTitle(Guid id, string newTitle);
 
-    public void SetNoteTags(Guid id, IEnumerable<string> tagNames);
+    public void SetNoteTags(Guid id, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null);
 
     public List<NoteTag> GetTags();
 
     public int CountNotesWithTag(Guid tagId);
 
     public void RenameTag(Guid tagId, string newName);
+
+    public void SetTagColor(Guid tagId, string color);
 
     public void DeleteTag(Guid tagId);
 

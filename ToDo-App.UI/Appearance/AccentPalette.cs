@@ -19,6 +19,7 @@ namespace ToDo_App.UI.Appearance
     /// <summary>
     /// The selectable accent colours, laid out as a 3x3 grid. Every colour keeps white text
     /// readable (WCAG AA), because buttons draw white content on top of the accent.
+    /// Tag colours are picked from the same palette, and a tag with no colour gets <see cref="Default"/>.
     /// </summary>
     public static class AccentPalette
     {

@@ -197,6 +197,9 @@
     <data name="dialog/tag_new_info" xml:space="preserve">
         <value>Nyt tag, tilføjes når du gemmer noten</value>
     </data>
+    <data name="dialog/tag_colour" xml:space="preserve">
+        <value>Farve</value>
+    </data>
     <data name="dialog/tag_name_taken" xml:space="preserve">
         <value>Et andet tag hedder allerede "{0}".</value>
     </data>

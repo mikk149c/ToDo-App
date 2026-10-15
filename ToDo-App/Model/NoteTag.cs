@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace ToDo_App;
 
 /// <summary>
@@ -10,6 +12,12 @@ public class NoteTag
 
     public Guid Id { get; set; }
     public string Name { get; set; }
+
+    /// <summary>
+    /// The tag's colour as "#RRGGBB", or null for the default colour. Every todo with the tag stores the
+    /// same colour, so boards saved before tags had colours simply show the default.
+    /// </summary>
+    public string? Color { get; set; }
 
     public NoteTag(string name)
     {
@@ -34,6 +42,19 @@ public class NoteTag
         }
 
         return trimmed;
+    }
+
+    /// <summary>Checks a colour is written as "#RRGGBB" and returns it in upper case.</summary>
+    /// <exception cref="ArgumentException">The colour isn't a "#RRGGBB" hex colour.</exception>
+    public static string NormalizeColor(string? color)
+    {
+        string trimmed = color?.Trim() ?? "";
+        if (!Regex.IsMatch(trimmed, "^#[0-9A-Fa-f]{6}$"))
+        {
+            throw new ArgumentException("A tag colour must be written as #RRGGBB.");
+        }
+
+        return trimmed.ToUpperInvariant();
     }
 
     /// <summary>Tag names are matched without regard to case, so "work" and "Work" are the same tag.</summary>

@@ -204,6 +204,9 @@
     <data name="dialog/tag_new_info" xml:space="preserve">
         <value>New tag, added when you save the note</value>
     </data>
+    <data name="dialog/tag_colour" xml:space="preserve">
+        <value>Colour</value>
+    </data>
     <data name="dialog/tag_name_taken" xml:space="preserve">
         <value>Another tag is already called "{0}".</value>
     </data>

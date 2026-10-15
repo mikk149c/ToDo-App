@@ -1,5 +1,9 @@
+using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using ToDo_App.Interfaces;
+using ToDo_App.UI.Appearance;
 using Windows.System;
 
 namespace ToDo_App.UI.Controls
@@ -20,18 +24,36 @@ namespace ToDo_App.UI.Controls
         {
             public Guid? Id;
             public string Name = "";
+            public string? Color;
             public TagChip Chip = new TagChip();
         }
 
         private readonly List<TagEntry> entries = new List<TagEntry>();
         private ITodoBoard? board;
         private TagEntry? flyoutEntry;
+        private bool isSyncingColor;
 
         private Dictionary<string, string> localizationStrings = new Dictionary<string, string>();
 
         public TagEditor()
         {
             InitializeComponent();
+
+            // The same swatches as the accent colour, so tag text stays readable (WCAG AA)
+            foreach (AccentColorOption option in AccentPalette.All)
+            {
+                var swatch = new Border
+                {
+                    Width = 32,
+                    Height = 32,
+                    CornerRadius = new CornerRadius(4),
+                    Background = new SolidColorBrush(option.Color)
+                };
+                ToolTipService.SetToolTip(swatch, option.Name);
+                AutomationProperties.SetName(swatch, option.Name);
+
+                ColorGrid.Items.Add(new GridViewItem { Content = swatch, Tag = option });
+            }
         }
 
         /// <param name="board">Gives the existing tags, and renames or deletes a tag on every todo.</param>
@@ -44,7 +66,7 @@ namespace ToDo_App.UI.Controls
 
             foreach (NoteTag tag in noteTags)
             {
-                addEntry(tag.Id, tag.Name);
+                addEntry(tag.Id, tag.Name, tag.Color);
             }
         }
 
@@ -54,6 +76,8 @@ namespace ToDo_App.UI.Controls
             TagInput.Header = localizationStrings["todo/property_tags"];
             TagInput.PlaceholderText = localizationStrings["dialog/add_tag_placeholder"];
             FlyoutNameBox.Header = localizationStrings["dialog/tag_name"];
+            ColorHeader.Text = localizationStrings["dialog/tag_colour"];
+            AutomationProperties.SetName(ColorGrid, localizationStrings["dialog/tag_colour"]);
             RenameButton.Content = localizationStrings["dialog/rename"];
             DeleteButton.Content = localizationStrings["dialog/delete"];
             ConfirmDeleteButton.Content = localizationStrings["dialog/delete"];
@@ -61,6 +85,11 @@ namespace ToDo_App.UI.Controls
         }
 
         public IReadOnlyList<string> TagNames => entries.Select(entry => entry.Name).ToList();
+
+        /// <summary>The colours chosen for tags that aren't on the board yet, by tag name.</summary>
+        public IReadOnlyDictionary<string, string> NewTagColors => entries
+            .Where(entry => entry.Id == null && entry.Color != null)
+            .ToDictionary(entry => entry.Name, entry => entry.Color!, StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Adds a name that's still typed in the box but wasn't submitted with Enter.
@@ -104,7 +133,7 @@ namespace ToDo_App.UI.Controls
             if (entry == null)
             {
                 NoteTag? existing = findBoardTag(name);
-                entry = addEntry(existing?.Id, existing?.Name ?? name);
+                entry = addEntry(existing?.Id, existing?.Name ?? name, existing?.Color);
             }
 
             TagInput.Text = "";
@@ -130,9 +159,9 @@ namespace ToDo_App.UI.Controls
             TagInput.IsSuggestionListOpen = suggestions.Count > 0;
         }
 
-        private TagEntry addEntry(Guid? id, string name)
+        private TagEntry addEntry(Guid? id, string name, string? color)
         {
-            var entry = new TagEntry { Id = id, Name = name };
+            var entry = new TagEntry { Id = id, Name = name, Color = color };
             entry.Chip.EditRequested += (sender, e) => openFlyout(entry);
             entry.Chip.RemoveRequested += (sender, e) => removeEntry(entry);
             showEntry(entry);
@@ -147,7 +176,7 @@ namespace ToDo_App.UI.Controls
             bool isNew = entry.Id == null;
             string editLabel = string.Format(localizationStrings[isNew ? "dialog/new_tag_tooltip" : "dialog/edit_tag"], entry.Name);
             string removeLabel = string.Format(localizationStrings["dialog/remove_tag"], entry.Name);
-            entry.Chip.Show(entry.Name, isNew, editLabel, removeLabel);
+            entry.Chip.Show(entry.Name, isNew, entry.Color, editLabel, removeLabel);
         }
 
         private void removeEntry(TagEntry entry)
@@ -166,8 +195,10 @@ namespace ToDo_App.UI.Controls
             FlyoutActions.Visibility = Visibility.Visible;
             DeleteConfirmPanel.Visibility = Visibility.Collapsed;
 
-            // A tag that isn't saved yet only exists in this dialog, so it can be renamed but not deleted
+            // A tag that isn't saved yet only exists in this dialog, so it can be renamed and given a colour
+            // but not deleted
             DeleteButton.Visibility = entry.Id == null ? Visibility.Collapsed : Visibility.Visible;
+            syncColorSelection(entry);
             FlyoutInfoText.Text = entry.Id is Guid tagId
                 ? string.Format(localizationStrings["dialog/tag_used_on"], board?.CountNotesWithTag(tagId) ?? 0)
                 : localizationStrings["dialog/tag_new_info"];
@@ -225,10 +256,42 @@ namespace ToDo_App.UI.Controls
                 NoteTag? existing = findBoardTag(name);
                 flyoutEntry.Id = existing?.Id;
                 flyoutEntry.Name = existing?.Name ?? name;
+                flyoutEntry.Color = existing?.Color;
             }
 
             showEntry(flyoutEntry);
             TagFlyout.Hide();
+        }
+
+        private void OnColorSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (isSyncingColor || flyoutEntry == null
+                || ColorGrid.SelectedItem is not GridViewItem { Tag: AccentColorOption option })
+            {
+                return;
+            }
+
+            if (flyoutEntry.Id is Guid tagId)
+            {
+                // On the board: changes the colour on every todo straight away
+                board?.SetTagColor(tagId, option.Hex);
+            }
+            // Otherwise it's only in this dialog, and the colour is given to the tag when the todo is saved
+            flyoutEntry.Color = option.Hex;
+            showEntry(flyoutEntry);
+            TagFlyout.Hide();
+        }
+
+        private void syncColorSelection(TagEntry entry)
+        {
+            isSyncingColor = true;
+
+            AccentColorOption current = AccentPalette.Find(entry.Color);
+            ColorGrid.SelectedItem = ColorGrid.Items
+                .Cast<GridViewItem>()
+                .FirstOrDefault(item => ReferenceEquals(item.Tag, current));
+
+            isSyncingColor = false;
         }
 
         private void OnDeleteClicked(object sender, RoutedEventArgs e)
@@ -241,6 +304,7 @@ namespace ToDo_App.UI.Controls
             DeleteConfirmText.Text = string.Format(localizationStrings["dialog/delete_tag_confirm"],
                 flyoutEntry.Name, board?.CountNotesWithTag(tagId) ?? 0);
             FlyoutActions.Visibility = Visibility.Collapsed;
+            ColorPanel.Visibility = Visibility.Collapsed;
             DeleteConfirmPanel.Visibility = Visibility.Visible;
         }
 
@@ -261,6 +325,7 @@ namespace ToDo_App.UI.Controls
         {
             DeleteConfirmPanel.Visibility = Visibility.Collapsed;
             FlyoutActions.Visibility = Visibility.Visible;
+            ColorPanel.Visibility = Visibility.Visible;
         }
 
         private void showFlyoutError(string message)
