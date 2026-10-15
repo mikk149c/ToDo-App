@@ -161,4 +161,49 @@
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
         <value>Hvat skal henda við tey {0} uppriti(ni) í hesu teiginum?</value>
     </data>
+    <data name="error/failed_to_attach_file" xml:space="preserve">
+        <value>Fílan kundi ikki viðfestast.</value>
+    </data>
+    <data name="error/failed_to_export_board" xml:space="preserve">
+        <value>Talvan kundi ikki flytast út.</value>
+    </data>
+    <data name="error/failed_to_import_board" xml:space="preserve">
+        <value>Talvan kundi ikki flytast inn.</value>
+    </data>
+    <data name="error/failed_to_load_board" xml:space="preserve">
+        <value>Talvan kundi ikki lesast inn.</value>
+    </data>
+    <data name="error/failed_to_save_board" xml:space="preserve">
+        <value>Talvan kundi ikki goymast.</value>
+    </data>
+    <data name="error/failed_to_open_attached_file" xml:space="preserve">
+        <value>Tann viðfestaða fílan kundi ikki latast upp.</value>
+    </data>
+    <data name="error/failed_to_remove_attached_file" xml:space="preserve">
+        <value>Tann viðfestaða fílan kundi ikki takast burtur.</value>
+    </data>
+    <data name="dialog/delete_tag_confirm" xml:space="preserve">
+        <value>Tak "{0}" burtur úr øllum {1} uppritunum?</value>
+    </data>
+    <data name="dialog/edit_tag" xml:space="preserve">
+        <value>Rætta "{0}"</value>
+    </data>
+    <data name="dialog/tag_name" xml:space="preserve">
+        <value>Navn</value>
+    </data>
+    <data name="dialog/rename" xml:space="preserve">
+        <value>Nýnevna</value>
+    </data>
+    <data name="dialog/new_tag_tooltip" xml:space="preserve">
+        <value>Nýtt frámerki, verður goymt tá tú goymir uppritið</value>
+    </data>
+    <data name="dialog/tag_name_taken" xml:space="preserve">
+        <value>Eitt annað frámerki eitur longu "{0}".</value>
+    </data>
+    <data name="dialog/tag_new_info" xml:space="preserve">
+        <value>Nýtt frámerki, verður lagt afturat tá tú goymir uppritið</value>
+    </data>
+    <data name="dialog/tag_used_on" xml:space="preserve">
+        <value>{0} upprit nýta hetta</value>
+    </data>
 </root>

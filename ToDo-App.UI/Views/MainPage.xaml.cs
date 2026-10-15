@@ -222,9 +222,14 @@ namespace ToDo_App.UI.Views
                 throw new ArgumentException("Wrong EventArgs type");
             }
             
-            removeColumn(args.ColumnId);
-            var column = buildColumn(args.ColumnId, args.NewName);
-            AddColumnToUI(column, args.ColumnId);
+            rebuildColumn(args.ColumnId, args.NewName);
+        }
+
+        private void rebuildColumn(Guid id, string name)
+        {
+            removeColumn(id);
+            var column = buildColumn(id, name);
+            AddColumnToUI(column, id);
         }
 
         private void onColumnRemoved(object? sender, EventArgs eventArgs)
@@ -1163,6 +1168,14 @@ namespace ToDo_App.UI.Views
 
         private void initializeLanguageSettings()
         {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            var selectedLanguage = localSettings.Values["selectedLanguage"]?.ToString();
+
+            if (selectedLanguage == null)
+                selectedLanguage = "en-US";
+            
+            _currentCulture = new CultureInfo(selectedLanguage);
+            
             foreach (var language in Languages)
             {
                 LanguageSelector.Items.Add(new ComboBoxItem
@@ -1171,14 +1184,40 @@ namespace ToDo_App.UI.Views
                     Tag = language.Key
                 });
             }
-            LanguageSelector.SelectedIndex = 0;
+            
+            var initialIndex = 0;
+            if (Languages.ContainsKey(selectedLanguage))
+            {
+                for (int i = 0; i < LanguageSelector.Items.Count; i++)
+                {
+                    var item = (ComboBoxItem)LanguageSelector.Items[i];
+                    if (item.Tag.Equals(selectedLanguage))
+                    {
+                        initialIndex = i;
+                    }
+                }
+            }
+            
+            LanguageSelector.SelectedIndex = initialIndex;
         }
 
         private void onLanguageSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
         {
             var item = selectionChangedEventArgs.AddedItems[0] as ComboBoxItem;
-            _currentCulture = new CultureInfo(item.Tag.ToString());
+            var language = item.Tag.ToString();
+            _currentCulture = new CultureInfo(language);
+            
+            // Refresh static UI elements
             localizeXaml();
+            
+            // Refresh dynamic UI elements for each column
+            foreach (var guid in columns)
+            {
+                rebuildColumn(guid, boardController.GetStatusColumnName(guid));
+            }
+            
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values["selectedLanguage"] = language;
         }
         
         private void localizeXaml()
