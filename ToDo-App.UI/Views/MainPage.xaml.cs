@@ -355,13 +355,14 @@ namespace ToDo_App.UI.Views
             Grid trashFooter = new Grid {
                 ColumnDefinitions = {
                     new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                    new ColumnDefinition { Width = GridLength.Auto }
-                }
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                },
+                ColumnSpacing = 8
             };
 
             Button emptyTrashButton = new Button {
                 Content = "Empty trash",
-                HorizontalAlignment = HorizontalAlignment.Left
+                HorizontalAlignment = HorizontalAlignment.Stretch
             };
             emptyTrashButton.Click += (sender, e) => {
                 selectedTrashNoteId = Guid.Empty;
@@ -373,7 +374,7 @@ namespace ToDo_App.UI.Views
 
             Button closeTrashBinButton = new Button {
                 Content = "Close",
-                HorizontalAlignment = HorizontalAlignment.Right
+                HorizontalAlignment = HorizontalAlignment.Stretch
             };
 
             Grid.SetColumn(emptyTrashButton, 0); Grid.SetColumn(closeTrashBinButton, 1);
