@@ -206,4 +206,7 @@
     <data name="dialog/tag_used_on" xml:space="preserve">
         <value>{0} Notiz(en) benutzt es</value>
     </data>
+    <data name="dialog/tag_colour" xml:space="preserve">
+        <value>Farbe</value>
+    </data>
 </root>

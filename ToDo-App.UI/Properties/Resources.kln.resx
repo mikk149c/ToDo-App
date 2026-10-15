@@ -206,4 +206,7 @@
     <data name="dialog/edit_tag" xml:space="preserve">
         <value>"{0}" yIDI'</value>
     </data>
+    <data name="dialog/tag_colour" xml:space="preserve">
+        <value>qalmuS</value>
+    </data>
 </root>
