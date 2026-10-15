@@ -186,10 +186,10 @@ public class ToDoBoard
     /// Replaces a note's tags. Names are validated with <see cref="NoteTag.NormalizeName"/>,
     /// and a name that matches a tag already on the board reuses that tag.
     /// </summary>
-    public void SetNoteTags(Guid noteId, IEnumerable<string> tagNames)
+    public void SetNoteTags(Guid noteId, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null)
     {
         var (columnIndex, noteIndex) = GetNotePositionFromId(noteId);
-        StatusColumns[columnIndex].Notes[noteIndex].Tags = ResolveTags(tagNames);
+        StatusColumns[columnIndex].Notes[noteIndex].Tags = ResolveTags(tagNames, newTagColors);
     }
 
     /// <summary>
@@ -207,10 +207,12 @@ public class ToDoBoard
 
     /// <summary>
     /// Turns tag names into tags for a note: validates each name, drops duplicates, and reuses the Id and
-    /// spelling of a tag already on the board. Nothing is changed if any name is invalid.
+    /// spelling and colour of a tag already on the board. A tag that isn't on the board yet takes its colour
+    /// from <paramref name="newTagColors"/> (tag name to "#RRGGBB"), or has the default colour.
+    /// Nothing is changed if any name or colour is invalid.
     /// </summary>
-    /// <exception cref="ArgumentException">A name is empty, only whitespace, or too long.</exception>
-    public List<NoteTag> ResolveTags(IEnumerable<string> tagNames)
+    /// <exception cref="ArgumentException">A name is empty, only whitespace or too long, or a colour isn't valid.</exception>
+    public List<NoteTag> ResolveTags(IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null)
     {
         List<NoteTag> existingTags = GetTags();
         var resolved = new List<NoteTag>();
@@ -224,9 +226,18 @@ public class ToDoBoard
             }
 
             NoteTag? existing = existingTags.Find(tag => NoteTag.NamesMatch(tag.Name, name));
-            resolved.Add(existing != null
-                ? new NoteTag(existing.Name) { Id = existing.Id, Color = existing.Color }
-                : new NoteTag(name));
+            if (existing != null)
+            {
+                resolved.Add(new NoteTag(existing.Name) { Id = existing.Id, Color = existing.Color });
+                continue;
+            }
+
+            // A brand-new tag starts with the colour chosen for it, if any, otherwise the default
+            string? chosenColor = newTagColors?.FirstOrDefault(pair => NoteTag.NamesMatch(pair.Key, name)).Value;
+            resolved.Add(new NoteTag(name)
+            {
+                Color = chosenColor == null ? null : NoteTag.NormalizeColor(chosenColor)
+            });
         }
 
         return resolved;

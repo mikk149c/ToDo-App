@@ -86,6 +86,11 @@ namespace ToDo_App.UI.Controls
 
         public IReadOnlyList<string> TagNames => entries.Select(entry => entry.Name).ToList();
 
+        /// <summary>The colours chosen for tags that aren't on the board yet, by tag name.</summary>
+        public IReadOnlyDictionary<string, string> NewTagColors => entries
+            .Where(entry => entry.Id == null && entry.Color != null)
+            .ToDictionary(entry => entry.Name, entry => entry.Color!, StringComparer.OrdinalIgnoreCase);
+
         /// <summary>
         /// Adds a name that's still typed in the box but wasn't submitted with Enter.
         /// Returns false, and shows why, if that name isn't valid.
@@ -190,10 +195,9 @@ namespace ToDo_App.UI.Controls
             FlyoutActions.Visibility = Visibility.Visible;
             DeleteConfirmPanel.Visibility = Visibility.Collapsed;
 
-            // A tag that isn't saved yet only exists in this dialog, so it can be renamed but not deleted
-            // or given a colour
+            // A tag that isn't saved yet only exists in this dialog, so it can be renamed and given a colour
+            // but not deleted
             DeleteButton.Visibility = entry.Id == null ? Visibility.Collapsed : Visibility.Visible;
-            ColorPanel.Visibility = entry.Id == null ? Visibility.Collapsed : Visibility.Visible;
             syncColorSelection(entry);
             FlyoutInfoText.Text = entry.Id is Guid tagId
                 ? string.Format(localizationStrings["dialog/tag_used_on"], board?.CountNotesWithTag(tagId) ?? 0)
@@ -261,14 +265,18 @@ namespace ToDo_App.UI.Controls
 
         private void OnColorSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (isSyncingColor || flyoutEntry?.Id is not Guid tagId
+            if (isSyncingColor || flyoutEntry == null
                 || ColorGrid.SelectedItem is not GridViewItem { Tag: AccentColorOption option })
             {
                 return;
             }
 
-            // On the board: changes the colour on every todo straight away
-            board?.SetTagColor(tagId, option.Hex);
+            if (flyoutEntry.Id is Guid tagId)
+            {
+                // On the board: changes the colour on every todo straight away
+                board?.SetTagColor(tagId, option.Hex);
+            }
+            // Otherwise it's only in this dialog, and the colour is given to the tag when the todo is saved
             flyoutEntry.Color = option.Hex;
             showEntry(flyoutEntry);
             TagFlyout.Hide();

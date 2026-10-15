@@ -121,10 +121,10 @@ public class BoardController : ITodoBoard
         throw new NotImplementedException();
     }
 
-    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null)
+    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null, IReadOnlyDictionary<string, string>? newTagColors = null)
     {
         // Resolve tags before adding the note, so an invalid tag name leaves the board unchanged
-        var note = new ToDoNote(title, content, file) { Tags = _board.ResolveTags(tagNames ?? []) };
+        var note = new ToDoNote(title, content, file) { Tags = _board.ResolveTags(tagNames ?? [], newTagColors) };
         var noteId = _board.AddNote(columnId, note);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
@@ -164,9 +164,9 @@ public class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    public void SetNoteTags(Guid id, IEnumerable<string> tagNames)
+    public void SetNoteTags(Guid id, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null)
     {
-        _board.SetNoteTags(id, tagNames);
+        _board.SetNoteTags(id, tagNames, newTagColors);
         Guid columnId = _board.GetColumnIdFromNoteId(id);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));

@@ -29,9 +29,7 @@
                         <Setter Target="Outline.Stroke" Value="{ThemeResource AccentTextBrush}" />
                         <Setter Target="Outline.StrokeThickness" Value="1.5" />
                         <Setter Target="Outline.StrokeDashArray" Value="4,2" />
-                        <Setter Target="NewIcon.Visibility" Value="Visible" />
-                        <Setter Target="ColorDot.Visibility" Value="Collapsed" />
-                    </VisualState.Setters>
+                        <Setter Target="NewIcon.Visibility" Value="Visible" />                    </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
@@ -66,7 +64,7 @@
                     Foreground="{ThemeResource AccentTextBrush}"
                     Glyph="&#xE710;"
                     Visibility="Collapsed" />
-                <!-- The tag's colour. Hidden while the tag is new, because it has no colour yet -->
+                <!-- The tag's colour -->
                 <Ellipse
                     x:Name="ColorDot"
                     Width="10"

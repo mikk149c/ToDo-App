@@ -685,7 +685,8 @@ namespace ToDo_App.UI.Views
                     columnId,
                     string.IsNullOrWhiteSpace(titleBox.Text) ? defaultTitle : titleBox.Text,
                     string.IsNullOrWhiteSpace(contentBox.Text) ? defaultContent : contentBox.Text,
-                    tagNames: tagEditor.TagNames);
+                    tagNames: tagEditor.TagNames,
+                    newTagColors: tagEditor.NewTagColors);
             }
         }
 
@@ -854,7 +855,7 @@ namespace ToDo_App.UI.Views
             {
                 boardController.SetNoteTitle(note.Id, titleBox.Text);
                 boardController.SetNoteContent(note.Id, contentBox.Text);
-                boardController.SetNoteTags(note.Id, tagEditor.TagNames);
+                boardController.SetNoteTags(note.Id, tagEditor.TagNames, tagEditor.NewTagColors);
             }
         }
 

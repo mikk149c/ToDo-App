@@ -172,6 +172,47 @@ public class TagColorTests
         Assert.That(colorOf(thirdNoteId, "Home"), Is.Null);
     }
 
+    // --- Colour chosen before the todo is saved ---
+
+    [Test]
+    public void NewTagOnANewTodoTakesTheChosenColour()
+    {
+        Guid noteId = controller.CreateNote(plannedId, "New", "", tagNames: new[] { "Garden" },
+            newTagColors: new Dictionary<string, string> { ["garden"] = Blue });
+
+        Assert.That(colorOf(noteId, "Garden"), Is.EqualTo(Blue));
+    }
+
+    [Test]
+    public void NewTagAddedToAnExistingTodoTakesTheChosenColour()
+    {
+        controller.SetNoteTags(thirdNoteId, new[] { "Garden" },
+            new Dictionary<string, string> { ["Garden"] = "#c62828" });
+
+        Assert.That(colorOf(thirdNoteId, "Garden"), Is.EqualTo("#C62828"));
+    }
+
+    [Test]
+    public void ChosenColourIsIgnoredForATagThatIsAlreadyOnTheBoard()
+    {
+        controller.SetTagColor(workId, Blue);
+
+        controller.SetNoteTags(thirdNoteId, new[] { "Work" },
+            new Dictionary<string, string> { ["Work"] = "#C62828" });
+
+        Assert.That(colorOf(thirdNoteId, "Work"), Is.EqualTo(Blue));
+    }
+
+    [Test]
+    public void InvalidChosenColourIsRejectedAndChangesNothing()
+    {
+        Assert.Throws<ArgumentException>(() => controller.SetNoteTags(thirdNoteId, new[] { "Garden" },
+            new Dictionary<string, string> { ["Garden"] = "blue" }));
+
+        Assert.That(note(thirdNoteId).Tags, Is.Empty);
+        Assert.That(recorder.Names, Is.Empty);
+    }
+
     // --- Persistence ---
 
     [Test]

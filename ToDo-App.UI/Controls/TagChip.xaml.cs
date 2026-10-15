@@ -19,10 +19,7 @@ namespace ToDo_App.UI.Controls
             InitializeComponent();
         }
 
-        /// <summary>
-        /// Shows a tag's name, colour and whether it's new, with the texts for tooltips and screen readers.
-        /// A new tag has no colour yet, so the colour isn't shown for it.
-        /// </summary>
+        /// <summary>Shows a tag's name, colour and whether it's new, with the texts for tooltips and screen readers.</summary>
         public void Show(string name, bool isNew, string? color, string editLabel, string removeLabel)
         {
             NameText.Text = name;
