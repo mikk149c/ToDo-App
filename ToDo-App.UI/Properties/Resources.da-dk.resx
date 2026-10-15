@@ -209,4 +209,37 @@
     <data name="dialog/delete_tag_confirm" xml:space="preserve">
         <value>Fjern "{0}" fra alle {1} note(r)?</value>
     </data>
+    <data name="dialog/merge" xml:space="preserve">
+        <value>Flet</value>
+    </data>
+    <data name="dialog/merge_tag_confirm" xml:space="preserve">
+        <value>Et andet tag hedder allerede "{1}". Flet "{0}" ind i det? Dets {2} note(r) får "{1}" i stedet.</value>
+    </data>
+    <data name="filter/button" xml:space="preserve">
+        <value>Filtrer</value>
+    </data>
+    <data name="filter/button_active" xml:space="preserve">
+        <value>Filtrer ({0})</value>
+    </data>
+    <data name="filter/match_label" xml:space="preserve">
+        <value>Vis todos med</value>
+    </data>
+    <data name="filter/match_any" xml:space="preserve">
+        <value>Mindst ét af tagsene</value>
+    </data>
+    <data name="filter/match_all" xml:space="preserve">
+        <value>Alle tags</value>
+    </data>
+    <data name="filter/clear" xml:space="preserve">
+        <value>Ryd filter</value>
+    </data>
+    <data name="filter/showing" xml:space="preserve">
+        <value>Filtreret på</value>
+    </data>
+    <data name="filter/no_tags" xml:space="preserve">
+        <value>Der er endnu ingen tags på tavlen.</value>
+    </data>
+    <data name="filter/remove_tag" xml:space="preserve">
+        <value>Stop filtrering på {0}</value>
+    </data>
 </root>

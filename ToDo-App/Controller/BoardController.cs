@@ -202,6 +202,18 @@ public class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
+    public void MergeTags(Guid sourceTagId, Guid targetTagId)
+    {
+        // Merging changes the tags on the cards, so the affected columns are redrawn
+        List<Guid> affectedColumnIds = _board.GetColumnIdsWithTag(sourceTagId);
+        _board.MergeTags(sourceTagId, targetTagId);
+        foreach (Guid columnId in affectedColumnIds)
+        {
+            onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        }
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
     public void DeleteTag(Guid tagId)
     {
         List<Guid> affectedColumnIds = _board.GetColumnIdsWithTag(tagId);

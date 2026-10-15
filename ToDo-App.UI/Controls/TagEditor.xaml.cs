@@ -31,6 +31,7 @@ namespace ToDo_App.UI.Controls
         private readonly List<TagEntry> entries = new List<TagEntry>();
         private ITodoBoard? board;
         private TagEntry? flyoutEntry;
+        private NoteTag? mergeTarget;
         private bool isSyncingColor;
 
         private Dictionary<string, string> localizationStrings = new Dictionary<string, string>();
@@ -82,6 +83,8 @@ namespace ToDo_App.UI.Controls
             DeleteButton.Content = localizationStrings["dialog/delete"];
             ConfirmDeleteButton.Content = localizationStrings["dialog/delete"];
             CancelDeleteButton.Content = localizationStrings["dialog/cancel"];
+            ConfirmMergeButton.Content = localizationStrings["dialog/merge"];
+            CancelMergeButton.Content = localizationStrings["dialog/cancel"];
         }
 
         public IReadOnlyList<string> TagNames => entries.Select(entry => entry.Name).ToList();
@@ -194,6 +197,7 @@ namespace ToDo_App.UI.Controls
             FlyoutErrorText.Visibility = Visibility.Collapsed;
             FlyoutActions.Visibility = Visibility.Visible;
             DeleteConfirmPanel.Visibility = Visibility.Collapsed;
+            MergeConfirmPanel.Visibility = Visibility.Collapsed;
 
             // A tag that isn't saved yet only exists in this dialog, so it can be renamed and given a colour
             // but not deleted
@@ -232,6 +236,13 @@ namespace ToDo_App.UI.Controls
             if (!tryNormalize(FlyoutNameBox.Text, out string name, out string error))
             {
                 showFlyoutError(error);
+                return;
+            }
+
+            // Renaming a tag on the board to another board tag's name offers to merge the two instead (#68)
+            if (flyoutEntry.Id is Guid sourceId && findBoardTag(name, exceptId: sourceId) is NoteTag mergeTarget)
+            {
+                askToMerge(flyoutEntry, mergeTarget, sourceId);
                 return;
             }
 
@@ -324,6 +335,49 @@ namespace ToDo_App.UI.Controls
         private void OnCancelDeleteClicked(object sender, RoutedEventArgs e)
         {
             DeleteConfirmPanel.Visibility = Visibility.Collapsed;
+            FlyoutActions.Visibility = Visibility.Visible;
+            ColorPanel.Visibility = Visibility.Visible;
+        }
+
+        private void askToMerge(TagEntry source, NoteTag target, Guid sourceId)
+        {
+            mergeTarget = target;
+            MergeConfirmText.Text = string.Format(localizationStrings["dialog/merge_tag_confirm"],
+                source.Name, target.Name, board?.CountNotesWithTag(sourceId) ?? 0);
+            FlyoutErrorText.Visibility = Visibility.Collapsed;
+            FlyoutActions.Visibility = Visibility.Collapsed;
+            ColorPanel.Visibility = Visibility.Collapsed;
+            MergeConfirmPanel.Visibility = Visibility.Visible;
+        }
+
+        private void OnConfirmMergeClicked(object sender, RoutedEventArgs e)
+        {
+            if (flyoutEntry?.Id is not Guid sourceId || mergeTarget == null)
+            {
+                return;
+            }
+
+            // Every todo with the tag gets the target instead, straight away, including this one
+            board?.MergeTags(sourceId, mergeTarget.Id);
+
+            if (entries.Exists(entry => entry != flyoutEntry && entry.Id == mergeTarget.Id))
+            {
+                // This todo had both tags, so it keeps the target once
+                removeEntry(flyoutEntry);
+            }
+            else
+            {
+                flyoutEntry.Id = mergeTarget.Id;
+                flyoutEntry.Name = mergeTarget.Name;
+                flyoutEntry.Color = mergeTarget.Color;
+                showEntry(flyoutEntry);
+            }
+            TagFlyout.Hide();
+        }
+
+        private void OnCancelMergeClicked(object sender, RoutedEventArgs e)
+        {
+            MergeConfirmPanel.Visibility = Visibility.Collapsed;
             FlyoutActions.Visibility = Visibility.Visible;
             ColorPanel.Visibility = Visibility.Visible;
         }

@@ -305,6 +305,42 @@ public class ToDoBoard
         return normalized;
     }
 
+    /// <summary>
+    /// Merges one tag into another: every note with <paramref name="sourceTagId"/> gets
+    /// <paramref name="targetTagId"/> instead, exactly once, and the source tag no longer exists.
+    /// The target keeps its name and colour.
+    /// </summary>
+    /// <exception cref="KeyNotFoundException">No note has one of the tags.</exception>
+    /// <exception cref="ArgumentException">Both are the same tag.</exception>
+    public void MergeTags(Guid sourceTagId, Guid targetTagId)
+    {
+        if (sourceTagId == targetTagId)
+        {
+            throw new ArgumentException("A tag can't be merged into itself.");
+        }
+
+        GetTagCopies(sourceTagId);
+        NoteTag target = GetTagCopies(targetTagId)[0];
+
+        foreach (ToDoNote note in AllNotes())
+        {
+            int index = note.Tags.FindIndex(tag => tag.Id == sourceTagId);
+            if (index < 0)
+            {
+                continue;
+            }
+
+            if (HasTag(note, targetTagId))
+            {
+                note.Tags.RemoveAt(index);
+            }
+            else
+            {
+                note.Tags[index] = new NoteTag(target.Name) { Id = target.Id, Color = target.Color };
+            }
+        }
+    }
+
     /// <summary>Removes a tag from every note that has it. The notes themselves are kept.</summary>
     /// <exception cref="KeyNotFoundException">No note has the tag.</exception>
     public void DeleteTag(Guid tagId)
