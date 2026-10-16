@@ -22,14 +22,23 @@ public class Localizer
         {"naq",   [x => x == 1, x => x == 2, x => x == 3]}
     };
 
+    /// <summary>
+    /// Transforms a localized string with different plural forms into a single string based on a specific number.
+    /// </summary>
+    /// <param name="localizedString">A string that can include the syntax
+    /// "[[first form|second form|third form]]" and "{x}", where x can be any integer</param>
+    /// <param name="number">The plural form that matches this number will be used</param>
+    /// <param name="language">The plurality pattern of this language will be used ("en-US", "da-DK", "de", etc.)</param>
+    /// <param name="variableIndex">Optional parameter to specify which {x} to replace with the number argument</param>
+    /// <returns></returns>
     public static string HandlePlurals(string localizedString, int number, string language, int variableIndex = 0)
     {
         var numberString = language == "naq" ? Convert.ToString(number, 8) : $"{number}";
         var stringWithNumber = localizedString.Replace($"{{{variableIndex}}}", numberString);
-
+        
         var startPos = stringWithNumber.IndexOf("[[", StringComparison.Ordinal);
         var endPos = stringWithNumber.IndexOf("]]", StringComparison.Ordinal);
-
+        
         if (startPos == -1 || endPos == -1)
         {
             return stringWithNumber;
@@ -40,7 +49,8 @@ public class Localizer
         var afterString = stringWithNumber.Substring(endPos + 2, stringWithNumber.Length - endPos - 2);
         
         var forms = matchedString.Split('|');
-
+        
+        // find a plurality pattern that matches the input number
         var pattern = PluralityPatterns[language];
         for (int i = 0; i < pattern.Count; i++)
         {
