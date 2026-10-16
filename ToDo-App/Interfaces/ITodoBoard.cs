@@ -28,6 +28,10 @@ public interface ITodoBoard
 
     public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null, IReadOnlyDictionary<string, string>? newTagColors = null);
 
+    public void EmptyTrashBin();
+
+    public List<ToDoNote> GetTrashBinNotes();
+
     public void SetNoteContent(Guid id, string newContent);
 
     public void SetNoteTitle(Guid id, string newTitle);
@@ -62,7 +66,12 @@ public interface ITodoBoard
 
     public void RemoveNote(Guid noteId);
 
+    public void RemoveNoteFromTrashBin(Guid noteId);
+
+    public void RestoreNote(Guid noteId, Guid columnId);
+
     public void SaveBoardToJson(string jsonPath);
+    
     public void LoadBoardFromJson(string jsonPath);
 
     public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex);

@@ -18,6 +18,7 @@ namespace ToDo_App.UI.Views
     {
         private const string DefaultJsonPath = "Assets/default_board.json";
         private const string UserJsonPath = "board.json";
+        private Guid selectedTrashNoteId = Guid.Empty;
         private const double ScrollSpeed = 60;
         private const double ScrollTickSpeed = 10;
 
@@ -109,6 +110,342 @@ namespace ToDo_App.UI.Views
                     columnPanel.Children.Add(card);
                 }
             }
+        }
+
+        private void RefreshTrashBin(
+            StackPanel listPanel,
+            TextBlock confirmationText,
+            Grid trashListView,
+            StackPanel restorePanel,
+            TextBlock restoreHeading,
+            StackPanel restoreColumnButtons,
+            Grid confirmationPanel) 
+        {
+            listPanel.Children.Clear();
+
+            foreach (ToDoNote note in boardController.GetTrashBinNotes()) {       
+                TextBlock title = new TextBlock {
+                    Style = (Style)Resources["TodoTitle"],
+                    Text = note.Title,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                TextBlock expandIcon = new TextBlock { Text = ">", VerticalAlignment = VerticalAlignment.Center };
+
+                Grid titleRow = new Grid {
+                    ColumnSpacing = 8,
+                    ColumnDefinitions = {
+                        new ColumnDefinition { Width = GridLength.Auto },
+                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }},
+                    Children = { expandIcon, title }
+                };
+
+                Grid.SetColumn(title, 1);
+
+                TextBlock description = new TextBlock {
+                    Style = (Style)Resources["TodoDescription"],
+                    Text = note.Content,
+                    TextWrapping = TextWrapping.Wrap
+                };
+
+                StackPanel expandedContent = new StackPanel {
+                    Spacing = 4,
+                    Visibility = Visibility.Collapsed,
+                    Children = { description }
+                };
+
+                if (note.File != null) {
+                    var attachedFileButton = new Button {
+                        Style = (Style)Application.Current.Resources["AttachedFile"],
+                        Content = new StackPanel {
+                            Orientation = Orientation.Horizontal,
+                            Spacing = 8,
+                            Children = {
+                                new SymbolIcon(Symbol.Attach),
+                                new TextBlock { Text = note.File.Name }
+                            }
+                        }
+                    };
+                    attachedFileButton.Click += (s, e) => onAttachmentClicked(note);
+                    expandedContent.Children.Add(attachedFileButton);
+                }
+
+                Button titleButton = new Button {
+                    Content = titleRow,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    HorizontalContentAlignment = HorizontalAlignment.Stretch
+                };
+
+                titleButton.Click += (sender, e) => {
+                    bool isExpanded = expandedContent.Visibility == Visibility.Visible;
+
+                    expandedContent.Visibility = isExpanded
+                        ? Visibility.Collapsed
+                        : Visibility.Visible;
+
+                    expandIcon.Text = isExpanded ? ">" : "v";
+                };
+
+                StackPanel buttons = new StackPanel {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 4,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                Button restoreButton = new Button{ Content = new SymbolIcon(Symbol.Undo) };
+                restoreButton.Click += (sender, e) => {
+                    selectedTrashNoteId = note.Id;
+                    restoreHeading.Text = $"Select which column to restore \"{note.Title}\" to.";
+                    restoreColumnButtons.Children.Clear();
+                    List<Guid> columnIds = boardController.GetStatusColumnIds();
+
+                    foreach (Guid columnId in columnIds) {
+                        string columnName = boardController.GetStatusColumnName(columnId);
+
+                        TextBlock columnNameText = new TextBlock {
+                            Style = (Style)Application.Current.Resources["MyLabel"],
+                            Text = $"{columnName}",
+                            TextAlignment = TextAlignment.Left,
+                            TextWrapping = TextWrapping.Wrap,
+                            HorizontalAlignment = HorizontalAlignment.Stretch
+                        };
+
+                        Button destinationButton = new Button {
+                            Content = columnNameText,
+                            HorizontalAlignment = HorizontalAlignment.Stretch,
+                            HorizontalContentAlignment = HorizontalAlignment.Stretch
+                        };
+
+                        destinationButton.Click += (columnSender, columnE) => {
+                            if (selectedTrashNoteId == Guid.Empty) { return; }
+                            boardController.RestoreNote( selectedTrashNoteId, columnId);
+                            selectedTrashNoteId = Guid.Empty;
+
+                            RefreshTrashBin(listPanel, confirmationText, trashListView, restorePanel,
+                                            restoreHeading, restoreColumnButtons, confirmationPanel);
+
+                            restorePanel.Visibility = Visibility.Collapsed;
+                            trashListView.Visibility = Visibility.Visible;
+                        };
+
+                        restoreColumnButtons.Children.Add(destinationButton);
+                    }
+
+                    restorePanel.Visibility = Visibility.Visible;
+                    trashListView.Visibility = Visibility.Collapsed;
+                };
+
+                Button deleteButton = new Button { Content = new SymbolIcon(Symbol.Delete) };
+                deleteButton.Click += (sender, e) => { 
+                    selectedTrashNoteId = note.Id;
+                    confirmationText.Text =
+                    $"Are you sure you want to permanently delete \"{note.Title}\"?"; 
+                    confirmationPanel.Visibility = Visibility.Visible;
+                    trashListView.Visibility = Visibility.Collapsed;
+                };
+
+                buttons.Children.Add(restoreButton);
+                buttons.Children.Add(deleteButton);
+
+                // Put the clickable title and action buttons side by side.
+                Grid headerRow = new Grid {
+                    ColumnSpacing = 8,
+                    ColumnDefinitions = {
+                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                        new ColumnDefinition { Width = GridLength.Auto }},
+                    Children = { titleButton, buttons }
+                };
+
+                Grid.SetColumn(buttons, 1);
+
+                // Assemble the card.
+                StackPanel cardContent = new StackPanel { Spacing = 4 };
+
+                cardContent.Children.Add(headerRow);
+
+                if (note.Tags.Count > 0) { cardContent.Children.Add(buildTagsRow(note)); }
+
+                cardContent.Children.Add(expandedContent);
+
+                Border card = new Border {
+                    Style = (Style)Resources["TodoCard"],
+                    Child = cardContent
+                };
+
+                listPanel.Children.Add(card);
+            }
+        }
+
+        private async void OnTrashBinClicked(object sender, RoutedEventArgs e)
+        {
+            StackPanel listPanel = new StackPanel { Spacing = 8 };
+
+            Grid trashListView = new Grid {
+                RowDefinitions = {
+                    new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
+                    new RowDefinition { Height = GridLength.Auto } },
+                RowSpacing = 12,
+                MaxHeight = 550
+            };
+
+            ScrollViewer trashScrollViewer = new ScrollViewer {
+                Content = listPanel,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                MaxHeight = 500
+            };
+
+            //Restore note section
+            StackPanel restorePanel = new StackPanel {
+                Spacing = 12,
+                Visibility = Visibility.Collapsed
+            };
+
+            TextBlock restoreHeading = new TextBlock { TextWrapping = TextWrapping.Wrap };
+
+            StackPanel restoreColumnButtons = new StackPanel { Spacing = 8 };
+
+            ScrollViewer restoreColumnScrollViewer = new ScrollViewer {
+                Content = restoreColumnButtons,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                MaxHeight = 400
+            };
+
+            Button cancelRestoreButton = new Button {
+                Content = "Cancel",
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+
+            cancelRestoreButton.Click += (sender, e) => {
+                selectedTrashNoteId = Guid.Empty;
+                restorePanel.Visibility = Visibility.Collapsed;
+                trashListView.Visibility = Visibility.Visible;
+            };
+
+            restorePanel.Children.Add(restoreHeading);
+            restorePanel.Children.Add(restoreColumnScrollViewer);
+            restorePanel.Children.Add(cancelRestoreButton);
+
+            //Confirm delete section
+            Grid confirmationPanel = new Grid {
+                Visibility = Visibility.Collapsed,
+                MinHeight = 180,
+                RowDefinitions = {
+                    new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
+                    new RowDefinition { Height = GridLength.Auto }
+                }
+            };
+
+            TextBlock confirmationText = new TextBlock {
+                Text = "Are you sure you want to permanently delete this note?",
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            Grid confirmationButtons = new Grid {
+                ColumnDefinitions = {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                },
+                ColumnSpacing = 8,
+                Margin = new Thickness(0, 12, 0, 0)
+            };
+
+            Button cancelDeleteFromTrashButton = new Button { 
+                Content = "Cancel",
+                Height = 40,
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+            cancelDeleteFromTrashButton.Click += (sender, e) => {
+                selectedTrashNoteId = Guid.Empty;
+                confirmationPanel.Visibility = Visibility.Collapsed;
+                trashListView.Visibility = Visibility.Visible;
+            };
+
+            Button confirmDeleteFromTrashButton = new Button {
+                Content = "Delete",
+                Height = 40,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Style = (Style)Application.Current.Resources["PrimaryAction"]
+            };
+            confirmDeleteFromTrashButton.Click += (sender, e) => {
+                if (selectedTrashNoteId == Guid.Empty) { 
+                    boardController.EmptyTrashBin(); 
+                }
+                else {
+                    boardController.RemoveNoteFromTrashBin(selectedTrashNoteId);
+                    selectedTrashNoteId = Guid.Empty;   
+                }
+                RefreshTrashBin(listPanel, confirmationText,trashListView, restorePanel, 
+                                restoreHeading, restoreColumnButtons, confirmationPanel);
+                confirmationPanel.Visibility = Visibility.Collapsed;
+                trashListView.Visibility = Visibility.Visible;
+            };
+            Grid.SetColumn(confirmDeleteFromTrashButton, 0);
+            Grid.SetColumn(cancelDeleteFromTrashButton, 1);
+
+            confirmationButtons.Children.Add(confirmDeleteFromTrashButton);
+            confirmationButtons.Children.Add(cancelDeleteFromTrashButton);
+
+            Grid.SetRow(confirmationText, 0); Grid.SetRow(confirmationButtons, 1);
+            confirmationPanel.Children.Add(confirmationText);
+            confirmationPanel.Children.Add(confirmationButtons);
+
+            //Build the trash bin
+            Grid trashFooter = new Grid {
+                ColumnDefinitions = {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                },
+                ColumnSpacing = 8
+            };
+
+            Button emptyTrashButton = new Button {
+                Content = "Empty trash",
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+            emptyTrashButton.Click += (sender, e) => {
+                selectedTrashNoteId = Guid.Empty;
+                confirmationText.Text = "Are you sure you want to permanently delete all notes in the trash bin?";
+
+                confirmationPanel.Visibility = Visibility.Visible;
+                trashListView.Visibility = Visibility.Collapsed;
+            };
+
+            Button closeTrashBinButton = new Button {
+                Content = "Close",
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+
+            Grid.SetColumn(emptyTrashButton, 0); Grid.SetColumn(closeTrashBinButton, 1);
+            trashFooter.Children.Add(emptyTrashButton);
+            trashFooter.Children.Add(closeTrashBinButton);
+            
+            Grid.SetRow(trashScrollViewer, 0); Grid.SetRow(trashFooter, 1);
+            trashListView.Children.Add(trashScrollViewer);
+            trashListView.Children.Add(trashFooter);
+
+            Grid dialogContent = new Grid { Width = 500 };
+            dialogContent.Children.Add(trashListView);
+            dialogContent.Children.Add(restorePanel);
+            dialogContent.Children.Add(confirmationPanel);
+
+            RefreshTrashBin(listPanel, confirmationText,trashListView, restorePanel, 
+                            restoreHeading, restoreColumnButtons, confirmationPanel);
+
+            ContentDialog dialog = new ContentDialog {
+                Title = "Trash bin",
+                Content = dialogContent,
+                XamlRoot = this.XamlRoot,
+                RequestedTheme = this.ActualTheme
+            };
+            closeTrashBinButton.Click += (sender, e) => { dialog.Hide(); };
+
+            await dialog.ShowAsync();
         }
 
         private void OnAddTodoClicked(object sender, RoutedEventArgs e)
@@ -1431,7 +1768,7 @@ namespace ToDo_App.UI.Views
         
         private void localizeXaml()
         {
-            AddColumnButton.Content = Res.ResourceManager.GetString("button/add_column", _currentCulture);
+            AddColumnButtonTextBlock.Text = Res.ResourceManager.GetString("button/add_column", _currentCulture);
             AddToDoButton.Content = Res.ResourceManager.GetString("button/add_todo", _currentCulture);
             ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
             ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);

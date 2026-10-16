@@ -27,7 +27,7 @@
         <value>Importér</value>
     </data>
     <data name="button/add_column" xml:space="preserve">
-        <value>Tilføj Kolonne</value>
+        <value>Kolonne</value>
     </data>
     <data name="button/add_todo" xml:space="preserve">
         <value>Tilføj Note</value>

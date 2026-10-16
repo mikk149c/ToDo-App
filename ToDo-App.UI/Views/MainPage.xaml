@@ -90,8 +90,14 @@
                     <Button
                         x:Name="AddColumnButton"
                         Click="OnClickAddColumn"
-                        Content="Add Column"
-                        Style="{StaticResource Button_AddColumn}" />
+                        Style="{StaticResource PrimaryAction}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <SymbolIcon Symbol="Add"/>
+                                <TextBlock x:Name="AddColumnButtonTextBlock"></TextBlock>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
 
                     <Button
                         x:Name="AddToDoButton"
@@ -119,6 +125,18 @@
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <SymbolIcon Symbol="SaveLocal"/>
                                 <TextBlock x:Name="ExportButtonTextBlock"></TextBlock>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+
+                    <Button
+                        x:Name="TrashBinButton"
+                        Click="OnTrashBinClicked"
+                        Style="{StaticResource PrimaryAction}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <SymbolIcon Symbol="Delete"/>
+                                <TextBlock Text="Trash Bin"></TextBlock>
                             </StackPanel>
                         </Button.Content>
                     </Button>
