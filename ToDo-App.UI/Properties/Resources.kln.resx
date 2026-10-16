@@ -66,7 +66,7 @@
         <value>ghu'lIS yIchel</value>
     </data>
     <data name="button/add_column" xml:space="preserve">
-        <value>tut</value>
+        <value>war</value>
     </data>
     <data name="button/add_note_tooltip" xml:space="preserve">
         <value>ghu'lIS chu' yIchel</value>
@@ -81,10 +81,10 @@
         <value>ghu'lIS chu' yIchel</value>
     </data>
     <data name="dialog/title_delete_column_q" xml:space="preserve">
-        <value>war luteqlu' DaneH'a'?</value>
+        <value>war teqlu' DaneH'a'?</value>
     </data>
     <data name="dialog/title_delete_note_q" xml:space="preserve">
-        <value>ghu'lIS luteqlu' DaneH'a'?</value>
+        <value>ghu'lIS teqlu' DaneH'a'?</value>
     </data>
     <data name="dialog/title_edit_column" xml:space="preserve">
         <value>war yIDI'</value>
@@ -149,11 +149,8 @@
     <data name="dialog/import_board" xml:space="preserve">
         <value>teywI' 'echlet yIHev</value>
     </data>
-    <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>«{0}» luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
-    </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>«{0}» luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>veQ DaqDaq «{0}» qemlu' DaneH'a'?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
         <value>«{0}» [[ghu'lIS|{1} ghu'lISmey]] rarchuq je luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
@@ -208,5 +205,65 @@
     </data>
     <data name="dialog/tag_colour" xml:space="preserve">
         <value>qalmuS</value>
+    </data>
+    <data name="dialog/merge_tag_confirm" xml:space="preserve">
+        <value>wejHa' latlhvaD «{1}» ponglu' neH. mergh «{0}» «{1}» je DaneH'a'? «{1}» [[lughajchoH ghu'lIS|ghajchoH {2} ghu'lISmey]].</value>
+    </data>
+    <data name="dialog/merge" xml:space="preserve">
+        <value>yImerghmoH</value>
+    </data>
+    <data name="filter/button" xml:space="preserve">
+        <value>yIQIb</value>
+    </data>
+    <data name="filter/button_active" xml:space="preserve">
+        <value>yIQIb</value>
+    </data>
+    <data name="filter/clear" xml:space="preserve">
+        <value>QIbtaH 'e' yImev</value>
+    </data>
+    <data name="filter/match_label" xml:space="preserve">
+        <value>ghu'lISmey lucha'lu'meH DuHvam lo'lu'</value>
+    </data>
+    <data name="filter/match_all" xml:space="preserve">
+        <value>Hoch per</value>
+    </data>
+    <data name="filter/match_any" xml:space="preserve">
+        <value>rav wa' per</value>
+    </data>
+    <data name="filter/no_tags" xml:space="preserve">
+        <value>teywI' 'echletDaq pagh per tu'lu'.</value>
+    </data>
+    <data name="filter/showing" xml:space="preserve">
+        <value>QIbtaHmeH Ho'DoSvam lo'</value>
+    </data>
+    <data name="filter/remove_tag" xml:space="preserve">
+        <value>«{0}» yIlo' 'e' yImev</value>
+    </data>
+    <data name="button/trash_bin" xml:space="preserve">
+        <value>veQ Daq</value>
+    </data>
+    <data name="dialog/close" xml:space="preserve">
+        <value>SoQmoH</value>
+    </data>
+    <data name="dialog/content_permanent_delete_note" xml:space="preserve">
+        <value>«{0}» teqlu' DaneH'a'? DateqHa'laHbe'.</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>«{0}» teqlu' DaneH'a'? DateqHa'laHbe'.</value>
+    </data>
+    <data name="dialog/empty_bin" xml:space="preserve">
+        <value>Hoch veQ yIQaw'</value>
+    </data>
+    <data name="dialog/empty_bin_confirm" xml:space="preserve">
+        <value>veQ Daq Hoch ghu'lIS Qaw'lu' DaneH'a'? DateqHa'laHbe'.</value>
+    </data>
+    <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
+        <value>ghu'lIS yIQaw'</value>
+    </data>
+    <data name="dialog/restore_tooltip" xml:space="preserve">
+        <value>ghu'lIS yInobHa'</value>
+    </data>
+    <data name="dialog/restore_which_column" xml:space="preserve">
+        <value>nuqDaq ghu'lIS luqemlu' DaneH?</value>
     </data>
 </root>

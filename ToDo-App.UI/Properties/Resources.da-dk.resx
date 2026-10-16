@@ -141,7 +141,7 @@
         <value>Styresystemets standardindstilling</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>Slet "{0}"? Dette kan ikke fortrydes.</value>
+        <value>Flyt "{0}" til papirkurven?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
         <value>Slet "{0}" og [[noten|de {1} noter]] der ligger i den? Dette kan ikke fortrydes.</value>
@@ -151,9 +151,6 @@
     </data>
     <data name="dialog/option_move_to_column" xml:space="preserve">
         <value>Flyt til "{0}"</value>
-    </data>
-    <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>Slet "{0}"? Dette kan ikke fortrydes.</value>
     </data>
     <data name="language/english" xml:space="preserve">
         <value>engelsk</value>
@@ -213,7 +210,7 @@
         <value>Flet</value>
     </data>
     <data name="dialog/merge_tag_confirm" xml:space="preserve">
-        <value>Et andet tag hedder allerede "{1}". Flet "{0}" ind i det? Dets {2} note(r) får "{1}" i stedet.</value>
+        <value>Et andet tag hedder allerede "{1}". Flet "{0}" ind i det? Dets [[{2} note|{2} noter]] får "{1}" i stedet.</value>
     </data>
     <data name="filter/button" xml:space="preserve">
         <value>Filtrer</value>
@@ -222,7 +219,7 @@
         <value>Filtrer ({0})</value>
     </data>
     <data name="filter/match_label" xml:space="preserve">
-        <value>Vis todos med</value>
+        <value>Vis ToDos med:</value>
     </data>
     <data name="filter/match_any" xml:space="preserve">
         <value>Mindst ét af tagsene</value>
@@ -234,12 +231,39 @@
         <value>Ryd filter</value>
     </data>
     <data name="filter/showing" xml:space="preserve">
-        <value>Filtreret på</value>
+        <value>Filtreret på:</value>
     </data>
     <data name="filter/no_tags" xml:space="preserve">
         <value>Der er endnu ingen tags på tavlen.</value>
     </data>
     <data name="filter/remove_tag" xml:space="preserve">
-        <value>Stop filtrering på {0}</value>
+        <value>Stop filtrering på "{0}"</value>
+    </data>
+    <data name="button/trash_bin" xml:space="preserve">
+        <value>Papirkurv</value>
+    </data>
+    <data name="dialog/close" xml:space="preserve">
+        <value>Luk</value>
+    </data>
+    <data name="dialog/empty_bin" xml:space="preserve">
+        <value>Tøm papirkurv</value>
+    </data>
+    <data name="dialog/empty_bin_confirm" xml:space="preserve">
+        <value>Er du sikker på at du vil slette alle noter i papirkurven permanent?</value>
+    </data>
+    <data name="dialog/restore_which_column" xml:space="preserve">
+        <value>Vælg hvilken kolonne "{0}" skal genoprettes i.</value>
+    </data>
+    <data name="dialog/content_permanent_delete_note" xml:space="preserve">
+        <value>Slet "0" permanent? Dette kan ikke fortrydes.</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>Slet "{0}"? Dette kan ikke fortrydes.</value>
+    </data>
+    <data name="dialog/restore_tooltip" xml:space="preserve">
+        <value>Genopret note</value>
+    </data>
+    <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
+        <value>Slet note permanent</value>
     </data>
 </root>
