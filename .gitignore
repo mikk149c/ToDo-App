@@ -81,3 +81,7 @@ BundleArtifacts/
 # Local test coverage reports
 coverage/
 TestResults/
+
+### Web app
+# The board and attachments the web app saves while running locally
+ToDo-App.Web/App_Data/

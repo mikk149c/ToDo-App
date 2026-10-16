@@ -242,4 +242,10 @@
     <data name="filter/remove_tag" xml:space="preserve">
         <value>Stop filtrering på {0}</value>
     </data>
+    <data name="button/language_tooltip" xml:space="preserve">
+        <value>Sprog</value>
+    </data>
+    <data name="error/attachment_only_on_pc" xml:space="preserve">
+        <value>"{0}" blev vedhæftet i Windows-appen og ligger på den pc, så den kan ikke åbnes fra browseren.</value>
+    </data>
 </root>
