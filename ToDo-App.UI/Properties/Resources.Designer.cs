@@ -330,6 +330,24 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Merge.
+        /// </summary>
+        internal static string dialog_merge {
+            get {
+                return ResourceManager.GetString("dialog/merge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Another tag is already called &quot;{1}&quot;. Merge &quot;{0}&quot; into it? Its [[{2} note|{2} notes]] will get &quot;{1}&quot; instead..
+        /// </summary>
+        internal static string dialog_merge_tag_confirm {
+            get {
+                return ResourceManager.GetString("dialog/merge_tag_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New tag &quot;{0}&quot;, saved when you save the note.
         /// </summary>
         internal static string dialog_new_tag_tooltip {
@@ -542,6 +560,87 @@ namespace ToDo_App.UI {
         internal static string error_failed_to_save_board {
             get {
                 return ResourceManager.GetString("error/failed_to_save_board", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter.
+        /// </summary>
+        internal static string filter_button {
+            get {
+                return ResourceManager.GetString("filter/button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter ({0}).
+        /// </summary>
+        internal static string filter_button_active {
+            get {
+                return ResourceManager.GetString("filter/button_active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear filter.
+        /// </summary>
+        internal static string filter_clear {
+            get {
+                return ResourceManager.GetString("filter/clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All of the tags.
+        /// </summary>
+        internal static string filter_match_all {
+            get {
+                return ResourceManager.GetString("filter/match_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Any of the tags.
+        /// </summary>
+        internal static string filter_match_any {
+            get {
+                return ResourceManager.GetString("filter/match_any", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show todos with.
+        /// </summary>
+        internal static string filter_match_label {
+            get {
+                return ResourceManager.GetString("filter/match_label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no tags on the board yet..
+        /// </summary>
+        internal static string filter_no_tags {
+            get {
+                return ResourceManager.GetString("filter/no_tags", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop filtering by {0}.
+        /// </summary>
+        internal static string filter_remove_tag {
+            get {
+                return ResourceManager.GetString("filter/remove_tag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filtered by.
+        /// </summary>
+        internal static string filter_showing {
+            get {
+                return ResourceManager.GetString("filter/showing", resourceCulture);
             }
         }
         

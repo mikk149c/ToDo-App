@@ -220,7 +220,7 @@
         <value>Merge</value>
     </data>
     <data name="dialog/merge_tag_confirm" xml:space="preserve">
-        <value>Another tag is already called "{1}". Merge "{0}" into it? Its {2} note(s) will get "{1}" instead.</value>
+        <value>Another tag is already called "{1}". Merge "{0}" into it? Its [[{2} note|{2} notes]] will get "{1}" instead.</value>
     </data>
     <data name="filter/button" xml:space="preserve">
         <value>Filter</value>
