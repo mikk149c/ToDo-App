@@ -1,0 +1,101 @@
+@inject IJSRuntime JS
+@* Edits the tags of a todo before it's saved. See TagEditor.razor.cs *@
+<div class="tag-editor">
+    <div class="field tag-input">
+        <label for="@inputId">@Strings["todo/property_tags"]</label>
+        @* Escape closes the suggestions first, and only then the dialog *@
+        <input id="@inputId" type="text" role="combobox" autocomplete="off"
+               aria-expanded="@(isSuggestionListOpen ? "true" : "false")" aria-controls="@listId"
+               aria-activedescendant="@(highlighted >= 0 ? $"{listId}-{highlighted}" : null)"
+               aria-describedby="@(errorText != null ? errorId : null)"
+               placeholder="@Strings["dialog/add_tag_placeholder"]"
+               @bind="inputText" @bind:event="oninput" @bind:after="OnInputChanged"
+               @onfocus="OnInputFocus" @onblur="OnInputBlur" @onkeydown="OnInputKeyDown"
+               @onkeydown:stopPropagation="isSuggestionListOpen" />
+
+        @if (isSuggestionListOpen)
+        {
+            <ul id="@listId" class="suggestions" role="listbox" aria-label="@Strings["todo/property_tags"]">
+                @for (int i = 0; i < suggestions.Count; i++)
+                {
+                    string suggestion = suggestions[i];
+                    @* mousedown is cancelled so the box keeps focus while a suggestion is clicked *@
+                    <li id="@($"{listId}-{i}")" role="option" aria-selected="@(i == highlighted ? "true" : "false")"
+                        class="@(i == highlighted ? "highlighted" : null)"
+                        @onmousedown:preventDefault @onclick="() => tryAddTag(suggestion)">@suggestion</li>
+                }
+            </ul>
+        }
+    </div>
+
+    @if (errorText != null)
+    {
+        <p id="@errorId" class="error-text" role="alert">@errorText</p>
+    }
+
+    @* One TagChip per tag *@
+    <div class="tag-chips" role="group" aria-label="@Strings["todo/property_tags"]">
+        @foreach (TagEntry entry in entries)
+        {
+            bool isNew = entry.Id == null;
+            <span class="chip-anchor" @key="entry" @ref="entry.Anchor">
+                <TagChip @ref="entry.Chip" Name="@entry.Name" IsNew="isNew" Color="@entry.Color"
+                         EditLabel="@string.Format(Strings[isNew ? "dialog/new_tag_tooltip" : "dialog/edit_tag"], entry.Name)"
+                         RemoveLabel="@string.Format(Strings["dialog/remove_tag"], entry.Name)"
+                         EditRequested="() => openFlyout(entry)" RemoveRequested="() => removeEntry(entry)" />
+
+                @if (flyoutEntry == entry)
+                {
+                    @* Opened from a tag's name. A flyout, because the note dialog is already open *@
+                    <div class="flyout-dismiss" @onclick="closeFlyout"></div>
+                    <div class="tag-flyout" role="dialog" @ref="flyoutElement" aria-label="@string.Format(Strings["dialog/edit_tag"], entry.Name)"
+                         @onkeydown="OnFlyoutKeyDown" @onkeydown:stopPropagation>
+                        <div class="field">
+                            <label for="@flyoutNameId">@Strings["dialog/tag_name"]</label>
+                            <input id="@flyoutNameId" type="text" maxlength="@NoteTag.MaxNameLength" @ref="flyoutNameBox"
+                                   @bind="flyoutName" @bind:event="oninput" @onkeydown="OnFlyoutNameKeyDown" />
+                        </div>
+
+                        <p class="secondary-text">@flyoutInfoText</p>
+
+                        @if (!isConfirmingDelete)
+                        {
+                            <div class="color-panel">
+                                <span id="@colorHeaderId">@Strings["dialog/tag_colour"]</span>
+                                <div role="radiogroup" aria-labelledby="@colorHeaderId">
+                                    <SwatchGrid Selected="@entry.Color" SelectedChanged="OnColorPicked" />
+                                </div>
+                            </div>
+                        }
+
+                        @if (flyoutError != null)
+                        {
+                            <p class="error-text" role="alert">@flyoutError</p>
+                        }
+
+                        @if (isConfirmingDelete)
+                        {
+                            @* Delete asks before removing the tag from every todo *@
+                            <p>@deleteConfirmText</p>
+                            <div class="flyout-actions">
+                                <button type="button" class="primary-action" @onclick="OnConfirmDeleteClicked">@Strings["dialog/delete"]</button>
+                                <button type="button" @onclick="OnCancelDeleteClicked">@Strings["dialog/cancel"]</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="flyout-actions">
+                                <button type="button" class="primary-action" @onclick="renameFlyoutEntry">@Strings["dialog/rename"]</button>
+                                @* A tag that isn't saved yet only exists in this dialog, so it can't be deleted *@
+                                @if (!isNew)
+                                {
+                                    <button type="button" @onclick="OnDeleteClicked">@Strings["dialog/delete"]</button>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </span>
+        }
+    </div>
+</div>

@@ -1,0 +1,205 @@
+/* The board's own styles, the web counterpart of the Page resources in MainPage.xaml */
+
+.page {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    background: var(--board-background);
+}
+
+@media (max-width: 600px) {
+    .page {
+        padding: 16px;
+    }
+
+    .board {
+        grid-auto-columns: minmax(min(300px, 100%), 1fr);
+    }
+}
+
+/* --- Toolbar above the columns --- */
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.toolbar-actions,
+.toolbar-settings {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.language-selector {
+    width: auto;
+    min-width: 100px;
+}
+
+.save-error {
+    margin: 0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--critical);
+    color: var(--critical);
+}
+
+/* --- Columns --- */
+
+/* Scrolls sideways on its own, like the ScrollViewer in the Windows app. min-width: 0 keeps the columns
+   from stretching the whole page on a narrow screen */
+.board {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(300px, 1fr);
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* Columns sit lighter than the page behind them in both themes so they stand out */
+.board-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    padding: 12px;
+    background: var(--column-background);
+    border: 1px solid var(--card-stroke);
+    border-radius: 8px;
+}
+
+.board-column.dragging,
+.todo-card.dragging {
+    opacity: 0.5;
+}
+
+.column-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.column-actions {
+    display: flex;
+    flex-direction: column;
+}
+
+.column-actions .subtle {
+    background: transparent;
+    border-color: transparent;
+}
+
+.column-actions .subtle:hover {
+    background: var(--subtle-fill-hover);
+}
+
+.column-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent-text);
+    overflow-wrap: anywhere;
+    cursor: grab;
+}
+
+.column-cards {
+    flex: 1;
+    min-height: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    /* Keeps focus outlines of the cards from being cut off */
+    padding: 2px;
+    margin: -2px;
+}
+
+/* --- Todo cards --- */
+
+.todo-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: var(--card-background);
+    border: 1px solid var(--card-stroke);
+    border-radius: 6px;
+    cursor: grab;
+}
+
+.card-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 8px;
+}
+
+.card-row:last-child {
+    align-items: end;
+}
+
+.todo-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    align-self: center;
+}
+
+.todo-description {
+    margin: 0;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* A tag shown on a card. The background is the tag's colour. Every palette colour keeps white text
+   readable (WCAG AA) in both themes */
+.todo-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.todo-tag {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: white;
+}
+
+.attachment {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+.attached-file {
+    background: var(--accent);
+    color: var(--on-accent);
+    border-color: transparent;
+    border-radius: 8px;
+    padding: 5px 8px;
+    max-width: 100%;
+}
+
+.attached-file span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

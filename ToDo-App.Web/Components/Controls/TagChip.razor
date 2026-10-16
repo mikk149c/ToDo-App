@@ -1,0 +1,44 @@
+@* A tag in the note dialogs: one pill split by a divider into two buttons. Clicking the name raises
+   EditRequested, clicking the square ✕ area raises RemoveRequested.
+   A tag that isn't saved yet has a dashed accent outline and an accent "+" icon. *@
+<span class="tag-chip @(IsNew ? "new" : "saved")">
+    <button type="button" class="tag-zone edit-zone" @ref="editButton"
+            aria-label="@EditLabel" title="@EditLabel" aria-haspopup="dialog" @onclick="EditRequested">
+        @if (IsNew)
+        {
+            <span class="new-icon"><Icon Name="add" Size="10" /></span>
+        }
+        <span class="color-dot" style="background: @AccentPalette.Find(Color).Hex"></span>
+        <span>@Name</span>
+    </button>
+    <span class="divider" aria-hidden="true"></span>
+    <button type="button" class="tag-zone remove-zone"
+            aria-label="@RemoveLabel" title="@RemoveLabel" @onclick="RemoveRequested">
+        <Icon Name="cancel" Size="10" />
+    </button>
+</span>
+
+@code {
+    private ElementReference editButton;
+
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+
+    [Parameter] public bool IsNew { get; set; }
+
+    /// <summary>The tag's colour as "#RRGGBB", or null for the default colour.</summary>
+    [Parameter] public string? Color { get; set; }
+
+    [Parameter] public string EditLabel { get; set; } = "";
+
+    [Parameter] public string RemoveLabel { get; set; } = "";
+
+    [Parameter] public EventCallback EditRequested { get; set; }
+
+    [Parameter] public EventCallback RemoveRequested { get; set; }
+
+    /// <summary>Moves focus to the tag's name, e.g. to show which tag was just added.</summary>
+    public ValueTask FocusName()
+    {
+        return editButton.FocusAsync();
+    }
+}

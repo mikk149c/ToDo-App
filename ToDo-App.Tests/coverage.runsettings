@@ -10,8 +10,13 @@
       <DataCollector friendlyName="XPlat code coverage">
         <Configuration>
           <Format>cobertura</Format>
-          <!-- Only the class library is measured. ToDo-App.UI is not referenced by the tests and is out of scope. -->
+          <!--
+              Only the class library is measured. ToDo-App.UI is not referenced by the tests and is out of scope.
+              ToDo-App.Web is referenced for its service tests, but it's mostly Razor UI, so it's excluded like ToDo-App.UI.
+              It's excluded by source path, because the assembly filters don't match it.
+          -->
           <Include>[ToDo-App]*</Include>
+          <ExcludeByFile>**/ToDo-App.Web/**</ExcludeByFile>
           <!--
               Tool-generated code only. CompilerGeneratedAttribute is deliberately not listed: it would also
               hide auto-property accessors and lambda bodies, which are hand-written code.

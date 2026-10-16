@@ -10,9 +10,10 @@
     <Platform Solution="*|x86" Project="x86" />
     <Platform Solution="*|ARM64" Project="ARM64" />
   </Project>
-  <Project Path="ToDo-App/ToDo-App.csproj">
+  <Project Path="ToDo-App.Web/ToDo-App.Web.csproj">
     <Platform Solution="*|x64" Project="Any CPU" />
     <Platform Solution="*|x86" Project="Any CPU" />
     <Platform Solution="*|ARM64" Project="Any CPU" />
   </Project>
+  <Project Path="ToDo-App/ToDo-App.csproj" />
 </Solution>

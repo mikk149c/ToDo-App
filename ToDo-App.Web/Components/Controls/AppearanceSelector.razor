@@ -1,0 +1,76 @@
+@implements IDisposable
+@inject AppearanceManager Appearance
+
+@* Theme: Light | System default | Dark, and the accent colour *@
+<div class="appearance-selector">
+    <div class="theme-toggles" role="group">
+        <button type="button" class="theme-toggle first" aria-pressed="@IsTheme(ThemePreference.Light)"
+                aria-label="@LightLabel" title="@LightLabel" @onclick="() => Appearance.SetThemeAsync(ThemePreference.Light)">
+            <Icon Name="sun" />
+        </button>
+        <button type="button" class="theme-toggle" aria-pressed="@IsTheme(ThemePreference.SystemDefault)"
+                aria-label="@SystemLabel" title="@SystemLabel" @onclick="() => Appearance.SetThemeAsync(ThemePreference.SystemDefault)">
+            <Icon Name="sun" /><Icon Name="moon" />
+        </button>
+        <button type="button" class="theme-toggle last" aria-pressed="@IsTheme(ThemePreference.Dark)"
+                aria-label="@DarkLabel" title="@DarkLabel" @onclick="() => Appearance.SetThemeAsync(ThemePreference.Dark)">
+            <Icon Name="moon" />
+        </button>
+    </div>
+
+    <div class="accent">
+        <button type="button" class="accent-button" aria-label="@AccentLabel" title="@AccentLabel"
+                aria-expanded="@isAccentOpen" @onclick="() => isAccentOpen = !isAccentOpen">
+            <span class="swatch-dot" style="background: @AccentPalette.Find(Appearance.Current.AccentColor).Hex"></span>
+            <Icon Name="chevron-down" Size="12" />
+        </button>
+
+        @if (isAccentOpen)
+        {
+            <div class="flyout-dismiss" @onclick="() => isAccentOpen = false"></div>
+            <div class="accent-flyout" role="radiogroup" aria-label="@AccentLabel" @onkeydown="OnFlyoutKeyDown">
+                <SwatchGrid Selected="@Appearance.Current.AccentColor" SelectedChanged="OnAccentPicked" />
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private bool isAccentOpen;
+
+    [Parameter] public string LightLabel { get; set; } = "Light";
+    [Parameter] public string SystemLabel { get; set; } = "System default";
+    [Parameter] public string DarkLabel { get; set; } = "Dark";
+    [Parameter] public string AccentLabel { get; set; } = "Accent colour";
+
+    protected override void OnInitialized()
+    {
+        Appearance.Changed += onAppearanceChanged;
+    }
+
+    private string IsTheme(ThemePreference theme) => Appearance.Current.Theme == theme ? "true" : "false";
+
+    private async Task OnAccentPicked(AccentColorOption accent)
+    {
+        isAccentOpen = false;
+        await Appearance.SetAccentAsync(accent);
+    }
+
+    private void OnFlyoutKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            isAccentOpen = false;
+        }
+    }
+
+    private void onAppearanceChanged(object? sender, EventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Appearance.Changed -= onAppearanceChanged;
+    }
+}
