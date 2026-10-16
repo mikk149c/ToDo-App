@@ -124,6 +124,14 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <!-- Where the board is kept: a file on this PC (default), or the board on the server -->
+                    <ToggleSwitch
+                        x:Name="RemoteToggle"
+                        MinWidth="0"
+                        VerticalAlignment="Center"
+                        OffContent="Local"
+                        OnContent="Remote"
+                        Toggled="onRemoteToggled" />
                     <controls:AppearanceSelector x:Name="AppearanceSelector" VerticalAlignment="Center" />
                     <ComboBox
                         x:Name="LanguageSelector"
