@@ -16,7 +16,8 @@ public class BoardController : ITodoBoard
     public event EventHandler? ColumnRemoved;
     public event EventHandler? ColumnContentChanged;
     public event EventHandler? BoardChanged;
-    
+    public event EventHandler? ColumnOrderChanged;
+    public event EventHandler? TagChanged;
     private void onColumnCreated(ColumnCreatedEventArgs e)
     {
         ColumnCreated?.Invoke(this, e);
@@ -41,6 +42,15 @@ public class BoardController : ITodoBoard
     {
         BoardChanged?.Invoke(this, e);
     }
+    private void onColumnOrderChanged(ColumnOrderChangedEventArgs e)
+    {
+        ColumnOrderChanged?.Invoke(this, e);
+    }
+    private void onTagChanged(TagChangedEventArgs e)
+    {
+        TagChanged?.Invoke(this, e);
+    }
+    
 
 
     public void SetStatusColumnName(Guid columnId, string newName)
@@ -112,9 +122,11 @@ public class BoardController : ITodoBoard
         throw new NotImplementedException();
     }
 
-    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null)
+    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null, IReadOnlyDictionary<string, string>? newTagColors = null)
     {
-        var noteId = _board.AddNote(columnId, new ToDoNote(title, content, file));
+        // Resolve tags before adding the note, so an invalid tag name leaves the board unchanged
+        var note = new ToDoNote(title, content, file) { Tags = _board.ResolveTags(tagNames ?? [], newTagColors) };
+        var noteId = _board.AddNote(columnId, note);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
         return noteId;
@@ -156,6 +168,55 @@ public class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
+    public void SetNoteTags(Guid id, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null)
+    {
+        _board.SetNoteTags(id, tagNames, newTagColors);
+        Guid columnId = _board.GetColumnIdFromNoteId(id);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public List<NoteTag> GetTags()
+    {
+        return _board.GetTags();
+    }
+
+    public int CountNotesWithTag(Guid tagId)
+    {
+        return _board.CountNotesWithTag(tagId);
+    }
+
+    public void RenameTag(Guid tagId, string newName)
+    {
+        _board.RenameTag(tagId, newName);
+        notifyTagChanged(tagId);
+    }
+
+    public void SetTagColor(Guid tagId, string color)
+    {
+        _board.SetTagColor(tagId, color);
+        notifyTagChanged(tagId);
+    }
+
+    // One event for the tag, so every card showing it can update, whichever columns they're in
+    private void notifyTagChanged(Guid tagId)
+    {
+        NoteTag tag = _board.GetTags().Single(candidate => candidate.Id == tagId);
+        onTagChanged(new TagChangedEventArgs(tagId, tag.Name, tag.Color));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void DeleteTag(Guid tagId)
+    {
+        List<Guid> affectedColumnIds = _board.GetColumnIdsWithTag(tagId);
+        _board.DeleteTag(tagId);
+        foreach (Guid columnId in affectedColumnIds)
+        {
+            onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        }
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
     public void SetNoteFileAttachment(Guid id, string newFilePath)
     {
         var fileInfo = new FileInfo(newFilePath);
@@ -175,33 +236,17 @@ public class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    public void MoveNoteDown(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteDown(noteId);
-    }
-
-    public void MoveNoteUp(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteUp(noteId);
-    }
-
-    public void MoveNoteRight(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteRight(noteId);
-    }
-
-    public void MoveNoteLeft(Guid noteId)
-    {
-        //TODO handle exception
-        _board.MoveNoteLeft(noteId);
-    }
-
     public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
     {
-        _board.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos);
+        bool sourceExists = fromColumnIndex >= 0 && fromColumnIndex < _board.StatusColumns.Count
+                            && fromPos >= 0 && fromPos < _board.StatusColumns[fromColumnIndex].Notes.Count;
+        if (!sourceExists)
+        {
+            return; // nothing to move, so nothing changes (ToDoBoard.MoveNote ignores it too)
+        }
+
+        Guid noteId = _board.StatusColumns[fromColumnIndex].Notes[fromPos].Id;
+        moveNoteAndNotify(noteId, () => _board.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos));
     }
 
     public void RemoveNote(Guid noteId)
@@ -233,11 +278,51 @@ public class BoardController : ITodoBoard
     public void LoadBoardFromJson(string jsonPath)
     {
         var storeJson = new StoreJson<ToDoBoard>(jsonPath);
-        //_board = storeJson.Load();
-        _board = new ToDoBoard();  //do this instead, if the ToDoBoard class has changed
+        // Load first, so a file that can't be read leaves the current board and UI untouched
+        ToDoBoard loadedBoard = storeJson.Load();
+        loadedBoard.NormalizeTags();
+        List<Guid> replacedColumnIds = GetStatusColumnIds();
+        _board = loadedBoard;
+
+        foreach (Guid columnId in replacedColumnIds)
+        {
+            onColumnRemoved(new ColumnRemovedEventArgs(columnId));
+        }
         foreach (var column in _board.StatusColumns)
         {
             onColumnCreated(new ColumnCreatedEventArgs(column.Id, column.Title, column.Notes));
         }
+        onBoardChanged(new BoardChangedEventArgs(_board));
     }
+
+    private void moveNoteAndNotify(Guid noteId, Action move)
+    {
+        Guid sourceColumnId = _board.GetColumnIdFromNoteId(noteId);
+        move();
+        Guid targetColumnId = _board.GetColumnIdFromNoteId(noteId);
+
+        onColumnContentChanged(new ColumnContentChangedEventArgs(sourceColumnId, GetNotesInColumn(sourceColumnId)));
+        if (targetColumnId != sourceColumnId)
+        {
+            onColumnContentChanged(new ColumnContentChangedEventArgs(targetColumnId, GetNotesInColumn(targetColumnId)));
+        }
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex)
+    {
+        moveNoteAndNotify(noteId, () => _board.MoveNoteToColumn(noteId, targetColumnId, targetIndex));
+    }
+
+    public void MoveColumn(Guid columnId, int targetIndex)
+    {
+        _board.MoveColumn(columnId, targetIndex);
+        onColumnOrderChanged(new ColumnOrderChangedEventArgs(GetStatusColumnIds()));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    public void MoveNoteDown(Guid noteId)  { moveNoteAndNotify(noteId, () => _board.MoveNoteDown(noteId)); }
+    public void MoveNoteUp(Guid noteId)    { moveNoteAndNotify(noteId, () => _board.MoveNoteUp(noteId)); }
+    public void MoveNoteRight(Guid noteId) { moveNoteAndNotify(noteId, () => _board.MoveNoteRight(noteId)); }
+    public void MoveNoteLeft(Guid noteId)  { moveNoteAndNotify(noteId, () => _board.MoveNoteLeft(noteId)); }
 }

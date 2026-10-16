@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<UserControl
+    x:Class="ToDo_App.UI.Controls.TagChip"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+        <!-- The two zones are transparent until hovered or pressed, using the standard button highlight.
+             They sit 1px inside the outline, so the highlight never covers it. -->
+        <Style x:Key="TagZoneButton" TargetType="Button">
+            <Setter Property="Margin" Value="1" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Height="28">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="SaveStates">
+                <VisualState x:Name="Saved" />
+
+                <!-- Not on the board yet: dashed accent outline and an accent "+", so it stands out
+                     without relying on colour alone -->
+                <VisualState x:Name="New">
+                    <VisualState.Setters>
+                        <Setter Target="Outline.Stroke" Value="{ThemeResource AccentTextBrush}" />
+                        <Setter Target="Outline.StrokeThickness" Value="1.5" />
+                        <Setter Target="Outline.StrokeDashArray" Value="4,2" />
+                        <Setter Target="NewIcon.Visibility" Value="Visible" />                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Same pill shape as before. The New state restyles it while the tag isn't saved yet -->
+        <Rectangle
+            x:Name="Outline"
+            Grid.ColumnSpan="3"
+            Fill="{ThemeResource ControlFillColorDefaultBrush}"
+            RadiusX="10"
+            RadiusY="10"
+            Stroke="{ThemeResource ControlStrokeColorDefaultBrush}"
+            StrokeThickness="1" />
+
+        <Button
+            x:Name="EditButton"
+            Grid.Column="0"
+            Padding="8,0,8,0"
+            Click="OnEditClicked"
+            CornerRadius="9,0,0,9"
+            Style="{StaticResource TagZoneButton}">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <FontIcon
+                    x:Name="NewIcon"
+                    FontSize="10"
+                    Foreground="{ThemeResource AccentTextBrush}"
+                    Glyph="&#xE710;"
+                    Visibility="Collapsed" />
+                <!-- The tag's colour -->
+                <Ellipse
+                    x:Name="ColorDot"
+                    Width="10"
+                    Height="10"
+                    VerticalAlignment="Center" />
+                <TextBlock x:Name="NameText" VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
+
+        <Rectangle
+            Grid.Column="1"
+            Width="1"
+            Margin="0,5"
+            Fill="{ThemeResource ControlStrokeColorDefaultBrush}" />
+
+        <!-- Square: as wide as the chip is tall, minus the outline -->
+        <Button
+            x:Name="RemoveButton"
+            Grid.Column="2"
+            Width="26"
+            Click="OnRemoveClicked"
+            CornerRadius="0,9,9,0"
+            Style="{StaticResource TagZoneButton}">
+            <FontIcon FontSize="10" Glyph="&#xE711;" />
+        </Button>
+    </Grid>
+</UserControl>

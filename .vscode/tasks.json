@@ -37,6 +37,20 @@
                 "-p:Platform=x64"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-unpackaged",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}/ToDo-App.UI/ToDo-App.UI.csproj",
+                "-p:Platform=x64",
+                "-p:WindowsPackageType=None",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Code coverage settings, used when dotnet test collects "XPlat Code Coverage".
+    Picked up automatically through RunSettingsFilePath in ToDo-App.Tests.csproj.
+    See "Tests and coverage" in README.md before changing what is measured.
+-->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <!-- Only the class library is measured. ToDo-App.UI is not referenced by the tests and is out of scope. -->
+          <Include>[ToDo-App]*</Include>
+          <!--
+              Tool-generated code only. CompilerGeneratedAttribute is deliberately not listed: it would also
+              hide auto-property accessors and lambda bodies, which are hand-written code.
+          -->
+          <ExcludeByAttribute>GeneratedCodeAttribute</ExcludeByAttribute>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

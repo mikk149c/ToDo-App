@@ -1,0 +1,209 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="button/add_column" xml:space="preserve">
+        <value>Sung Tsengti</value>
+    </data>
+    <data name="button/add_note_tooltip" xml:space="preserve">
+        <value>Sung mipa sätserit</value>
+    </data>
+    <data name="button/add_todo" xml:space="preserve">
+        <value>Sung Sätserit</value>
+    </data>
+    <data name="button/attach_file_tooltip" xml:space="preserve">
+        <value>Yem faylti</value>
+    </data>
+    <data name="button/delete_column_tooltip" xml:space="preserve">
+        <value>'Aku tsengti</value>
+    </data>
+    <data name="button/delete_tooltip" xml:space="preserve">
+        <value>'Aku</value>
+    </data>
+    <data name="button/edit_column_title_tooltip" xml:space="preserve">
+        <value>Leykatem tstxot tsengä</value>
+    </data>
+    <data name="button/edit_tooltip" xml:space="preserve">
+        <value>Leykatem</value>
+    </data>
+    <data name="button/export" xml:space="preserve">
+        <value>Sweyn</value>
+    </data>
+    <data name="button/import" xml:space="preserve">
+        <value>Kanom</value>
+    </data>
+    <data name="button/remove_attached_file_tooltip" xml:space="preserve">
+        <value>'Aku faylti ayawnem</value>
+    </data>
+    <data name="button/tooltip_accent_color" xml:space="preserve">
+        <value>'Opin</value>
+    </data>
+    <data name="button/tooltip_dark" xml:space="preserve">
+        <value>Vawm</value>
+    </data>
+    <data name="button/tooltip_light" xml:space="preserve">
+        <value>Neyn</value>
+    </data>
+    <data name="button/tooltip_system_default" xml:space="preserve">
+        <value>Yrra pum</value>
+    </data>
+    <data name="dialog/add" xml:space="preserve">
+        <value>Sung</value>
+    </data>
+    <data name="dialog/attach_file" xml:space="preserve">
+        <value>Yem faylti</value>
+    </data>
+    <data name="dialog/ok" xml:space="preserve">
+        <value>Tam</value>
+    </data>
+    <data name="dialog/delete" xml:space="preserve">
+        <value>'Aku</value>
+    </data>
+    <data name="dialog/delete_the_todos" xml:space="preserve">
+        <value>'Aku (ay)sätseriti</value>
+    </data>
+    <data name="dialog/export_board" xml:space="preserve">
+        <value>Sweyn tìtserit</value>
+    </data>
+    <data name="dialog/import_board" xml:space="preserve">
+        <value>Kanom tìtserit</value>
+    </data>
+    <data name="dialog/json_files" xml:space="preserve">
+        <value>Ayfayl alu JSON</value>
+    </data>
+    <data name="dialog/option_move_to_column" xml:space="preserve">
+        <value>Munge ne "{0}"</value>
+    </data>
+    <data name="dialog/save" xml:space="preserve">
+        <value>Sweyn</value>
+    </data>
+    <data name="dialog/title_add_new_column" xml:space="preserve">
+        <value>Sung Mipa Tsengti</value>
+    </data>
+    <data name="dialog/title_add_new_note" xml:space="preserve">
+        <value>Sung Mipa Sätserit</value>
+    </data>
+    <data name="dialog/title_delete_column_q" xml:space="preserve">
+        <value>'Aku Tsengti Srak?</value>
+    </data>
+    <data name="dialog/title_delete_note_q" xml:space="preserve">
+        <value>'Aku Sätserit Srak?</value>
+    </data>
+    <data name="dialog/title_edit_column" xml:space="preserve">
+        <value>Leykatem Tsengti</value>
+    </data>
+    <data name="dialog/title_edit_note" xml:space="preserve">
+        <value>Leykatem Sätserit</value>
+    </data>
+    <data name="error/failed_to_attach_file" xml:space="preserve">
+        <value>Nìnu yolem faylti.</value>
+    </data>
+    <data name="error/failed_to_export_board" xml:space="preserve">
+        <value>Nìnu swoleyn tìtserit nemfa fayl.</value>
+    </data>
+    <data name="error/failed_to_import_board" xml:space="preserve">
+        <value>Nìnu kolanom tìtserit ftumfa fayl.</value>
+    </data>
+    <data name="error/failed_to_load_board" xml:space="preserve">
+        <value>Nìnu kolanom tìtserit.</value>
+    </data>
+    <data name="error/failed_to_open_attached_file" xml:space="preserve">
+        <value>Nìnu piak soli faylur ayawnem.</value>
+    </data>
+    <data name="error/failed_to_remove_attached_file" xml:space="preserve">
+        <value>Nìnu 'olaku faylit ayawnem.</value>
+    </data>
+    <data name="error/failed_to_save_board" xml:space="preserve">
+        <value>Nìnu swoleyn tìtserit.</value>
+    </data>
+    <data name="language/danish" xml:space="preserve">
+        <value>nìTänskì</value>
+    </data>
+    <data name="language/english" xml:space="preserve">
+        <value>nì'Ìnglìsì</value>
+    </data>
+    <data name="todo/column_title" xml:space="preserve">
+        <value>Tstxo tsengä</value>
+    </data>
+    <data name="todo/default_description" xml:space="preserve">
+        <value>Fì'u mipa sätseri lu.</value>
+    </data>
+    <data name="todo/default_title" xml:space="preserve">
+        <value>Mipa Sätseri</value>
+    </data>
+    <data name="todo/property_description" xml:space="preserve">
+        <value>Tìsla'tsu</value>
+    </data>
+    <data name="todo/property_title" xml:space="preserve">
+        <value>Tstxo</value>
+    </data>
+    <data name="dialog/cancel" xml:space="preserve">
+        <value>Fpak</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>'Aku "{0}"ti srak? Zene livu am'ake.</value>
+    </data>
+    <data name="dialog/content_delete_column_consequence" xml:space="preserve">
+        <value>{0}a sätseriri sweylu txo pehem si?</value>
+    </data>
+    <data name="dialog/content_delete_column_no_space" xml:space="preserve">
+        <value>'Aku "{0}"ti sì {1}a sätserit a tok tsat srak? Zene livu am'ake.</value>
+    </data>
+    <data name="dialog/content_delete_note" xml:space="preserve">
+        <value>'Aku "{0}"ti srak? Zene livu am'ake.</value>
+    </data>
+    <data name="language/navi" xml:space="preserve">
+        <value>nìNa'vi</value>
+    </data>
+    <data name="language/klingon" xml:space="preserve">
+        <value>nìTslìngan</value>
+    </data>
+    <data name="language/german" xml:space="preserve">
+        <value>nìToitsye</value>
+    </data>
+    <data name="language/faroese" xml:space="preserve">
+        <value>nìFerìstì</value>
+    </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>Aysyon</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>Pamrel si tstxor syonä ulte 'ampi fì'ut alu Enter</value>
+    </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>'Aku "{0}"ti</value>
+    </data>
+    <data name="dialog/tag_name" xml:space="preserve">
+        <value>Tstxo</value>
+    </data>
+    <data name="dialog/rename" xml:space="preserve">
+        <value>Tìng mipa tstxot</value>
+    </data>
+    <data name="dialog/tag_used_on" xml:space="preserve">
+        <value>Tok {0}a sätserit</value>
+    </data>
+    <data name="dialog/tag_name_taken" xml:space="preserve">
+        <value>Li fkeytok syon alu "{0}".</value>
+    </data>
+    <data name="dialog/new_tag_tooltip" xml:space="preserve">
+        <value>Mipa syon alu "{0}", sweyn tsat fkol krra sweyn sätserit</value>
+    </data>
+    <data name="dialog/delete_tag_confirm" xml:space="preserve">
+        <value>'Aku "{0}"ti ta {1}a sätseri srak?</value>
+    </data>
+    <data name="dialog/tag_new_info" xml:space="preserve">
+        <value>Mipa syon, sung tsat fkol krra sweyn sätserit</value>
+    </data>
+    <data name="dialog/edit_tag" xml:space="preserve">
+        <value>Leykatem "{0}"ti</value>
+    </data>
+</root>

@@ -1,0 +1,209 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="language/german" xml:space="preserve">
+        <value>deutsch</value>
+    </data>
+    <data name="language/danish" xml:space="preserve">
+        <value>dänisch</value>
+    </data>
+    <data name="language/english" xml:space="preserve">
+        <value>englisch</value>
+    </data>
+    <data name="language/klingon" xml:space="preserve">
+        <value>klingonisch</value>
+    </data>
+    <data name="language/navi" xml:space="preserve">
+        <value>Na'vi</value>
+    </data>
+    <data name="button/tooltip_dark" xml:space="preserve">
+        <value>Dunkel</value>
+    </data>
+    <data name="button/tooltip_light" xml:space="preserve">
+        <value>Hell</value>
+    </data>
+    <data name="todo/property_title" xml:space="preserve">
+        <value>Titel</value>
+    </data>
+    <data name="todo/column_title" xml:space="preserve">
+        <value>Spaltetitel</value>
+    </data>
+    <data name="todo/property_description" xml:space="preserve">
+        <value>Beschreibung</value>
+    </data>
+    <data name="button/add_column" xml:space="preserve">
+        <value>Spalte Hinzufügen</value>
+    </data>
+    <data name="button/add_todo" xml:space="preserve">
+        <value>Notiz Hinzufügen</value>
+    </data>
+    <data name="button/add_note_tooltip" xml:space="preserve">
+        <value>Eine neue Notiz hinzufügen</value>
+    </data>
+    <data name="button/delete_column_tooltip" xml:space="preserve">
+        <value>Spalte löschen</value>
+    </data>
+    <data name="button/delete_tooltip" xml:space="preserve">
+        <value>Löschen</value>
+    </data>
+    <data name="dialog/add" xml:space="preserve">
+        <value>Hinzufügen</value>
+    </data>
+    <data name="dialog/cancel" xml:space="preserve">
+        <value>Einstellen</value>
+    </data>
+    <data name="dialog/ok" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="todo/default_title" xml:space="preserve">
+        <value>Neue ToDo</value>
+    </data>
+    <data name="todo/default_description" xml:space="preserve">
+        <value>Das ist eine neue Todo.</value>
+    </data>
+    <data name="dialog/save" xml:space="preserve">
+        <value>Speichern</value>
+    </data>
+    <data name="dialog/delete" xml:space="preserve">
+        <value>Löschen</value>
+    </data>
+    <data name="dialog/delete_the_todos" xml:space="preserve">
+        <value>Notiz(en) löschen</value>
+    </data>
+    <data name="dialog/title_add_new_column" xml:space="preserve">
+        <value>Neue Spalte Hinzufügen</value>
+    </data>
+    <data name="dialog/title_add_new_note" xml:space="preserve">
+        <value>Neue Notiz Hinzufügen</value>
+    </data>
+    <data name="dialog/title_delete_column_q" xml:space="preserve">
+        <value>Spalte Löschen?</value>
+    </data>
+    <data name="dialog/title_delete_note_q" xml:space="preserve">
+        <value>Notiz Löschen?</value>
+    </data>
+    <data name="dialog/title_edit_column" xml:space="preserve">
+        <value>Spalte Bearbeiten</value>
+    </data>
+    <data name="dialog/title_edit_note" xml:space="preserve">
+        <value>Notiz Bearbeiten</value>
+    </data>
+    <data name="button/edit_column_title_tooltip" xml:space="preserve">
+        <value>Spaltetitel bearbeiten</value>
+    </data>
+    <data name="button/edit_tooltip" xml:space="preserve">
+        <value>Bearbeiten</value>
+    </data>
+    <data name="button/export" xml:space="preserve">
+        <value>Exportieren</value>
+    </data>
+    <data name="button/import" xml:space="preserve">
+        <value>Importieren</value>
+    </data>
+    <data name="dialog/export_board" xml:space="preserve">
+        <value>Tafel Exportieren</value>
+    </data>
+    <data name="dialog/import_board" xml:space="preserve">
+        <value>Tafel Importieren</value>
+    </data>
+    <data name="dialog/json_files" xml:space="preserve">
+        <value>JSON-Datei</value>
+    </data>
+    <data name="dialog/option_move_to_column" xml:space="preserve">
+        <value>Auf "{0}" stellen</value>
+    </data>
+    <data name="button/attach_file_tooltip" xml:space="preserve">
+        <value>Datei anhängen</value>
+    </data>
+    <data name="button/remove_attached_file_tooltip" xml:space="preserve">
+        <value>Den Anhang entfernen</value>
+    </data>
+    <data name="button/tooltip_accent_color" xml:space="preserve">
+        <value>Temafarbe</value>
+    </data>
+    <data name="dialog/attach_file" xml:space="preserve">
+        <value>Datei anhängen</value>
+    </data>
+    <data name="language/faroese" xml:space="preserve">
+        <value>färöisch</value>
+    </data>
+    <data name="button/tooltip_system_default" xml:space="preserve">
+        <value>Standardeinstellung des Betriebssystems</value>
+    </data>
+    <data name="todo/property_tags" xml:space="preserve">
+        <value>Tags</value>
+    </data>
+    <data name="dialog/add_tag_placeholder" xml:space="preserve">
+        <value>Schreib eine Tagname und drück die Eingabetaste</value>
+    </data>
+    <data name="dialog/remove_tag" xml:space="preserve">
+        <value>"{0}" entfernen</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>"{0}" löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+    </data>
+    <data name="dialog/content_delete_column_no_space" xml:space="preserve">
+        <value>"{0}" und die {1} Notiz(en) darin löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+    </data>
+    <data name="dialog/content_delete_note" xml:space="preserve">
+        <value>"{0}" löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+    </data>
+    <data name="dialog/content_delete_column_consequence" xml:space="preserve">
+        <value>Was soll mit die {0} Notiz(en) in diese Spalte geschehen?</value>
+    </data>
+    <data name="error/failed_to_attach_file" xml:space="preserve">
+        <value>Die Datei konnte nicht anhängt werden.</value>
+    </data>
+    <data name="error/failed_to_export_board" xml:space="preserve">
+        <value>Die Tafel konnte nicht als Datei exportiert werden.</value>
+    </data>
+    <data name="error/failed_to_import_board" xml:space="preserve">
+        <value>Die Tafel konnte nicht aus der Datei importiert werden.</value>
+    </data>
+    <data name="error/failed_to_load_board" xml:space="preserve">
+        <value>Die Tafel konnte nicht eingeladen werden.</value>
+    </data>
+    <data name="error/failed_to_open_attached_file" xml:space="preserve">
+        <value>Die angehängte Datei konnte nicht geöffnet werden.</value>
+    </data>
+    <data name="error/failed_to_remove_attached_file" xml:space="preserve">
+        <value>Die angehängte Datei konnte nicht entfernt werden.</value>
+    </data>
+    <data name="error/failed_to_save_board" xml:space="preserve">
+        <value>Die Tafel konnte nicht gespeichert werden.</value>
+    </data>
+    <data name="dialog/delete_tag_confirm" xml:space="preserve">
+        <value>"{0}" von alle {1} Notiz(en) entfernen?</value>
+    </data>
+    <data name="dialog/edit_tag" xml:space="preserve">
+        <value>"{0}" bearbeiten</value>
+    </data>
+    <data name="dialog/new_tag_tooltip" xml:space="preserve">
+        <value>Neuer Tag "{0}", wird beim Speichern der Notiz gespeichert.</value>
+    </data>
+    <data name="dialog/rename" xml:space="preserve">
+        <value>Umbenennen</value>
+    </data>
+    <data name="dialog/tag_name" xml:space="preserve">
+        <value>Name</value>
+    </data>
+    <data name="dialog/tag_name_taken" xml:space="preserve">
+        <value>Es gibt schon ein Tag mit dem Namen "{0}".</value>
+    </data>
+    <data name="dialog/tag_new_info" xml:space="preserve">
+        <value>Neuer Tag, wird beim Speichern der Notiz hinzugefügt.</value>
+    </data>
+    <data name="dialog/tag_used_on" xml:space="preserve">
+        <value>{0} Notiz(en) benutzt es</value>
+    </data>
+</root>

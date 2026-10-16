@@ -7,7 +7,8 @@ public interface ITodoBoard
     public event EventHandler ColumnRemoved;
     public event EventHandler ColumnContentChanged;
     public event EventHandler BoardChanged;
-    
+    public event EventHandler? ColumnOrderChanged;
+    public event EventHandler? TagChanged;
     public List<Guid> GetStatusColumnIds();
 
     public String GetStatusColumnName(Guid columnId);
@@ -25,7 +26,7 @@ public interface ITodoBoard
 
     public void MoveColumnRight(Guid columnId);
 
-    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null);
+    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null, IReadOnlyDictionary<string, string>? newTagColors = null);
 
     public void EmptyTrashBin();
 
@@ -34,6 +35,18 @@ public interface ITodoBoard
     public void SetNoteContent(Guid id, string newContent);
 
     public void SetNoteTitle(Guid id, string newTitle);
+
+    public void SetNoteTags(Guid id, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null);
+
+    public List<NoteTag> GetTags();
+
+    public int CountNotesWithTag(Guid tagId);
+
+    public void RenameTag(Guid tagId, string newName);
+
+    public void SetTagColor(Guid tagId, string color);
+
+    public void DeleteTag(Guid tagId);
 
     public void SetNoteFileAttachment(Guid id, string newFilePath);
 
@@ -58,4 +71,8 @@ public interface ITodoBoard
     public void SaveBoardToJson(string jsonPath);
     
     public void LoadBoardFromJson(string jsonPath);
+
+    public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex);
+
+    public void MoveColumn(Guid columnId, int targetIndex);
 }
