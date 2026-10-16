@@ -268,12 +268,17 @@ namespace ToDo_App.UI.Views
                 Grid.SetColumn(buttons, 1);
 
                 // Assemble the card.
+                StackPanel cardContent = new StackPanel { Spacing = 4 };
+
+                cardContent.Children.Add(headerRow);
+
+                if (note.Tags.Count > 0) { cardContent.Children.Add(buildTagsRow(note)); }
+
+                cardContent.Children.Add(expandedContent);
+
                 Border card = new Border {
                     Style = (Style)Resources["TodoCard"],
-                    Child = new StackPanel {
-                        Spacing = 4,
-                        Children = { headerRow, expandedContent }
-                    }
+                    Child = cardContent
                 };
 
                 listPanel.Children.Add(card);
