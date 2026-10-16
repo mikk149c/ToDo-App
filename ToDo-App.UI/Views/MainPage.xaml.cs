@@ -1184,7 +1184,7 @@ namespace ToDo_App.UI.Views
             {
                 LanguageSelector.Items.Add(new ComboBoxItem
                 {
-                    Content = Res.ResourceManager.GetString(language.Value, _currentCulture),
+                    Content = language.Value,
                     Tag = language.Key
                 });
             }
@@ -1233,8 +1233,7 @@ namespace ToDo_App.UI.Views
 
             foreach (ComboBoxItem item in LanguageSelector.Items)
             {
-                var languageStringName = Localizer.Languages[item.Tag.ToString()];
-                item.Content = Res.ResourceManager.GetString(languageStringName, _currentCulture);
+                item.Content = Localizer.Languages[item.Tag.ToString()];
             }
             
             AppearanceSelector.SetStrings(
