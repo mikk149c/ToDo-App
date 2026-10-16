@@ -39,6 +39,31 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "build-web",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}/ToDo-App.Web/ToDo-App.Web.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "run-web",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "watch",
+                "--project",
+                "${workspaceFolder}/ToDo-App.Web/ToDo-App.Web.csproj"
+            ],
+            "isBackground": true,
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "build-unpackaged",
             "type": "process",
             "command": "dotnet",
