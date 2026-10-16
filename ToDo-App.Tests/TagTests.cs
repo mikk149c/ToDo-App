@@ -16,7 +16,7 @@ public class TagTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         plannedId = controller.CreateColumn("Planned");
         progressId = controller.CreateColumn("In Progress");
         firstNoteId = controller.CreateNote(plannedId, "First note", "Køb bananer");
@@ -304,13 +304,13 @@ public class TagPersistenceTests
     [Test]
     public void RoundTripKeepsTagIdsAndNames()
     {
-        var original = new BoardController();
+        var original = new LocalBoardController();
         Guid columnId = original.CreateColumn("Planned");
         Guid firstId = original.CreateNote(columnId, "First", "", tagNames: new[] { "Work", "Home" });
         Guid secondId = original.CreateNote(columnId, "Second", "", tagNames: new[] { "Work" });
         original.SaveBoardToJson(jsonPath);
 
-        var loaded = new BoardController();
+        var loaded = new LocalBoardController();
         loaded.LoadBoardFromJson(jsonPath);
 
         List<ToDoNote> originalNotes = allNotes(original);
@@ -340,7 +340,7 @@ public class TagPersistenceTests
               ]
             }
             """);
-        var controller = new BoardController();
+        var controller = new LocalBoardController();
 
         controller.LoadBoardFromJson(jsonPath);
 
@@ -357,7 +357,7 @@ public class TagPersistenceTests
             { "StatusColumns": [ { "Id": "11111111-1111-1111-1111-111111111111", "Title": "Planned",
               "Notes": [ { "Id": "22222222-2222-2222-2222-222222222222", "Title": "Note", "Content": "", "Tags": null } ] } ] }
             """);
-        var controller = new BoardController();
+        var controller = new LocalBoardController();
 
         controller.LoadBoardFromJson(jsonPath);
 
@@ -375,7 +375,7 @@ public class TagPersistenceTests
               { "Id": "44444444-4444-4444-4444-444444444444", "Title": "Second", "Content": "",
                 "Tags": [ { "Id": "33333333-3333-3333-3333-333333333333", "Name": "Job" } ] } ] } ] }
             """);
-        var controller = new BoardController();
+        var controller = new LocalBoardController();
 
         controller.LoadBoardFromJson(jsonPath);
 
@@ -392,7 +392,7 @@ public class TagPersistenceTests
                 "Tags": [ { "Id": "33333333-3333-3333-3333-333333333333", "Name": "Work" },
                           { "Id": "33333333-3333-3333-3333-333333333333", "Name": "Work" } ] } ] } ] }
             """);
-        var controller = new BoardController();
+        var controller = new LocalBoardController();
 
         controller.LoadBoardFromJson(jsonPath);
 
