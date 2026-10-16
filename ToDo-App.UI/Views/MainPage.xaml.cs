@@ -194,6 +194,7 @@ namespace ToDo_App.UI.Views
                 };
 
                 Button restoreButton = new Button{ Content = new SymbolIcon(Symbol.Undo) };
+                ToolTipService.SetToolTip(restoreButton, Res.ResourceManager.GetString("dialog/restore_tooltip", _currentCulture));
                 restoreButton.Click += (sender, e) => {
                     selectedTrashNoteId = note.Id;
                     restoreHeading.Text = string.Format(
@@ -239,10 +240,11 @@ namespace ToDo_App.UI.Views
                 };
 
                 Button deleteButton = new Button { Content = new SymbolIcon(Symbol.Delete) };
+                ToolTipService.SetToolTip(deleteButton, Res.ResourceManager.GetString("dialog/permanent_delete_note_tooltip", _currentCulture));
                 deleteButton.Click += (sender, e) => { 
                     selectedTrashNoteId = note.Id;
                     confirmationText.Text = string.Format(
-                        Res.ResourceManager.GetString("dialog/content_delete_note_permanent", _currentCulture),
+                        Res.ResourceManager.GetString("dialog/content_permanent_delete_note", _currentCulture),
                         note.Title);
                     confirmationPanel.Visibility = Visibility.Visible;
                     trashListView.Visibility = Visibility.Collapsed;

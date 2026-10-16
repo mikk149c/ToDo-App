@@ -148,7 +148,7 @@
         <value>Accent color</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>Delete "{0}"? This can't be undone.</value>
+        <value>Move "{0}" to trash bin?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
         <value>Delete "{0}" and the [[{1} note|{1} notes]] in it? This can't be undone.</value>
@@ -261,10 +261,16 @@
     <data name="dialog/restore_which_column" xml:space="preserve">
         <value>Select which column to restore "{0}" to.</value>
     </data>
-    <data name="dialog/content_delete_note_permanent" xml:space="preserve">
+    <data name="dialog/content_permanent_delete_note" xml:space="preserve">
         <value>Permanently delete "{0}"? This can't be undone.</value>
     </data>
     <data name="button/trash_bin" xml:space="preserve">
         <value>Trash bin</value>
+    </data>
+    <data name="dialog/restore_tooltip" xml:space="preserve">
+        <value>Restore note</value>
+    </data>
+    <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
+        <value>Delete note permanently</value>
     </data>
 </root>

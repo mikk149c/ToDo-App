@@ -276,7 +276,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete &quot;{0}&quot;? This can&apos;t be undone..
+        ///   Looks up a localized string similar to Move &quot;{0}&quot; to trash bin?.
         /// </summary>
         internal static string dialog_content_delete_note {
             get {
@@ -287,9 +287,9 @@ namespace ToDo_App.UI {
         /// <summary>
         ///   Looks up a localized string similar to Permanently delete &quot;{0}&quot;? This can&apos;t be undone..
         /// </summary>
-        internal static string dialog_content_delete_note_permanent {
+        internal static string dialog_content_permanent_delete_note {
             get {
-                return ResourceManager.GetString("dialog/content_delete_note_permanent", resourceCulture);
+                return ResourceManager.GetString("dialog/content_permanent_delete_note", resourceCulture);
             }
         }
         
@@ -420,6 +420,15 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete note permanently.
+        /// </summary>
+        internal static string dialog_permanent_delete_note_tooltip {
+            get {
+                return ResourceManager.GetString("dialog/permanent_delete_note_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove &quot;{0}&quot;.
         /// </summary>
         internal static string dialog_remove_tag {
@@ -434,6 +443,15 @@ namespace ToDo_App.UI {
         internal static string dialog_rename {
             get {
                 return ResourceManager.GetString("dialog/rename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore note.
+        /// </summary>
+        internal static string dialog_restore_tooltip {
+            get {
+                return ResourceManager.GetString("dialog/restore_tooltip", resourceCulture);
             }
         }
         

@@ -149,11 +149,8 @@
     <data name="dialog/import_board" xml:space="preserve">
         <value>Flyt talvu inn</value>
     </data>
-    <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>Strika "{0}"? Hetta kann ikki angrast.</value>
-    </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>Strika "{0}"? Hetta kann ikki angrast.</value>
+        <value>Koyr "{0}" í pappírskurvina?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
         <value>Strika "{0}" og [[uppriti|tey {1} uppritini]] inni í? Hetta kann ikki angrast.</value>
@@ -241,5 +238,32 @@
     </data>
     <data name="filter/remove_tag" xml:space="preserve">
         <value>Hald uppat við at síla eftir "{0}"</value>
+    </data>
+    <data name="dialog/content_permanent_delete_note" xml:space="preserve">
+        <value>Strika "{0}" um ævir? Hetta kann ikki angrast.</value>
+    </data>
+    <data name="button/trash_bin" xml:space="preserve">
+        <value>Pappírskurv</value>
+    </data>
+    <data name="dialog/close" xml:space="preserve">
+        <value>Lat aftur</value>
+    </data>
+    <data name="dialog/empty_bin" xml:space="preserve">
+        <value>Tøm pappírskurvina</value>
+    </data>
+    <data name="dialog/empty_bin_confirm" xml:space="preserve">
+        <value>Vil tú verðiliga strika øll upprit, ið liggja í pappírskurvini, um ævir?</value>
+    </data>
+    <data name="dialog/restore_which_column" xml:space="preserve">
+        <value>Vel hvørjan teig ið "{0}" skal endurnýggjast á.</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>Strika "{0}"? Hetta kann ikki angrast.</value>
+    </data>
+    <data name="dialog/restore_tooltip" xml:space="preserve">
+        <value>Endurnýggja upprit</value>
+    </data>
+    <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
+        <value>Strika upprit um ævir</value>
     </data>
 </root>

@@ -149,11 +149,8 @@
     <data name="dialog/import_board" xml:space="preserve">
         <value>teywI' 'echlet yIHev</value>
     </data>
-    <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>«{0}» teqlu' DaneH'a'? DateqHa'laHbe'.</value>
-    </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>«{0}» teqlu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>veQ DaqDaq «{0}» qemlu' DaneH'a'?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
         <value>«{0}» [[ghu'lIS|{1} ghu'lISmey]] rarchuq je luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
@@ -241,5 +238,32 @@
     </data>
     <data name="filter/remove_tag" xml:space="preserve">
         <value>«{0}» yIlo' 'e' yImev</value>
+    </data>
+    <data name="button/trash_bin" xml:space="preserve">
+        <value>veQ Daq</value>
+    </data>
+    <data name="dialog/close" xml:space="preserve">
+        <value>SoQmoH</value>
+    </data>
+    <data name="dialog/content_permanent_delete_note" xml:space="preserve">
+        <value>«{0}» teqlu' DaneH'a'? DateqHa'laHbe'.</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>«{0}» teqlu' DaneH'a'? DateqHa'laHbe'.</value>
+    </data>
+    <data name="dialog/empty_bin" xml:space="preserve">
+        <value>Hoch veQ yIQaw'</value>
+    </data>
+    <data name="dialog/empty_bin_confirm" xml:space="preserve">
+        <value>veQ Daq Hoch ghu'lIS Qaw'lu' DaneH'a'? DateqHa'laHbe'.</value>
+    </data>
+    <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
+        <value>ghu'lIS yIQaw'</value>
+    </data>
+    <data name="dialog/restore_tooltip" xml:space="preserve">
+        <value>ghu'lIS yInobHa'</value>
+    </data>
+    <data name="dialog/restore_which_column" xml:space="preserve">
+        <value>nuqDaq ghu'lIS luqemlu' DaneH?</value>
     </data>
 </root>

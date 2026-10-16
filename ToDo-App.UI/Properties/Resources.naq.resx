@@ -159,7 +159,7 @@
         <value>'Aku likit alu {0} sì [[|me|pxe|{1}a ]]sätserit a tok tsat srak? Zene livu am'ake.</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>'Aku sätserit alu {0} srak? Zene livu am'ake.</value>
+        <value>Munge sätserit alu {0} ne sngeltseng srak?</value>
     </data>
     <data name="language/navi" xml:space="preserve">
         <value>nìNa'vi</value>
@@ -241,5 +241,29 @@
     </data>
     <data name="filter/showing" xml:space="preserve">
         <value>Ekxan seri fa</value>
+    </data>
+    <data name="button/trash_bin" xml:space="preserve">
+        <value>Sngeltseng</value>
+    </data>
+    <data name="dialog/close" xml:space="preserve">
+        <value>Tstu si</value>
+    </data>
+    <data name="dialog/content_permanent_delete_note" xml:space="preserve">
+        <value>'Aku sätserit alu {0} srak? Zene livu am'ake.</value>
+    </data>
+    <data name="dialog/empty_bin" xml:space="preserve">
+        <value>Mek sleyku sngeltsengit</value>
+    </data>
+    <data name="dialog/empty_bin_confirm" xml:space="preserve">
+        <value>Frasätserit a tok sngeltsengit ska'a srak? Zene livu am'ake.</value>
+    </data>
+    <data name="dialog/restore_which_column" xml:space="preserve">
+        <value>Ftxey teyngta pelikmì speng sätseriti.</value>
+    </data>
+    <data name="dialog/restore_tooltip" xml:space="preserve">
+        <value>Speng sätserit</value>
+    </data>
+    <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
+        <value>Ska'a sätserit</value>
     </data>
 </root>

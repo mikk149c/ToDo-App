@@ -149,14 +149,11 @@
     <data name="dialog/remove_tag" xml:space="preserve">
         <value>"{0}" entfernen</value>
     </data>
-    <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>"{0}" löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
-    </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
         <value>"{0}" und die [[Notiz|{1} Notizen]] darin löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>"{0}" löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+        <value>"{0}" in den Papierkorb verschieben?</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
         <value>Was soll mit die [[Notiz|{0} Notizen]] in diese Spalte geschehen?</value>
@@ -241,5 +238,32 @@
     </data>
     <data name="filter/remove_tag" xml:space="preserve">
         <value>Filterung nach "{0}" unheben</value>
+    </data>
+    <data name="dialog/content_permanent_delete_note" xml:space="preserve">
+        <value>"{0}" endgültig löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+    </data>
+    <data name="button/trash_bin" xml:space="preserve">
+        <value>Papierkorb</value>
+    </data>
+    <data name="dialog/close" xml:space="preserve">
+        <value>Schließen</value>
+    </data>
+    <data name="dialog/empty_bin" xml:space="preserve">
+        <value>Den Papierkorb leeren</value>
+    </data>
+    <data name="dialog/empty_bin_confirm" xml:space="preserve">
+        <value>Bist du sicher, dass du alle Notizen im Papierkorb endgültig löschen möchtest?</value>
+    </data>
+    <data name="dialog/restore_which_column" xml:space="preserve">
+        <value>Wähle aus, in welcher Spalte "{0}" wiederhergestellt werden soll.</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>"{0}" löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+    </data>
+    <data name="dialog/restore_tooltip" xml:space="preserve">
+        <value>Notiz wiedergestellen</value>
+    </data>
+    <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
+        <value>Endgültig Notiz löschen</value>
     </data>
 </root>
