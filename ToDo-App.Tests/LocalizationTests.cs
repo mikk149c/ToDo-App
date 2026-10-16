@@ -43,4 +43,12 @@ public class LocalizationTests
         Assert.That(naviEightOctal, Is.EqualTo("Tok 10a 'ul tsengti."));
         Assert.That(naviNineOctal, Is.EqualTo("Tok 11a 'ul tsengti."));
     }
+    [Test]
+    public void TestStringWithoutPatternWorks()
+    {
+        var normalString = "There are notes in the column.";
+
+        var handledString = Localizer.HandlePlurals(normalString, 50, "en-US");
+        Assert.That(handledString, Is.EqualTo(normalString));
+    }
 }
