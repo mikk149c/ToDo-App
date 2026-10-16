@@ -215,4 +215,31 @@
     <data name="dialog/merge_tag_confirm" xml:space="preserve">
         <value>Eitt annað frámerki eitur longu "{1}". Skal tað flættast inn í "{0}"? [[Uppriti fær|Tey {2} uppritini fáa]] "{1}" ístaðin.</value>
     </data>
+    <data name="filter/button" xml:space="preserve">
+        <value>Síla</value>
+    </data>
+    <data name="filter/button_active" xml:space="preserve">
+        <value>Síla ({0})</value>
+    </data>
+    <data name="filter/clear" xml:space="preserve">
+        <value>Strika síluna</value>
+    </data>
+    <data name="filter/match_all" xml:space="preserve">
+        <value>Øllum frámerkjum</value>
+    </data>
+    <data name="filter/match_any" xml:space="preserve">
+        <value>Minst einum frámerki</value>
+    </data>
+    <data name="filter/match_label" xml:space="preserve">
+        <value>Vís ToDoar við:</value>
+    </data>
+    <data name="filter/no_tags" xml:space="preserve">
+        <value>Har liggja enn eingi frámerki á talvuni.</value>
+    </data>
+    <data name="filter/showing" xml:space="preserve">
+        <value>Sílað eftir:</value>
+    </data>
+    <data name="filter/remove_tag" xml:space="preserve">
+        <value>Hald uppat við at síla eftir "{0}"</value>
+    </data>
 </root>

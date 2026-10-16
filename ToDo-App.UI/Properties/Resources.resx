@@ -229,7 +229,7 @@
         <value>Filter ({0})</value>
     </data>
     <data name="filter/match_label" xml:space="preserve">
-        <value>Show todos with</value>
+        <value>Show ToDos with:</value>
     </data>
     <data name="filter/match_any" xml:space="preserve">
         <value>Any of the tags</value>
@@ -241,12 +241,12 @@
         <value>Clear filter</value>
     </data>
     <data name="filter/showing" xml:space="preserve">
-        <value>Filtered by</value>
+        <value>Filtered by:</value>
     </data>
     <data name="filter/no_tags" xml:space="preserve">
         <value>There are no tags on the board yet.</value>
     </data>
     <data name="filter/remove_tag" xml:space="preserve">
-        <value>Stop filtering by {0}</value>
+        <value>Stop filtering by "{0}"</value>
     </data>
 </root>

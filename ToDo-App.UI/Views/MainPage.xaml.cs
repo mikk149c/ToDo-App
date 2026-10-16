@@ -1244,8 +1244,10 @@ namespace ToDo_App.UI.Views
         // Shows on the toolbar that the board is filtered, and by which tags
         private void updateFilterUi()
         {
+            var activeText = Localizer.HandlePlurals(filterString("filter/button_active"),
+                tagFilter.TagIds.Count, _currentCulture.Name);
             FilterButton.Content = tagFilter.IsActive
-                ? string.Format(filterString("filter/button_active"), tagFilter.TagIds.Count)
+                ? activeText
                 : filterString("filter/button");
             FilterBar.Visibility = tagFilter.IsActive ? Visibility.Visible : Visibility.Collapsed;
             FilterBarLabel.Text = filterString("filter/showing");

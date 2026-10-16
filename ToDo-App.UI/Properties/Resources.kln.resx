@@ -81,10 +81,10 @@
         <value>ghu'lIS chu' yIchel</value>
     </data>
     <data name="dialog/title_delete_column_q" xml:space="preserve">
-        <value>war luteqlu' DaneH'a'?</value>
+        <value>war teqlu' DaneH'a'?</value>
     </data>
     <data name="dialog/title_delete_note_q" xml:space="preserve">
-        <value>ghu'lIS luteqlu' DaneH'a'?</value>
+        <value>ghu'lIS teqlu' DaneH'a'?</value>
     </data>
     <data name="dialog/title_edit_column" xml:space="preserve">
         <value>war yIDI'</value>
@@ -150,10 +150,10 @@
         <value>teywI' 'echlet yIHev</value>
     </data>
     <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>«{0}» luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>«{0}» teqlu' DaneH'a'? DateqHa'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>«{0}» luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>«{0}» teqlu' DaneH'a'? DateqHa'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
         <value>«{0}» [[ghu'lIS|{1} ghu'lISmey]] rarchuq je luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
@@ -214,5 +214,32 @@
     </data>
     <data name="dialog/merge" xml:space="preserve">
         <value>yImerghmoH</value>
+    </data>
+    <data name="filter/button" xml:space="preserve">
+        <value>yIQIb</value>
+    </data>
+    <data name="filter/button_active" xml:space="preserve">
+        <value>yIQIb</value>
+    </data>
+    <data name="filter/clear" xml:space="preserve">
+        <value>QIbtaH 'e' yImev</value>
+    </data>
+    <data name="filter/match_label" xml:space="preserve">
+        <value>ghu'lISmey lucha'lu'meH DuHvam lo'lu'</value>
+    </data>
+    <data name="filter/match_all" xml:space="preserve">
+        <value>Hoch per</value>
+    </data>
+    <data name="filter/match_any" xml:space="preserve">
+        <value>rav wa' per</value>
+    </data>
+    <data name="filter/no_tags" xml:space="preserve">
+        <value>teywI' 'echletDaq pagh per tu'lu'.</value>
+    </data>
+    <data name="filter/showing" xml:space="preserve">
+        <value>QIbtaHmeH Ho'DoSvam lo'</value>
+    </data>
+    <data name="filter/remove_tag" xml:space="preserve">
+        <value>«{0}» yIlo' 'e' yImev</value>
     </data>
 </root>

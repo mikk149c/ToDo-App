@@ -69,7 +69,7 @@
         <value>Neue ToDo</value>
     </data>
     <data name="todo/default_description" xml:space="preserve">
-        <value>Das ist eine neue Todo.</value>
+        <value>Das ist eine neue ToDo.</value>
     </data>
     <data name="dialog/save" xml:space="preserve">
         <value>Speichern</value>
@@ -214,5 +214,32 @@
     </data>
     <data name="dialog/merge_tag_confirm" xml:space="preserve">
         <value>Es gibt schon ein Tag mit dem Namen "{1}". Soll es in "{0}" zusammenlegen werden? Die [[Notiz|{2} Notizen]] werden stattdessen "{1}" bekommen.</value>
+    </data>
+    <data name="filter/button" xml:space="preserve">
+        <value>Filtern</value>
+    </data>
+    <data name="filter/button_active" xml:space="preserve">
+        <value>Filtern ({0})</value>
+    </data>
+    <data name="filter/clear" xml:space="preserve">
+        <value>Filter Löschen</value>
+    </data>
+    <data name="filter/match_all" xml:space="preserve">
+        <value>Alle Tags</value>
+    </data>
+    <data name="filter/match_any" xml:space="preserve">
+        <value>Beliebige der Tags</value>
+    </data>
+    <data name="filter/match_label" xml:space="preserve">
+        <value>Zeig ToDos mit:</value>
+    </data>
+    <data name="filter/no_tags" xml:space="preserve">
+        <value>Es gibt noch keine Tags auf der Tafel.</value>
+    </data>
+    <data name="filter/showing" xml:space="preserve">
+        <value>Gefiltert nach:</value>
+    </data>
+    <data name="filter/remove_tag" xml:space="preserve">
+        <value>Filterung nach "{0}" unheben</value>
     </data>
 </root>

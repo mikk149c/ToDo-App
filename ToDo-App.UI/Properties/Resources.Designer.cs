@@ -609,7 +609,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show todos with.
+        ///   Looks up a localized string similar to Show ToDos with:.
         /// </summary>
         internal static string filter_match_label {
             get {
@@ -627,7 +627,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stop filtering by {0}.
+        ///   Looks up a localized string similar to Stop filtering by &quot;{0}&quot;.
         /// </summary>
         internal static string filter_remove_tag {
             get {
@@ -636,7 +636,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Filtered by.
+        ///   Looks up a localized string similar to Filtered by:.
         /// </summary>
         internal static string filter_showing {
             get {

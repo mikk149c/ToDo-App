@@ -222,7 +222,7 @@
         <value>Filtrer ({0})</value>
     </data>
     <data name="filter/match_label" xml:space="preserve">
-        <value>Vis todos med</value>
+        <value>Vis ToDos med:</value>
     </data>
     <data name="filter/match_any" xml:space="preserve">
         <value>Mindst ét af tagsene</value>
@@ -234,12 +234,12 @@
         <value>Ryd filter</value>
     </data>
     <data name="filter/showing" xml:space="preserve">
-        <value>Filtreret på</value>
+        <value>Filtreret på:</value>
     </data>
     <data name="filter/no_tags" xml:space="preserve">
         <value>Der er endnu ingen tags på tavlen.</value>
     </data>
     <data name="filter/remove_tag" xml:space="preserve">
-        <value>Stop filtrering på {0}</value>
+        <value>Stop filtrering på "{0}"</value>
     </data>
 </root>

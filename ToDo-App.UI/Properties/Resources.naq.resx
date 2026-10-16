@@ -72,10 +72,10 @@
         <value>'Aku [[|me|pxe|{0}a ]]sätseriti</value>
     </data>
     <data name="dialog/export_board" xml:space="preserve">
-        <value>Sweyn tìtserit</value>
+        <value>Sweyn sähenat</value>
     </data>
     <data name="dialog/import_board" xml:space="preserve">
-        <value>Kanom tìtserit</value>
+        <value>Kanom sähenat</value>
     </data>
     <data name="dialog/json_files" xml:space="preserve">
         <value>Ayfayl alu JSON</value>
@@ -108,13 +108,13 @@
         <value>Nìnu yolem faylti.</value>
     </data>
     <data name="error/failed_to_export_board" xml:space="preserve">
-        <value>Nìnu swoleyn tìtserit nemfa fayl.</value>
+        <value>Nìnu swoleyn sähenat nemfa fayl.</value>
     </data>
     <data name="error/failed_to_import_board" xml:space="preserve">
-        <value>Nìnu kolanom tìtserit ftumfa fayl.</value>
+        <value>Nìnu kolanom sähenat ftumfa fayl.</value>
     </data>
     <data name="error/failed_to_load_board" xml:space="preserve">
-        <value>Nìnu kolanom tìtserit.</value>
+        <value>Nìnu kolanom sähenat.</value>
     </data>
     <data name="error/failed_to_open_attached_file" xml:space="preserve">
         <value>Nìnu piak soli faylur ayawnem.</value>
@@ -123,7 +123,7 @@
         <value>Nìnu 'olaku faylit ayawnem.</value>
     </data>
     <data name="error/failed_to_save_board" xml:space="preserve">
-        <value>Nìnu swoleyn tìtserit.</value>
+        <value>Nìnu swoleyn sähenat.</value>
     </data>
     <data name="language/danish" xml:space="preserve">
         <value>nìTänskì</value>
@@ -214,5 +214,32 @@
     </data>
     <data name="dialog/merge_tag_confirm" xml:space="preserve">
         <value>Li fkeytok syon alu {1}. Fì'ut neykawang hu syon alu {0} srak? [[S|mes|pxes|{2}a s]]ätseriru layu syon alu {1}.</value>
+    </data>
+    <data name="filter/button" xml:space="preserve">
+        <value>Ekxan si</value>
+    </data>
+    <data name="filter/button_active" xml:space="preserve">
+        <value>Ekxan si ({0})</value>
+    </data>
+    <data name="filter/clear" xml:space="preserve">
+        <value>'Aku ekxanit</value>
+    </data>
+    <data name="filter/match_label" xml:space="preserve">
+        <value>Wìntxu sätserit a tsaru lu</value>
+    </data>
+    <data name="filter/match_all" xml:space="preserve">
+        <value>frasyon</value>
+    </data>
+    <data name="filter/match_any" xml:space="preserve">
+        <value>hìmtxewvay syon a'aw</value>
+    </data>
+    <data name="filter/no_tags" xml:space="preserve">
+        <value>Ke li ke tok kea syonìl sähenat.</value>
+    </data>
+    <data name="filter/remove_tag" xml:space="preserve">
+        <value>Ftang ekxan sivi fa syon alu {0}</value>
+    </data>
+    <data name="filter/showing" xml:space="preserve">
+        <value>Ekxan seri fa</value>
     </data>
 </root>
