@@ -348,7 +348,10 @@ namespace ToDo_App.UI.Views
 
             TextBlock confirmationText = new TextBlock {
                 Text = "Are you sure you want to permanently delete this note?",
-                TextWrapping = TextWrapping.Wrap
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Center
             };
 
             Grid confirmationButtons = new Grid {
