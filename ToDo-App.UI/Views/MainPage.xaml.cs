@@ -24,6 +24,8 @@ namespace ToDo_App.UI.Views
         ITodoBoard boardController = new BoardController();
 
         List<Guid> columns = new List<Guid>();
+        // Which todos are shown. Only affects the view, never the board
+        TagFilter tagFilter = new TagFilter();
 
         DispatcherTimer horizontalScrollTimer = new DispatcherTimer();
         double scrollDirection = 0;
@@ -97,7 +99,7 @@ namespace ToDo_App.UI.Views
 
         private void populateStatusColumn(Guid column)
         {
-            List<ToDoNote> items = boardController.GetNotesInColumn(column);
+            List<ToDoNote> items = tagFilter.Apply(boardController.GetNotesInColumn(column));
             StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName(column.ToString());
             if (columnPanel != null)
             {
@@ -202,6 +204,12 @@ namespace ToDo_App.UI.Views
                 throw new ArgumentException("Wrong EventArgs type");
             }
 
+            // A loaded board may not have the filtered tags, and the new column is drawn with the filter
+            if (tagFilter.Prune(boardController.GetTags()))
+            {
+                updateFilterUi();
+            }
+
             var column = buildColumn(args.ColumnId, args.Name);
             AddColumnToUI(column, args.ColumnId);
         }
@@ -250,6 +258,13 @@ namespace ToDo_App.UI.Views
                 throw new ArgumentException("Wrong EventArgs type");
             }
             
+            // The filter turns off tags that are gone, which can show todos in every column
+            if (tagFilter.Prune(boardController.GetTags()))
+            {
+                refreshFilter();
+                return;
+            }
+
             clearColumnItems(args.ColumnId);
             populateStatusColumn(args.ColumnId);
         }
@@ -270,6 +285,9 @@ namespace ToDo_App.UI.Views
                     populateStatusColumn(columnId);
                 }
             }
+
+            // A renamed or recoloured tag is also shown in the filter bar
+            updateFilterUi();
         }
 
         private void onColumnOrderChanged(object? sender, EventArgs e)
@@ -566,6 +584,8 @@ namespace ToDo_App.UI.Views
                     }
                 }
                 List<ToDoNote> notes = boardController.GetNotesInColumn(columnId);
+                // The cards are only the shown todos, so hidden todos keep their positions
+                dropIndex = tagFilter.ToColumnIndex(notes, dropIndex);
                 int currentIndex = notes.FindIndex(n => n.Id == noteId);
                 if (currentIndex != -1 && currentIndex < dropIndex)
                 {
@@ -1115,13 +1135,180 @@ namespace ToDo_App.UI.Views
             return tagsRow;
         }
 
+        // --- Filter the board by tags (#67, #69) ---
+
+        private string filterString(string key)
+        {
+            return Res.ResourceManager.GetString(key, _currentCulture) ?? key;
+        }
+
+        // Rebuilt every time it opens, so it lists the tags the board has right now
+        private void onFilterFlyoutOpening(object? sender, object e)
+        {
+            FilterFlyoutContent.Children.Clear();
+            List<NoteTag> tags = boardController.GetTags();
+            if (tags.Count == 0)
+            {
+                FilterFlyoutContent.Children.Add(new TextBlock
+                {
+                    Text = filterString("filter/no_tags"),
+                    TextWrapping = TextWrapping.Wrap
+                });
+                return;
+            }
+
+            foreach (NoteTag tag in tags)
+            {
+                Guid tagId = tag.Id;
+                var content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+                content.Children.Add(new Microsoft.UI.Xaml.Shapes.Ellipse
+                {
+                    Width = 10,
+                    Height = 10,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Fill = new SolidColorBrush(AccentPalette.Find(tag.Color).Color)
+                });
+                content.Children.Add(new TextBlock { Text = tag.Name, VerticalAlignment = VerticalAlignment.Center });
+
+                var checkBox = new CheckBox { Content = content, IsChecked = tagFilter.TagIds.Contains(tagId) };
+                AutomationProperties.SetName(checkBox, tag.Name);
+                checkBox.Checked += (s, args) => onFilterTagToggled(tagId, true);
+                checkBox.Unchecked += (s, args) => onFilterTagToggled(tagId, false);
+                FilterFlyoutContent.Children.Add(checkBox);
+            }
+
+            // How several selected tags are combined
+            FilterFlyoutContent.Children.Add(new TextBlock { Text = filterString("filter/match_label") });
+            var matchAny = new RadioButton
+            {
+                Content = filterString("filter/match_any"),
+                GroupName = "TagMatchMode",
+                IsChecked = tagFilter.Mode == TagMatchMode.Any
+            };
+            var matchAll = new RadioButton
+            {
+                Content = filterString("filter/match_all"),
+                GroupName = "TagMatchMode",
+                IsChecked = tagFilter.Mode == TagMatchMode.All
+            };
+            matchAny.Checked += (s, args) => onFilterModeChanged(TagMatchMode.Any);
+            matchAll.Checked += (s, args) => onFilterModeChanged(TagMatchMode.All);
+            FilterFlyoutContent.Children.Add(matchAny);
+            FilterFlyoutContent.Children.Add(matchAll);
+
+            var clearButton = new Button { Content = filterString("filter/clear") };
+            clearButton.Click += (s, args) =>
+            {
+                FilterFlyout.Hide();
+                onClearFilterClicked(s, args);
+            };
+            FilterFlyoutContent.Children.Add(clearButton);
+        }
+
+        private void onFilterTagToggled(Guid tagId, bool isSelected)
+        {
+            if (isSelected)
+            {
+                tagFilter.Select(tagId);
+            }
+            else
+            {
+                tagFilter.Deselect(tagId);
+            }
+            refreshFilter();
+        }
+
+        private void onFilterModeChanged(TagMatchMode mode)
+        {
+            tagFilter.Mode = mode;
+            refreshFilter();
+        }
+
+        private void onClearFilterClicked(object sender, RoutedEventArgs e)
+        {
+            tagFilter.Clear();
+            refreshFilter();
+        }
+
+        // Redraws every column with the current filter. The board itself is untouched
+        private void refreshFilter()
+        {
+            foreach (Guid columnId in columns)
+            {
+                clearColumnItems(columnId);
+                populateStatusColumn(columnId);
+            }
+            updateFilterUi();
+        }
+
+        // Shows on the toolbar that the board is filtered, and by which tags
+        private void updateFilterUi()
+        {
+            FilterButton.Content = tagFilter.IsActive
+                ? string.Format(filterString("filter/button_active"), tagFilter.TagIds.Count)
+                : filterString("filter/button");
+            FilterBar.Visibility = tagFilter.IsActive ? Visibility.Visible : Visibility.Collapsed;
+            FilterBarLabel.Text = filterString("filter/showing");
+            ClearFilterButton.Content = filterString("filter/clear");
+            FilterBarMode.Text = tagFilter.TagIds.Count > 1
+                ? filterString(tagFilter.Mode == TagMatchMode.All ? "filter/match_all" : "filter/match_any")
+                : "";
+
+            FilterBarTags.Children.Clear();
+            List<NoteTag> boardTags = boardController.GetTags();
+            foreach (Guid tagId in tagFilter.TagIds)
+            {
+                NoteTag? tag = boardTags.Find(candidate => candidate.Id == tagId);
+                if (tag != null)
+                {
+                    FilterBarTags.Children.Add(buildFilterTag(tag));
+                }
+            }
+        }
+
+        // A tag in the filter bar: its name in its colour, and a ✕ to stop filtering by it
+        private Border buildFilterTag(NoteTag tag)
+        {
+            Guid tagId = tag.Id;
+            var removeButton = new Button
+            {
+                Content = new FontIcon { Glyph = "", FontSize = 10, Foreground = new SolidColorBrush(Colors.White) },
+                Padding = new Thickness(4),
+                MinWidth = 0,
+                MinHeight = 0,
+                Background = new SolidColorBrush(Colors.Transparent),
+                BorderThickness = new Thickness(0)
+            };
+            string label = string.Format(filterString("filter/remove_tag"), tag.Name);
+            AutomationProperties.SetName(removeButton, label);
+            ToolTipService.SetToolTip(removeButton, label);
+            removeButton.Click += (s, args) => onFilterTagToggled(tagId, false);
+
+            var content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
+            content.Children.Add(new TextBlock
+            {
+                Style = (Style)Resources["TodoTagText"],
+                Text = tag.Name,
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            content.Children.Add(removeButton);
+
+            return new Border
+            {
+                Style = (Style)Resources["TodoTag"],
+                Padding = new Thickness(8, 0, 2, 0),
+                Background = new SolidColorBrush(AccentPalette.Find(tag.Color).Color),
+                Child = content
+            };
+        }
+
         private Dictionary<string, string> tagEditorStrings()
         {
             string[] keys =
             {
                 "todo/property_tags", "dialog/add_tag_placeholder", "dialog/remove_tag", "dialog/edit_tag",
                 "dialog/new_tag_tooltip", "dialog/tag_name", "dialog/tag_used_on", "dialog/tag_new_info",
-                "dialog/tag_name_taken", "dialog/tag_colour", "dialog/rename", "dialog/delete", "dialog/cancel", "dialog/delete_tag_confirm"
+                "dialog/tag_name_taken", "dialog/tag_colour", "dialog/rename", "dialog/delete", "dialog/cancel", "dialog/delete_tag_confirm", "dialog/merge", "dialog/merge_tag_confirm"
             };
             // A missing translation shows the key instead of crashing the dialog
             var dict = keys.ToDictionary(key => key, key => Res.ResourceManager.GetString(key, _currentCulture) ?? key);
@@ -1248,6 +1435,7 @@ namespace ToDo_App.UI.Views
             AddToDoButton.Content = Res.ResourceManager.GetString("button/add_todo", _currentCulture);
             ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
             ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);
+            updateFilterUi();
 
             foreach (ComboBoxItem item in LanguageSelector.Items)
             {
