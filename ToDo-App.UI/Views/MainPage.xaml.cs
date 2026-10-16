@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.UI.Xaml.Automation;
 using System.Globalization;
 using Microsoft.Windows.Storage.Pickers;
+using ToDo_App.Client;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 using ToDo_App.UI.Appearance;
@@ -18,6 +19,10 @@ namespace ToDo_App.UI.Views
     {
         private const string DefaultJsonPath = "Assets/default_board.json";
         private const string UserJsonPath = "board.json";
+
+        // The server the Remote toggle connects to. Set TODO_SERVER_URL to use another one
+        private const string ServerUrlVariable = "TODO_SERVER_URL";
+        private const string DefaultServerUrl = "http://localhost:8080/";
         private const double ScrollSpeed = 60;
         private const double ScrollTickSpeed = 10;
 
@@ -31,7 +36,9 @@ namespace ToDo_App.UI.Views
             {"naq", "language/navi"}
         };
 
+        // Local by default. The Remote toggle replaces it with a RemoteBoardController (see useBoard)
         ITodoBoard boardController = new LocalBoardController();
+        bool isSwitchingBoard;
 
         List<Guid> columns = new List<Guid>();
 
@@ -49,13 +56,7 @@ namespace ToDo_App.UI.Views
         {
             InitializeComponent();
 
-            boardController.ColumnCreated += onColumnCreated;
-            boardController.ColumnNameChanged += onColumnNameChanged;
-            boardController.ColumnRemoved += onColumnRemoved;
-            boardController.ColumnContentChanged += onColumnContentChanged;
-            boardController.BoardChanged += onBoardChanged;
-            boardController.ColumnOrderChanged += onColumnOrderChanged;
-            boardController.TagChanged += onTagChanged;
+            subscribeTo(boardController);
             BoardScrollViewer.DragOver += onBoardDragOver;
             BoardScrollViewer.AllowDrop = true;
             this.Content.AllowDrop = true;
@@ -103,6 +104,100 @@ namespace ToDo_App.UI.Views
                     var result = await dialog.ShowAsync();
                 }
             }
+        }
+
+        // --- Local or remote board ---
+
+        // Local (the default) keeps the board in a file on this PC, Remote uses the board on the server
+        private async void onRemoteToggled(object sender, RoutedEventArgs e)
+        {
+            // Setting IsOn below raises Toggled again
+            if (isSwitchingBoard)
+            {
+                return;
+            }
+
+            isSwitchingBoard = true;
+            RemoteToggle.IsEnabled = false;
+
+            if (RemoteToggle.IsOn)
+            {
+                var remote = new RemoteBoardController(serverUrl());
+                useBoard(remote);
+                try
+                {
+                    // The server's columns arrive through ColumnCreated, like loading a file
+                    await remote.ConnectAsync();
+                }
+                catch (Exception exception)
+                {
+                    // The server can't be reached: back to the board on this PC
+                    RemoteToggle.IsOn = false;
+                    useLocalBoard();
+                    var dialog = new ContentDialog()
+                    {
+                        XamlRoot = this.Content.XamlRoot,
+                        Title = String.Format(Res.ResourceManager.GetString("error/failed_to_connect", _currentCulture) ?? "", serverUrl()),
+                        Content = exception.Message,
+                        CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
+                    };
+                    await dialog.ShowAsync();
+                }
+            }
+            else
+            {
+                useLocalBoard();
+            }
+
+            RemoteToggle.IsEnabled = true;
+            isSwitchingBoard = false;
+        }
+
+        private void useLocalBoard()
+        {
+            useBoard(new LocalBoardController());
+            loadInitialBoard();
+        }
+
+        // Swaps in another controller. The page is cleared, so the new controller's columns can fill it
+        private void useBoard(ITodoBoard board)
+        {
+            unsubscribeFrom(boardController);
+            (boardController as IDisposable)?.Dispose();
+            ColumnsPanel.Children.Clear();
+            ColumnsPanel.ColumnDefinitions.Clear();
+            columns.Clear();
+            recalculateColumnsPanelMinWidth();
+
+            boardController = board;
+            subscribeTo(boardController);
+        }
+
+        private void subscribeTo(ITodoBoard board)
+        {
+            board.ColumnCreated += onColumnCreated;
+            board.ColumnNameChanged += onColumnNameChanged;
+            board.ColumnRemoved += onColumnRemoved;
+            board.ColumnContentChanged += onColumnContentChanged;
+            board.BoardChanged += onBoardChanged;
+            board.ColumnOrderChanged += onColumnOrderChanged;
+            board.TagChanged += onTagChanged;
+        }
+
+        private void unsubscribeFrom(ITodoBoard board)
+        {
+            board.ColumnCreated -= onColumnCreated;
+            board.ColumnNameChanged -= onColumnNameChanged;
+            board.ColumnRemoved -= onColumnRemoved;
+            board.ColumnContentChanged -= onColumnContentChanged;
+            board.BoardChanged -= onBoardChanged;
+            board.ColumnOrderChanged -= onColumnOrderChanged;
+            board.TagChanged -= onTagChanged;
+        }
+
+        private static Uri serverUrl()
+        {
+            return new Uri(Environment.GetEnvironmentVariable(ServerUrlVariable) ?? DefaultServerUrl);
         }
 
         private void populateStatusColumn(Guid column)
@@ -311,6 +406,12 @@ namespace ToDo_App.UI.Views
             if (eventArgs is not BoardChangedEventArgs args)
             {
                 throw new ArgumentException("Wrong EventArgs type");
+            }
+
+            // The server saves a remote board. board.json is only for the board on this PC
+            if (boardController is RemoteBoardController)
+            {
+                return;
             }
 
             try
@@ -1247,6 +1348,10 @@ namespace ToDo_App.UI.Views
             AddToDoButton.Content = Res.ResourceManager.GetString("button/add_todo", _currentCulture);
             ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
             ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);
+            RemoteToggle.OffContent = Res.ResourceManager.GetString("button/board_local", _currentCulture);
+            RemoteToggle.OnContent = Res.ResourceManager.GetString("button/board_remote", _currentCulture);
+            ToolTipService.SetToolTip(RemoteToggle, String.Format(
+                Res.ResourceManager.GetString("button/board_source_tooltip", _currentCulture) ?? "", serverUrl()));
 
             foreach (ComboBoxItem item in LanguageSelector.Items)
             {
