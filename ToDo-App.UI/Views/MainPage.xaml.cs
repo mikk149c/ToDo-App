@@ -1571,7 +1571,7 @@ namespace ToDo_App.UI.Views
         
         private void localizeXaml()
         {
-            AddColumnButton.Content = Res.ResourceManager.GetString("button/add_column", _currentCulture);
+            AddColumnButtonTextBlock.Text = Res.ResourceManager.GetString("button/add_column", _currentCulture);
             AddToDoButton.Content = Res.ResourceManager.GetString("button/add_todo", _currentCulture);
             ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
             ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);

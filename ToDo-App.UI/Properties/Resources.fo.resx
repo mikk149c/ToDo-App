@@ -42,7 +42,7 @@
         <value>Na'vi</value>
     </data>
     <data name="button/add_column" xml:space="preserve">
-        <value>Legg Teig Afturat</value>
+        <value>Kolonne</value>
     </data>
     <data name="button/add_note_tooltip" xml:space="preserve">
         <value>Legg eitt nýtt upprit afturat</value>
