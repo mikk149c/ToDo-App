@@ -62,6 +62,7 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\ToDo-App\ToDo-App.csproj" />
+      <ProjectReference Include="..\ToDo-App.Client\ToDo-App.Client.csproj" />
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Update="Properties\Resources.resx">

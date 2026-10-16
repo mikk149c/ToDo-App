@@ -13,7 +13,13 @@ public class ToDoBoard
 
     public Guid CreateColumn(string title)
     {
-        var newColumn = new StatusColumn(title);
+        return CreateColumn(title, Guid.NewGuid());
+    }
+
+    /// <summary>Creates a column with a given Id, so a replayed command creates the same column everywhere.</summary>
+    public Guid CreateColumn(string title, Guid columnId)
+    {
+        var newColumn = new StatusColumn(title) { Id = columnId };
         StatusColumns.Add(newColumn);
         return newColumn.Id;
     }
@@ -188,8 +194,15 @@ public class ToDoBoard
     /// </summary>
     public void SetNoteTags(Guid noteId, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null)
     {
+        SetNoteTags(noteId, tagNames, newTagColors, null);
+    }
+
+    /// <summary>Replaces a note's tags, giving new tags the Ids in <paramref name="newTagIds"/> (tag name to Id).</summary>
+    public void SetNoteTags(Guid noteId, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors,
+        IReadOnlyDictionary<string, Guid>? newTagIds)
+    {
         var (columnIndex, noteIndex) = GetNotePositionFromId(noteId);
-        StatusColumns[columnIndex].Notes[noteIndex].Tags = ResolveTags(tagNames, newTagColors);
+        StatusColumns[columnIndex].Notes[noteIndex].Tags = ResolveTags(tagNames, newTagColors, newTagIds);
     }
 
     /// <summary>
@@ -214,6 +227,17 @@ public class ToDoBoard
     /// <exception cref="ArgumentException">A name is empty, only whitespace or too long, or a colour isn't valid.</exception>
     public List<NoteTag> ResolveTags(IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null)
     {
+        return ResolveTags(tagNames, newTagColors, null);
+    }
+
+    /// <summary>
+    /// <see cref="ResolveTags(IEnumerable{string}, IReadOnlyDictionary{string, string}?)"/>, where a tag that isn't on the
+    /// board yet takes its Id from <paramref name="newTagIds"/> (tag name to Id) when given, so a replayed command
+    /// creates the same tag everywhere.
+    /// </summary>
+    public List<NoteTag> ResolveTags(IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors,
+        IReadOnlyDictionary<string, Guid>? newTagIds)
+    {
         List<NoteTag> existingTags = GetTags();
         var resolved = new List<NoteTag>();
 
@@ -234,10 +258,16 @@ public class ToDoBoard
 
             // A brand-new tag starts with the colour chosen for it, if any, otherwise the default
             string? chosenColor = newTagColors?.FirstOrDefault(pair => NoteTag.NamesMatch(pair.Key, name)).Value;
-            resolved.Add(new NoteTag(name)
+            var newTag = new NoteTag(name)
             {
                 Color = chosenColor == null ? null : NoteTag.NormalizeColor(chosenColor)
-            });
+            };
+            Guid? givenId = newTagIds?.FirstOrDefault(pair => NoteTag.NamesMatch(pair.Key, name)).Value;
+            if (givenId is Guid id && id != Guid.Empty)
+            {
+                newTag.Id = id;
+            }
+            resolved.Add(newTag);
         }
 
         return resolved;

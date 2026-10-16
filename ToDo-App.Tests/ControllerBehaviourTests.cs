@@ -17,7 +17,7 @@ public class ControllerBehaviourTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         plannedId = controller.CreateColumn("Planned");
         progressId = controller.CreateColumn("In Progress");
         doneId = controller.CreateColumn("Done");

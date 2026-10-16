@@ -209,6 +209,18 @@
     <data name="dialog/delete_tag_confirm" xml:space="preserve">
         <value>Fjern "{0}" fra alle {1} note(r)?</value>
     </data>
+    <data name="button/board_local" xml:space="preserve">
+        <value>Lokal</value>
+    </data>
+    <data name="button/board_remote" xml:space="preserve">
+        <value>Server</value>
+    </data>
+    <data name="button/board_source_tooltip" xml:space="preserve">
+        <value>Lokal: tavlen på denne pc. Server: tavlen på serveren på {0}</value>
+    </data>
+    <data name="error/failed_to_connect" xml:space="preserve">
+        <value>Kunne ikke forbinde til serveren på {0}</value>
+    </data>
     <data name="button/language_tooltip" xml:space="preserve">
         <value>Sprog</value>
     </data>

@@ -10,7 +10,7 @@ public class ControllerTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
     }
 
     [Test]

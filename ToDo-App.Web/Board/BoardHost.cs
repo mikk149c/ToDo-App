@@ -6,6 +6,7 @@ namespace ToDo_App.Web.Board;
 /// <summary>
 /// Owns the one board the server shows, and keeps it saved. Every browser tab uses the same
 /// <see cref="Board"/>, so a change in one tab reaches the others through the <see cref="ITodoBoard"/> events.
+/// Remote desktop apps use it too, through the API and the hub (see <see cref="ServerBoardController"/>).
 /// </summary>
 /// <remarks>
 /// This is what MainPage does in the Windows app: load <c>board.json</c>, or the default board if that fails,
@@ -20,11 +21,15 @@ public sealed class BoardHost
     private readonly string userJsonPath;
     private readonly ILogger<BoardHost> logger;
 
-    public BoardHost(BoardStorageOptions options, ILogger<BoardHost> logger)
+    /// <param name="broadcaster">Sends every change to the remote apps. Null when none can connect (tests).</param>
+    public BoardHost(BoardStorageOptions options, ILogger<BoardHost> logger, IChangeBroadcaster? broadcaster = null)
     {
         this.logger = logger;
         Directory.CreateDirectory(options.DataDirectory);
         userJsonPath = Path.Combine(options.DataDirectory, UserJsonFile);
+
+        // Every change, from a tab or from the API, goes through the server's controller, which sends it on to remote apps
+        Board = new ServerBoardController(broadcaster);
 
         loadInitialBoard();
         // Subscribed after loading, so falling back to the default board doesn't overwrite a board.json
@@ -32,7 +37,7 @@ public sealed class BoardHost
         Board.BoardChanged += onBoardChanged;
     }
 
-    public ITodoBoard Board { get; } = new BoardController();
+    public ServerBoardController Board { get; }
 
     /// <summary>Set when loading failed, so a page can tell the user. Null when the board loaded.</summary>
     public string? LoadError { get; private set; }

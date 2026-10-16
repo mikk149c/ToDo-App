@@ -54,6 +54,31 @@ Then open http://localhost:5133.
 - **Translations** are the `.resx` files in `ToDo-App.UI/Properties`. The web app links them, so a string is added or translated once for both apps.
 - It's meant for a single user on your own machine or network. There's no sign-in, so don't put it on the internet as it is.
 
+### Run the server in Docker
+
+With Docker Desktop running:
+
+```
+docker compose up --build
+```
+
+The web app is then on http://localhost:8080. The board is kept in the `todo-data` volume, so `docker compose down` and rebuilding keep it. In VS Code the same commands are under *Terminal → Run Task → server: docker compose up / down*.
+
+## Desktop app on the server's board
+
+The desktop app has a **Local / Remote** toggle in the toolbar. It always starts on **Local**: the `board.json` next to the `.exe`, as before. Switch it to **Remote** to work on the server's board instead, the same board the web app shows. Changes made in the browser, or in another desktop app, show up straight away. If the server can't be reached, the app says so and goes back to Local. The local board isn't touched by anything you do in Remote.
+
+The server's address is http://localhost:8080 by default (the Docker setup above). Set the environment variable `TODO_SERVER_URL` to use another one.
+
+**How it works.** `BoardController` (`ToDo-App/Controller`) is an abstract parent with one child per place the board can live. The toggle replaces the page's controller with the other kind:
+
+- `BoardController` has the events, the reads, and a protected `Apply…` method for each change, which changes the board and raises the events. Each change itself is an abstract method that every child implements. It also makes the Ids for new columns, notes and tags before a change goes anywhere, so every copy of the board uses the same Ids.
+- `LocalBoardController` applies each change straight away. It's the default, and works as the controller always has.
+- `RemoteBoardController` (`ToDo-App.Client`) only sends the change to the server's API (`POST /commands/{change}`). The server applies it, numbers it, and sends it over SignalR to every connected app, including the one that sent it, which then applies it with the same `Apply…` method. So in Remote mode, the desktop only updates when the server says something changed, also for its own changes.
+- The server uses a `ServerBoardController` (`ToDo-App.Web`): a `LocalBoardController` that also sends every change on, from the web pages and the API alike.
+- A change that arrives over the network is only a name and its arguments as JSON. The two classes that receive them match the name in a `switch`: `ServerBoardController.Execute` (from the API, made like a change from a web page) and `RemoteBoardController.ApplyChange` (from SignalR, only applied, as the server has already made it).
+- A new kind of change is an abstract method and an `Apply…` method in `BoardController`, a one-line override in each child, and a `case` in both switches. A test checks that no change is missing from either `switch`.
+
 ## Tests and coverage
 
 Run the tests:

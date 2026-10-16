@@ -64,6 +64,24 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "server: docker compose up",
+            "detail": "Builds and starts the web app and board server on http://localhost:8080",
+            "type": "process",
+            "command": "docker",
+            "args": ["compose", "up", "--build", "--detach"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": []
+        },
+        {
+            "label": "server: docker compose down",
+            "detail": "Stops the server. The board is kept in the todo-data volume",
+            "type": "process",
+            "command": "docker",
+            "args": ["compose", "down"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": []
+        },
+        {
             "label": "build-unpackaged",
             "type": "process",
             "command": "dotnet",

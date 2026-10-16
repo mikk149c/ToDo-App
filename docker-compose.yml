@@ -1,0 +1,20 @@
+# The web app and board server: http://localhost:8080
+#   docker compose up --build      start it (and rebuild after code changes)
+#   docker compose down            stop it (the board is kept in the todo-data volume)
+# The desktop app's Remote toggle connects to http://localhost:8080 by default.
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ToDo-App.Web/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    volumes:
+      - todo-data:/data
+    restart: unless-stopped
+
+volumes:
+  todo-data:

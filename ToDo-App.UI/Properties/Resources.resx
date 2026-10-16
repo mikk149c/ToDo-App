@@ -216,6 +216,18 @@
     <data name="dialog/delete_tag_confirm" xml:space="preserve">
         <value>Remove "{0}" from all {1} note(s)?</value>
     </data>
+    <data name="button/board_local" xml:space="preserve">
+        <value>Local</value>
+    </data>
+    <data name="button/board_remote" xml:space="preserve">
+        <value>Remote</value>
+    </data>
+    <data name="button/board_source_tooltip" xml:space="preserve">
+        <value>Local: the board on this PC. Remote: the board on the server at {0}</value>
+    </data>
+    <data name="error/failed_to_connect" xml:space="preserve">
+        <value>Could not connect to the server at {0}</value>
+    </data>
     <data name="button/language_tooltip" xml:space="preserve">
         <value>Language</value>
     </data>

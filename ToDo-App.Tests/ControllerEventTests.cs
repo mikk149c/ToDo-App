@@ -16,7 +16,7 @@ public class ControllerEventTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         plannedId = controller.CreateColumn("Planned");
         progressId = controller.CreateColumn("In Progress");
         firstNoteId = controller.CreateNote(plannedId, "First note", "Køb bananer");
@@ -214,7 +214,7 @@ public class ControllerEventTests
     [Test]
     public void OperationsWithoutSubscribersDoNotThrow()
     {
-        var unobserved = new BoardController();
+        var unobserved = new LocalBoardController();
 
         Assert.DoesNotThrow(() =>
         {

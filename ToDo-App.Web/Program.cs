@@ -1,6 +1,8 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Net.Http.Headers;
 using ToDo_App;
+using ToDo_App.Controller;
 using ToDo_App.Web.Appearance;
 using ToDo_App.Web.Board;
 using ToDo_App.Web.Components;
@@ -18,6 +20,12 @@ string dataDirectory = Path.GetFullPath(
 builder.Services.AddSingleton(new BoardStorageOptions(dataDirectory));
 builder.Services.AddSingleton<BoardHost>();
 builder.Services.AddSingleton<AttachmentStore>();
+
+// Remote desktop apps: changes come in through the API, and every change goes out to every app through the hub
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<SignalRBroadcaster>();
+builder.Services.AddSingleton<IChangeBroadcaster>(services => services.GetRequiredService<SignalRBroadcaster>());
+builder.Services.AddHostedService(services => services.GetRequiredService<SignalRBroadcaster>());
 
 // Per browser tab: language and appearance are UI preferences, remembered in the browser
 builder.Services.AddScoped<UiStrings>();
@@ -40,6 +48,32 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+// --- The board API for remote apps (see ToDo-App.Client/RemoteBoardController) ---
+
+// The whole board and its version, to start from
+app.MapGet("/" + BoardProtocol.SnapshotPath, (BoardHost host) => Results.Text(host.Board.SnapshotJson(), "application/json"));
+
+// A change: a controller change method by name, with its arguments. It's made, saved and sent to every app through
+// the hub, which is how the sender sees it too
+app.MapPost("/" + BoardProtocol.CommandsPath + "/{change}", (string change, JsonElement[] arguments, BoardHost host) =>
+{
+    try
+    {
+        host.Board.Execute(change, arguments);
+        return Results.NoContent();
+    }
+    catch (ArgumentException e)
+    {
+        return Results.Text(e.Message, statusCode: StatusCodes.Status400BadRequest);
+    }
+    catch (KeyNotFoundException e)
+    {
+        return Results.Text(e.Message, statusCode: StatusCodes.Status404NotFound);
+    }
+});
+
+app.MapHub<BoardHub>("/" + BoardProtocol.HubPath);
 
 // Export: the browser downloads the board as a .json file
 app.MapGet("/board/export", (BoardHost host) =>
@@ -80,3 +114,6 @@ app.MapGet("/attachments/{noteId:guid}", (Guid noteId, BoardHost host, Attachmen
 });
 
 app.Run();
+
+// Public, so tests can host the whole server in memory (WebApplicationFactory<Program>)
+public partial class Program;
