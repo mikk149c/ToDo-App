@@ -1021,6 +1021,7 @@ namespace ToDo_App.UI.Views
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/add", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 Content = new StackPanel
                 {
                     Spacing = 8,
@@ -1056,6 +1057,7 @@ namespace ToDo_App.UI.Views
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/save", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 XamlRoot = this.XamlRoot
             };
 
@@ -1126,6 +1128,7 @@ namespace ToDo_App.UI.Views
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 XamlRoot = this.XamlRoot
             };
 
@@ -1165,6 +1168,7 @@ namespace ToDo_App.UI.Views
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 Content = String.Format(Res.ResourceManager.GetString("dialog/content_delete_note", _currentCulture), note.Title),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme
             };
 
             ContentDialogResult result = await dialog.ShowAsync();
@@ -1201,6 +1205,7 @@ namespace ToDo_App.UI.Views
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/save", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 Content = new StackPanel
                 {
                     Spacing = 8,
@@ -1681,6 +1686,7 @@ namespace ToDo_App.UI.Views
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/add", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 XamlRoot = this.Content.XamlRoot
             };
 
