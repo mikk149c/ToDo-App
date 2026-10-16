@@ -34,7 +34,7 @@
         <value>Import</value>
     </data>
     <data name="button/add_column" xml:space="preserve">
-        <value>Add Column</value>
+        <value>Column</value>
     </data>
     <data name="button/add_todo" xml:space="preserve">
         <value>Add Note</value>

@@ -42,7 +42,7 @@
         <value>Beschreibung</value>
     </data>
     <data name="button/add_column" xml:space="preserve">
-        <value>Spalte Hinzufügen</value>
+        <value>Hinzufügen</value>
     </data>
     <data name="button/add_todo" xml:space="preserve">
         <value>Notiz Hinzufügen</value>
