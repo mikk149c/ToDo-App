@@ -1,5 +1,5 @@
 using System.Net;
-using System.Text;
+using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -21,6 +21,16 @@ public sealed class RemoteBoardController : BoardController, IDisposable
 {
     private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(10);
 
+    // The server's addresses and message name. ServerBoardController and Program.cs in ToDo-App.Web use the same ones,
+    // and RemoteBoardControllerTests runs this class against the real server, so a mismatch fails the tests
+    private const string SnapshotPath = "board/snapshot";
+    private const string ChangesPath = "commands";
+    private const string HubPath = "hub/board";
+    private const string ChangedMessage = "Changed";
+
+    /// <summary>The whole board, and the version of the last change in it, as the server sends it.</summary>
+    private sealed record Snapshot(long Version, ToDoBoard Board);
+
     private readonly HttpClient http;
     private readonly HubConnection hub;
     private readonly SynchronizationContext? context = SynchronizationContext.Current;
@@ -41,7 +51,7 @@ public sealed class RemoteBoardController : BoardController, IDisposable
         http.Timeout = RequestTimeout;
 
         hub = new HubConnectionBuilder()
-            .WithUrl(new Uri(serverUrl, BoardProtocol.HubPath), options =>
+            .WithUrl(new Uri(serverUrl, HubPath), options =>
             {
                 if (handlerFactory != null)
                 {
@@ -51,7 +61,7 @@ public sealed class RemoteBoardController : BoardController, IDisposable
             })
             .WithAutomaticReconnect()
             .Build();
-        hub.On<long, string, JsonElement[]>(BoardProtocol.ChangedMessage,
+        hub.On<long, string, JsonElement[]>(ChangedMessage,
             (changeVersion, change, arguments) => post(() => applyFromServer(changeVersion, change, arguments)));
         // Changes sent while the connection was down are lost, so start again from the whole board
         hub.Reconnected += _ =>
@@ -67,7 +77,8 @@ public sealed class RemoteBoardController : BoardController, IDisposable
     {
         // Listen first, so no change made while the board loads is missed
         await hub.StartAsync();
-        BoardSnapshot snapshot = BoardProtocol.DeserializeSnapshot(await http.GetStringAsync(BoardProtocol.SnapshotPath));
+        Snapshot snapshot = await http.GetFromJsonAsync<Snapshot>(SnapshotPath)
+                            ?? throw new JsonException("The server sent an empty board.");
 
         ApplyReplaceBoard(snapshot.Board);
         version = snapshot.Version;
@@ -140,9 +151,8 @@ public sealed class RemoteBoardController : BoardController, IDisposable
     /// <exception cref="KeyNotFoundException">The column, note or tag doesn't exist (any more).</exception>
     private void send(string change, params object?[] arguments)
     {
-        string body = JsonSerializer.Serialize(ChangeArguments.ToJson(arguments), BoardProtocol.Json);
-        using var content = new StringContent(body, Encoding.UTF8, "application/json");
-        using HttpResponseMessage response = run(() => http.PostAsync($"{BoardProtocol.CommandsPath}/{change}", content));
+        // The arguments as a JSON array, in the order of the change method's parameters
+        using HttpResponseMessage response = run(() => http.PostAsJsonAsync($"{ChangesPath}/{change}", arguments));
         if (response.IsSuccessStatusCode)
         {
             return;
@@ -191,7 +201,7 @@ public sealed class RemoteBoardController : BoardController, IDisposable
     /// <exception cref="ArgumentException">The arguments don't fit the change, or the change isn't valid.</exception>
     internal void ApplyChange(string change, IReadOnlyList<JsonElement> arguments)
     {
-        var a = new ChangeArguments(change, arguments);
+        var a = new Arguments(change, arguments);
         switch (change)
         {
             case nameof(SetStatusColumnName): ApplySetStatusColumnName(a.Get<Guid>(0), a.Get<string>(1)); break;
@@ -228,9 +238,12 @@ public sealed class RemoteBoardController : BoardController, IDisposable
     {
         try
         {
-            BoardSnapshot snapshot = BoardProtocol.DeserializeSnapshot(run(() => http.GetStringAsync(BoardProtocol.SnapshotPath)));
-            ApplyReplaceBoard(snapshot.Board);
-            version = snapshot.Version;
+            Snapshot? snapshot = run(() => http.GetFromJsonAsync<Snapshot>(SnapshotPath));
+            if (snapshot != null)
+            {
+                ApplyReplaceBoard(snapshot.Board);
+                version = snapshot.Version;
+            }
         }
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JsonException)
         {
@@ -291,5 +304,27 @@ public sealed class RemoteBoardController : BoardController, IDisposable
             // Closing a connection that's already broken
         }
         http.Dispose();
+    }
+
+    // Reads the arguments of a change from the server: a JSON array, in the order of the change method's parameters
+    private sealed class Arguments(string change, IReadOnlyList<JsonElement> arguments)
+    {
+        /// <exception cref="ArgumentException">The argument is missing, or isn't a <typeparamref name="T"/>.</exception>
+        public T Get<T>(int index)
+        {
+            if (index >= arguments.Count)
+            {
+                throw new ArgumentException($"{change} needs more than {arguments.Count} arguments.");
+            }
+
+            try
+            {
+                return arguments[index].Deserialize<T>(JsonSerializerOptions.Web)!;
+            }
+            catch (JsonException e)
+            {
+                throw new ArgumentException($"Argument {index + 1} of {change} isn't valid: {e.Message}", e);
+            }
+        }
     }
 }

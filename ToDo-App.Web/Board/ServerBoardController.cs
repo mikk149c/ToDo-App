@@ -22,12 +22,15 @@ public sealed class ServerBoardController : LocalBoardController
     /// <summary>The number of changes made since the server started.</summary>
     public long Version { get; private set; }
 
-    /// <summary>The board and the version it's at, read together so a remote app knows which changes to apply next.</summary>
+    /// <summary>
+    /// The board and the version it's at, as JSON (<c>{ "version": …, "board": … }</c>), read together so a remote app
+    /// knows which changes to apply next.
+    /// </summary>
     public string SnapshotJson()
     {
         lock (gate)
         {
-            return BoardProtocol.Serialize(new BoardSnapshot(Version, Board));
+            return JsonSerializer.Serialize(new { version = Version, board = Board }, JsonSerializerOptions.Web);
         }
     }
 
@@ -39,7 +42,7 @@ public sealed class ServerBoardController : LocalBoardController
     /// <exception cref="ArgumentException">The arguments don't fit the change, or the change isn't valid.</exception>
     public void Execute(string change, IReadOnlyList<JsonElement> arguments)
     {
-        var a = new ChangeArguments(change, arguments);
+        var a = new Arguments(change, arguments);
         switch (change)
         {
             case nameof(SetStatusColumnName): SetStatusColumnName(a.Get<Guid>(0), a.Get<string>(1)); break;
@@ -151,7 +154,29 @@ public sealed class ServerBoardController : LocalBoardController
         {
             apply();
             Version++;
-            broadcaster?.Enqueue(new BoardChange(Version, change, ChangeArguments.ToJson(arguments)));
+            broadcaster?.Enqueue(new BoardChange(Version, change, JsonSerializer.SerializeToElement(arguments, JsonSerializerOptions.Web)));
+        }
+    }
+
+    // Reads the arguments of a change from the API: a JSON array, in the order of the change method's parameters
+    private sealed class Arguments(string change, IReadOnlyList<JsonElement> arguments)
+    {
+        /// <exception cref="ArgumentException">The argument is missing, or isn't a <typeparamref name="T"/>.</exception>
+        public T Get<T>(int index)
+        {
+            if (index >= arguments.Count)
+            {
+                throw new ArgumentException($"{change} needs more than {arguments.Count} arguments.");
+            }
+
+            try
+            {
+                return arguments[index].Deserialize<T>(JsonSerializerOptions.Web)!;
+            }
+            catch (JsonException e)
+            {
+                throw new ArgumentException($"Argument {index + 1} of {change} isn't valid: {e.Message}", e);
+            }
         }
     }
 }

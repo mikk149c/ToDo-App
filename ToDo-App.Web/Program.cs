@@ -2,7 +2,6 @@ using System.Text.Json;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Net.Http.Headers;
 using ToDo_App;
-using ToDo_App.Controller;
 using ToDo_App.Web.Appearance;
 using ToDo_App.Web.Board;
 using ToDo_App.Web.Components;
@@ -49,14 +48,14 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// --- The board API for remote apps (see ToDo-App.Client/RemoteBoardController) ---
+// --- The board API for remote apps. RemoteBoardController (ToDo-App.Client) uses the same addresses ---
 
 // The whole board and its version, to start from
-app.MapGet("/" + BoardProtocol.SnapshotPath, (BoardHost host) => Results.Text(host.Board.SnapshotJson(), "application/json"));
+app.MapGet("/board/snapshot", (BoardHost host) => Results.Text(host.Board.SnapshotJson(), "application/json"));
 
 // A change: a controller change method by name, with its arguments. It's made, saved and sent to every app through
 // the hub, which is how the sender sees it too
-app.MapPost("/" + BoardProtocol.CommandsPath + "/{change}", (string change, JsonElement[] arguments, BoardHost host) =>
+app.MapPost("/commands/{change}", (string change, JsonElement[] arguments, BoardHost host) =>
 {
     try
     {
@@ -73,7 +72,7 @@ app.MapPost("/" + BoardProtocol.CommandsPath + "/{change}", (string change, Json
     }
 });
 
-app.MapHub<BoardHub>("/" + BoardProtocol.HubPath);
+app.MapHub<BoardHub>("/hub/board");
 
 // Export: the browser downloads the board as a .json file
 app.MapGet("/board/export", (BoardHost host) =>

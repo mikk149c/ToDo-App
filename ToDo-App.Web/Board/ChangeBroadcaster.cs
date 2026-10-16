@@ -1,12 +1,14 @@
 using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.AspNetCore.SignalR;
-using ToDo_App.Controller;
 
 namespace ToDo_App.Web.Board;
 
-/// <summary>A change as it's sent to the remote apps: its version, and the controller method that makes it, with its arguments.</summary>
-public sealed record BoardChange(long Version, string Change, JsonElement[] Arguments);
+/// <summary>
+/// A change as it's sent to the remote apps: its version, the controller method that makes it, and its arguments as a
+/// JSON array (written when the change is made, as a board passed to ReplaceBoard keeps changing afterwards).
+/// </summary>
+public sealed record BoardChange(long Version, string Change, JsonElement Arguments);
 
 /// <summary>Sends changes to the remote apps, in the order they were made.</summary>
 public interface IChangeBroadcaster
@@ -17,6 +19,8 @@ public interface IChangeBroadcaster
 /// <summary>The hub remote apps connect to. They only listen: changes come in through the API.</summary>
 public sealed class BoardHub : Hub
 {
+    /// <summary>The message every change is sent as: (long version, string change, arguments). RemoteBoardController listens for it.</summary>
+    public const string ChangedMessage = "Changed";
 }
 
 /// <summary>
@@ -47,7 +51,7 @@ public sealed class SignalRBroadcaster : BackgroundService, IChangeBroadcaster
         {
             try
             {
-                await hub.Clients.All.SendAsync(BoardProtocol.ChangedMessage, change.Version, change.Change, change.Arguments,
+                await hub.Clients.All.SendAsync(BoardHub.ChangedMessage, change.Version, change.Change, change.Arguments,
                     stoppingToken);
             }
             catch (Exception e) when (e is not OperationCanceledException)
