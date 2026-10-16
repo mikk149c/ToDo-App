@@ -209,4 +209,10 @@
     <data name="dialog/tag_colour" xml:space="preserve">
         <value>Litur</value>
     </data>
+    <data name="dialog/merge" xml:space="preserve">
+        <value>Flætta</value>
+    </data>
+    <data name="dialog/merge_tag_confirm" xml:space="preserve">
+        <value>Eitt annað frámerki eitur longu "{1}". Skal tað flættast inn í "{0}"? [[Uppriti fær|Tey {2} uppritini fáa]] "{1}" ístaðin.</value>
+    </data>
 </root>

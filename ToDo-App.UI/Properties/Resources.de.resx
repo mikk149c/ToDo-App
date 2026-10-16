@@ -209,4 +209,10 @@
     <data name="dialog/tag_colour" xml:space="preserve">
         <value>Farbe</value>
     </data>
+    <data name="dialog/merge" xml:space="preserve">
+        <value>Zusammenlegen</value>
+    </data>
+    <data name="dialog/merge_tag_confirm" xml:space="preserve">
+        <value>Es gibt schon ein Tag mit dem Namen "{1}". Soll es in "{0}" zusammenlegen werden? Die [[Notiz|{2} Notizen]] werden stattdessen "{1}" bekommen.</value>
+    </data>
 </root>

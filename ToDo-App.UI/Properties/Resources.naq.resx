@@ -209,4 +209,10 @@
     <data name="dialog/tag_colour" xml:space="preserve">
         <value>'Opin</value>
     </data>
+    <data name="dialog/merge" xml:space="preserve">
+        <value>Neykawang</value>
+    </data>
+    <data name="dialog/merge_tag_confirm" xml:space="preserve">
+        <value>Li fkeytok syon alu {1}. Fì'ut neykawang hu syon alu {0} srak? [[S|mes|pxes|{2}a s]]ätseriru layu syon alu {1}.</value>
+    </data>
 </root>

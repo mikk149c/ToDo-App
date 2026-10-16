@@ -209,4 +209,10 @@
     <data name="dialog/tag_colour" xml:space="preserve">
         <value>qalmuS</value>
     </data>
+    <data name="dialog/merge_tag_confirm" xml:space="preserve">
+        <value>wejHa' latlhvaD «{1}» ponglu' neH. mergh «{0}» «{1}» je DaneH'a'? «{1}» [[lughajchoH ghu'lIS|ghajchoH {2} ghu'lISmey]].</value>
+    </data>
+    <data name="dialog/merge" xml:space="preserve">
+        <value>yImerghmoH</value>
+    </data>
 </root>
