@@ -46,6 +46,8 @@ public interface ITodoBoard
 
     public void SetTagColor(Guid tagId, string color);
 
+    public void MergeTags(Guid sourceTagId, Guid targetTagId);
+
     public void DeleteTag(Guid tagId);
 
     public void SetNoteFileAttachment(Guid id, string newFilePath);

@@ -94,7 +94,7 @@
         <value>Edit Column</value>
     </data>
     <data name="dialog/delete_the_todos" xml:space="preserve">
-        <value>Delete the note(s)</value>
+        <value>Delete the [[note|notes]]</value>
     </data>
     <data name="dialog/title_delete_column_q" xml:space="preserve">
         <value>Delete Column?</value>
@@ -151,13 +151,13 @@
         <value>Delete "{0}"? This can't be undone.</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
-        <value>Delete "{0}" and the {1} note(s) in it? This can't be undone.</value>
+        <value>Delete "{0}" and the [[{1} note|{1} notes]] in it? This can't be undone.</value>
     </data>
     <data name="dialog/option_move_to_column" xml:space="preserve">
         <value>Move to "{0}"</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
-        <value>What should happen to the {0} note(s) in this column?</value>
+        <value>What should happen to the [[{0} note|{0} notes]] in this column?</value>
     </data>
     <data name="dialog/content_delete_column" xml:space="preserve">
         <value>Delete "{0}"? This can't be undone.</value>
@@ -199,13 +199,13 @@
         <value>Name</value>
     </data>
     <data name="dialog/tag_used_on" xml:space="preserve">
-        <value>Used on {0} note(s)</value>
+        <value>Used on {0} [[note|notes]]</value>
     </data>
     <data name="dialog/tag_new_info" xml:space="preserve">
         <value>New tag, added when you save the note</value>
     </data>
     <data name="dialog/tag_colour" xml:space="preserve">
-        <value>Colour</value>
+        <value>Color</value>
     </data>
     <data name="dialog/tag_name_taken" xml:space="preserve">
         <value>Another tag is already called "{0}".</value>
@@ -214,6 +214,39 @@
         <value>Rename</value>
     </data>
     <data name="dialog/delete_tag_confirm" xml:space="preserve">
-        <value>Remove "{0}" from all {1} note(s)?</value>
+        <value>Remove "{0}" from [[the note|all {1} notes]]?</value>
+    </data>
+    <data name="dialog/merge" xml:space="preserve">
+        <value>Merge</value>
+    </data>
+    <data name="dialog/merge_tag_confirm" xml:space="preserve">
+        <value>Another tag is already called "{1}". Merge "{0}" into it? Its {2} note(s) will get "{1}" instead.</value>
+    </data>
+    <data name="filter/button" xml:space="preserve">
+        <value>Filter</value>
+    </data>
+    <data name="filter/button_active" xml:space="preserve">
+        <value>Filter ({0})</value>
+    </data>
+    <data name="filter/match_label" xml:space="preserve">
+        <value>Show todos with</value>
+    </data>
+    <data name="filter/match_any" xml:space="preserve">
+        <value>Any of the tags</value>
+    </data>
+    <data name="filter/match_all" xml:space="preserve">
+        <value>All of the tags</value>
+    </data>
+    <data name="filter/clear" xml:space="preserve">
+        <value>Clear filter</value>
+    </data>
+    <data name="filter/showing" xml:space="preserve">
+        <value>Filtered by</value>
+    </data>
+    <data name="filter/no_tags" xml:space="preserve">
+        <value>There are no tags on the board yet.</value>
+    </data>
+    <data name="filter/remove_tag" xml:space="preserve">
+        <value>Stop filtering by {0}</value>
     </data>
 </root>

@@ -240,7 +240,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to What should happen to the {0} note(s) in this column?.
+        ///   Looks up a localized string similar to What should happen to the [[{0} note|{0} notes]] in this column?.
         /// </summary>
         internal static string dialog_content_delete_column_consequence {
             get {
@@ -249,7 +249,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete &quot;{0}&quot; and the {1} note(s) in it? This can&apos;t be undone..
+        ///   Looks up a localized string similar to Delete &quot;{0}&quot; and the [[{1} note|{1} notes]] in it? This can&apos;t be undone..
         /// </summary>
         internal static string dialog_content_delete_column_no_space {
             get {
@@ -276,11 +276,29 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete the note(s).
+        ///   Looks up a localized string similar to Remove &quot;{0}&quot; from [[the note|all {1} notes]]?.
+        /// </summary>
+        internal static string dialog_delete_tag_confirm {
+            get {
+                return ResourceManager.GetString("dialog/delete_tag_confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete the [[note|notes]].
         /// </summary>
         internal static string dialog_delete_the_todos {
             get {
                 return ResourceManager.GetString("dialog/delete_the_todos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit &quot;{0}&quot;.
+        /// </summary>
+        internal static string dialog_edit_tag {
+            get {
+                return ResourceManager.GetString("dialog/edit_tag", resourceCulture);
             }
         }
         
@@ -312,6 +330,15 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New tag &quot;{0}&quot;, saved when you save the note.
+        /// </summary>
+        internal static string dialog_new_tag_tooltip {
+            get {
+                return ResourceManager.GetString("dialog/new_tag_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
         internal static string dialog_ok {
@@ -339,11 +366,65 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rename.
+        /// </summary>
+        internal static string dialog_rename {
+            get {
+                return ResourceManager.GetString("dialog/rename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         internal static string dialog_save {
             get {
                 return ResourceManager.GetString("dialog/save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Color.
+        /// </summary>
+        internal static string dialog_tag_colour {
+            get {
+                return ResourceManager.GetString("dialog/tag_colour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        internal static string dialog_tag_name {
+            get {
+                return ResourceManager.GetString("dialog/tag_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Another tag is already called &quot;{0}&quot;..
+        /// </summary>
+        internal static string dialog_tag_name_taken {
+            get {
+                return ResourceManager.GetString("dialog/tag_name_taken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New tag, added when you save the note.
+        /// </summary>
+        internal static string dialog_tag_new_info {
+            get {
+                return ResourceManager.GetString("dialog/tag_new_info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Used on {0} [[note|notes]].
+        /// </summary>
+        internal static string dialog_tag_used_on {
+            get {
+                return ResourceManager.GetString("dialog/tag_used_on", resourceCulture);
             }
         }
         
