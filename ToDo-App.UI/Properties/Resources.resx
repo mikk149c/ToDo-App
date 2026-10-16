@@ -249,4 +249,22 @@
     <data name="filter/remove_tag" xml:space="preserve">
         <value>Stop filtering by "{0}"</value>
     </data>
+    <data name="dialog/empty_bin_confirm" xml:space="preserve">
+        <value>Are you sure you want to permanently delete all notes in the trash bin?</value>
+    </data>
+    <data name="dialog/empty_bin" xml:space="preserve">
+        <value>Empty trash</value>
+    </data>
+    <data name="dialog/close" xml:space="preserve">
+        <value>Close</value>
+    </data>
+    <data name="dialog/restore_which_column" xml:space="preserve">
+        <value>Select which column to restore "{0}" to.</value>
+    </data>
+    <data name="dialog/content_delete_note_permanent" xml:space="preserve">
+        <value>Permanently delete "{0}"? This can't be undone.</value>
+    </data>
+    <data name="button/trash_bin" xml:space="preserve">
+        <value>Trash bin</value>
+    </data>
 </root>

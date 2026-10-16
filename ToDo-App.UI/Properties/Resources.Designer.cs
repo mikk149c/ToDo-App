@@ -60,7 +60,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add Column.
+        ///   Looks up a localized string similar to Column.
         /// </summary>
         internal static string button_add_column {
             get {
@@ -195,6 +195,15 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Trash bin.
+        /// </summary>
+        internal static string button_trash_bin {
+            get {
+                return ResourceManager.GetString("button/trash_bin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add.
         /// </summary>
         internal static string dialog_add {
@@ -227,6 +236,15 @@ namespace ToDo_App.UI {
         internal static string dialog_cancel {
             get {
                 return ResourceManager.GetString("dialog/cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string dialog_close {
+            get {
+                return ResourceManager.GetString("dialog/close", resourceCulture);
             }
         }
         
@@ -267,6 +285,15 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Permanently delete &quot;{0}&quot;? This can&apos;t be undone..
+        /// </summary>
+        internal static string dialog_content_delete_note_permanent {
+            get {
+                return ResourceManager.GetString("dialog/content_delete_note_permanent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         internal static string dialog_delete {
@@ -299,6 +326,24 @@ namespace ToDo_App.UI {
         internal static string dialog_edit_tag {
             get {
                 return ResourceManager.GetString("dialog/edit_tag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Empty trash.
+        /// </summary>
+        internal static string dialog_empty_bin {
+            get {
+                return ResourceManager.GetString("dialog/empty_bin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to permanently delete all notes in the trash bin?.
+        /// </summary>
+        internal static string dialog_empty_bin_confirm {
+            get {
+                return ResourceManager.GetString("dialog/empty_bin_confirm", resourceCulture);
             }
         }
         
@@ -389,6 +434,15 @@ namespace ToDo_App.UI {
         internal static string dialog_rename {
             get {
                 return ResourceManager.GetString("dialog/rename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select which column to restore &quot;{0}&quot; to..
+        /// </summary>
+        internal static string dialog_restore_which_column {
+            get {
+                return ResourceManager.GetString("dialog/restore_which_column", resourceCulture);
             }
         }
         
