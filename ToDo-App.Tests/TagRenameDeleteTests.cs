@@ -20,7 +20,7 @@ public class TagRenameDeleteTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         plannedId = controller.CreateColumn("Planned");
         progressId = controller.CreateColumn("In Progress");
         doneId = controller.CreateColumn("Done");
@@ -187,7 +187,7 @@ public class TagRenameDeletePersistenceTests
     [Test]
     public void RenameAndDeleteAreKeptAfterReload()
     {
-        var original = new BoardController();
+        var original = new LocalBoardController();
         Guid columnId = original.CreateColumn("Planned");
         original.CreateNote(columnId, "First", "", tagNames: new[] { "Wrok", "Old" });
         original.CreateNote(columnId, "Second", "", tagNames: new[] { "Wrok" });
@@ -195,7 +195,7 @@ public class TagRenameDeletePersistenceTests
         original.DeleteTag(original.GetTags().Single(tag => tag.Name == "Old").Id);
         original.SaveBoardToJson(jsonPath);
 
-        var loaded = new BoardController();
+        var loaded = new LocalBoardController();
         loaded.LoadBoardFromJson(jsonPath);
 
         var notes = loaded.GetNotesInColumn(columnId);

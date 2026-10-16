@@ -32,7 +32,7 @@ public sealed class BoardHost
         Board.BoardChanged += onBoardChanged;
     }
 
-    public ITodoBoard Board { get; } = new BoardController();
+    public ITodoBoard Board { get; } = new LocalBoardController();
 
     /// <summary>Set when loading failed, so a page can tell the user. Null when the board loaded.</summary>
     public string? LoadError { get; private set; }

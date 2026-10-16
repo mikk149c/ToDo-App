@@ -31,7 +31,7 @@ namespace ToDo_App.UI.Views
             {"naq", "language/navi"}
         };
 
-        ITodoBoard boardController = new BoardController();
+        ITodoBoard boardController = new LocalBoardController();
 
         List<Guid> columns = new List<Guid>();
 
