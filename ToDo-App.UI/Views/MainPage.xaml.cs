@@ -440,7 +440,8 @@ namespace ToDo_App.UI.Views
             ContentDialog dialog = new ContentDialog {
                 Title = "Trash bin",
                 Content = dialogContent,
-                XamlRoot = this.XamlRoot
+                XamlRoot = this.XamlRoot,
+                RequestedTheme = this.ActualTheme
             };
             closeTrashBinButton.Click += (sender, e) => { dialog.Hide(); };
 
