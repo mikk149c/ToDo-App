@@ -127,7 +127,7 @@
                     <controls:AppearanceSelector x:Name="AppearanceSelector" VerticalAlignment="Center" />
                     <ComboBox
                         x:Name="LanguageSelector"
-                        Width="100"
+                        Width="130"
                         SelectionChanged="onLanguageSelectionChanged"
                     />
                 </StackPanel>

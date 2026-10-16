@@ -200,7 +200,8 @@ namespace ToDo_App.UI.Controls
             DeleteButton.Visibility = entry.Id == null ? Visibility.Collapsed : Visibility.Visible;
             syncColorSelection(entry);
             FlyoutInfoText.Text = entry.Id is Guid tagId
-                ? string.Format(localizationStrings["dialog/tag_used_on"], board?.CountNotesWithTag(tagId) ?? 0)
+                ? Localizer.HandlePlurals(localizationStrings["dialog/tag_used_on"],
+                    board?.CountNotesWithTag(tagId) ?? 0, localizationStrings["lang_code"])
                 : localizationStrings["dialog/tag_new_info"];
 
             // Flyouts open outside the dialog's visual tree, so match the dialog's theme
@@ -301,8 +302,9 @@ namespace ToDo_App.UI.Controls
                 return;
             }
 
-            DeleteConfirmText.Text = string.Format(localizationStrings["dialog/delete_tag_confirm"],
-                flyoutEntry.Name, board?.CountNotesWithTag(tagId) ?? 0);
+            var textWithNumber = Localizer.HandlePlurals(localizationStrings["dialog/delete_tag_confirm"],
+                board?.CountNotesWithTag(tagId) ?? 0, localizationStrings["lang_code"], 1);
+            DeleteConfirmText.Text = string.Format(textWithNumber, flyoutEntry.Name);
             FlyoutActions.Visibility = Visibility.Collapsed;
             ColorPanel.Visibility = Visibility.Collapsed;
             DeleteConfirmPanel.Visibility = Visibility.Visible;
