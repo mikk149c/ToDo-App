@@ -190,7 +190,7 @@ namespace ToDo_App.UI.Views
                 StackPanel buttons = new StackPanel {
                     Orientation = Orientation.Horizontal,
                     Spacing = 4,
-                    VerticalAlignment = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Top
                 };
 
                 Button restoreButton = new Button{ Content = new SymbolIcon(Symbol.Undo) };
