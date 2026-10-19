@@ -1018,13 +1018,14 @@ namespace ToDo_App.UI.Views
 
             var tagEditor = new TagEditor(boardController, Array.Empty<NoteTag>(), tagEditorStrings());
 
-            var dialog = new ContentDialog
+            var dialog = new ThemedContentDialog
             {
                 XamlRoot = this.XamlRoot,
                 Title = Res.ResourceManager.GetString("dialog/title_add_new_note", _currentCulture),
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/add", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 Content = new StackPanel
                 {
                     Spacing = 8,
@@ -1053,13 +1054,14 @@ namespace ToDo_App.UI.Views
                 Text = boardController.GetStatusColumnName(columnId)
             };
 
-            ContentDialog dialog = new ContentDialog
+            ContentDialog dialog = new ThemedContentDialog
             {
                 Title = Res.ResourceManager.GetString("dialog/title_edit_column", _currentCulture),
                 Content = nameBox,
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/save", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 XamlRoot = this.XamlRoot
             };
 
@@ -1123,13 +1125,14 @@ namespace ToDo_App.UI.Views
                 content.Children.Add(todoActionBox);
             }
 
-            ContentDialog dialog = new ContentDialog
+            ContentDialog dialog = new ThemedContentDialog
             {
                 Title = Res.ResourceManager.GetString("dialog/title_delete_column_q", _currentCulture),
                 Content = content,
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 XamlRoot = this.XamlRoot
             };
 
@@ -1161,7 +1164,7 @@ namespace ToDo_App.UI.Views
 
         private async void onDeleteTodoClicked(ToDoNote note)
         {
-            var dialog = new ContentDialog
+            var dialog = new ThemedContentDialog
             {
                 XamlRoot = this.XamlRoot,
                 Title = Res.ResourceManager.GetString("dialog/title_delete_note_q", _currentCulture),
@@ -1169,6 +1172,7 @@ namespace ToDo_App.UI.Views
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 Content = String.Format(Res.ResourceManager.GetString("dialog/content_delete_note", _currentCulture), note.Title),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme
             };
 
             ContentDialogResult result = await dialog.ShowAsync();
@@ -1198,13 +1202,14 @@ namespace ToDo_App.UI.Views
             
             var tagEditor = new TagEditor(boardController, note.Tags, tagEditorStrings());
 
-            var dialog = new ContentDialog
+            var dialog = new ThemedContentDialog
             {
                 XamlRoot = this.XamlRoot,
                 Title = Res.ResourceManager.GetString("dialog/title_edit_note", _currentCulture),
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/save", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 Content = new StackPanel
                 {
                     Spacing = 8,
@@ -1680,13 +1685,14 @@ namespace ToDo_App.UI.Views
                 PlaceholderText = Res.ResourceManager.GetString("todo/column_title", _currentCulture)
             };
 
-            ContentDialog dialog = new ContentDialog //Enter column name
+            ContentDialog dialog = new ThemedContentDialog
             {
                 Title = Res.ResourceManager.GetString("dialog/title_add_new_column", _currentCulture),
                 Content = columnNameBox,
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/add", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 XamlRoot = this.Content.XamlRoot
             };
 
