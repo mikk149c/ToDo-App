@@ -1050,7 +1050,7 @@ namespace ToDo_App.UI.Views
                 Text = boardController.GetStatusColumnName(columnId)
             };
 
-            ContentDialog dialog = new ContentDialog
+            ContentDialog dialog = new ThemedContentDialog
             {
                 Title = Res.ResourceManager.GetString("dialog/title_edit_column", _currentCulture),
                 Content = nameBox,
@@ -1121,7 +1121,7 @@ namespace ToDo_App.UI.Views
                 content.Children.Add(todoActionBox);
             }
 
-            ContentDialog dialog = new ContentDialog
+            ContentDialog dialog = new ThemedContentDialog
             {
                 Title = Res.ResourceManager.GetString("dialog/title_delete_column_q", _currentCulture),
                 Content = content,
@@ -1160,7 +1160,7 @@ namespace ToDo_App.UI.Views
 
         private async void onDeleteTodoClicked(ToDoNote note)
         {
-            var dialog = new ContentDialog
+            var dialog = new ThemedContentDialog
             {
                 XamlRoot = this.XamlRoot,
                 Title = Res.ResourceManager.GetString("dialog/title_delete_note_q", _currentCulture),
@@ -1198,7 +1198,7 @@ namespace ToDo_App.UI.Views
             
             var tagEditor = new TagEditor(boardController, note.Tags, tagEditorStrings());
 
-            var dialog = new ContentDialog
+            var dialog = new ThemedContentDialog
             {
                 XamlRoot = this.XamlRoot,
                 Title = Res.ResourceManager.GetString("dialog/title_edit_note", _currentCulture),
@@ -1679,7 +1679,7 @@ namespace ToDo_App.UI.Views
                 PlaceholderText = Res.ResourceManager.GetString("todo/column_title", _currentCulture)
             };
 
-            ContentDialog dialog = new ContentDialog //Enter column name
+            ContentDialog dialog = new ThemedContentDialog
             {
                 Title = Res.ResourceManager.GetString("dialog/title_add_new_column", _currentCulture),
                 Content = columnNameBox,
