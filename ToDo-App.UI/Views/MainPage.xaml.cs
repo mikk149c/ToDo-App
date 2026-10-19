@@ -1014,7 +1014,7 @@ namespace ToDo_App.UI.Views
 
             var tagEditor = new TagEditor(boardController, Array.Empty<NoteTag>(), tagEditorStrings());
 
-            var dialog = new ContentDialog
+            var dialog = new ThemedContentDialog
             {
                 XamlRoot = this.XamlRoot,
                 Title = Res.ResourceManager.GetString("dialog/title_add_new_note", _currentCulture),
