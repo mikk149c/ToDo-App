@@ -255,7 +255,7 @@
         <value>Vælg hvilken kolonne "{0}" skal genoprettes i.</value>
     </data>
     <data name="dialog/content_permanent_delete_note" xml:space="preserve">
-        <value>Slet "0" permanent? Dette kan ikke fortrydes.</value>
+        <value>Slet "{0}" permanent? Dette kan ikke fortrydes.</value>
     </data>
     <data name="dialog/content_delete_column" xml:space="preserve">
         <value>Slet "{0}"? Dette kan ikke fortrydes.</value>
