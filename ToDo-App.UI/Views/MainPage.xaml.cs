@@ -194,9 +194,12 @@ namespace ToDo_App.UI.Views
                 };
 
                 Button restoreButton = new Button{ Content = new SymbolIcon(Symbol.Undo) };
+                ToolTipService.SetToolTip(restoreButton, Res.ResourceManager.GetString("dialog/restore_tooltip", _currentCulture));
                 restoreButton.Click += (sender, e) => {
                     selectedTrashNoteId = note.Id;
-                    restoreHeading.Text = $"Select which column to restore \"{note.Title}\" to.";
+                    restoreHeading.Text = string.Format(
+                        Res.ResourceManager.GetString("dialog/restore_which_column", _currentCulture),
+                        note.Title);
                     restoreColumnButtons.Children.Clear();
                     List<Guid> columnIds = boardController.GetStatusColumnIds();
 
@@ -237,10 +240,12 @@ namespace ToDo_App.UI.Views
                 };
 
                 Button deleteButton = new Button { Content = new SymbolIcon(Symbol.Delete) };
+                ToolTipService.SetToolTip(deleteButton, Res.ResourceManager.GetString("dialog/permanent_delete_note_tooltip", _currentCulture));
                 deleteButton.Click += (sender, e) => { 
                     selectedTrashNoteId = note.Id;
-                    confirmationText.Text =
-                    $"Are you sure you want to permanently delete \"{note.Title}\"?"; 
+                    confirmationText.Text = string.Format(
+                        Res.ResourceManager.GetString("dialog/content_permanent_delete_note", _currentCulture),
+                        note.Title);
                     confirmationPanel.Visibility = Visibility.Visible;
                     trashListView.Visibility = Visibility.Collapsed;
                 };
@@ -314,7 +319,7 @@ namespace ToDo_App.UI.Views
             };
 
             Button cancelRestoreButton = new Button {
-                Content = "Cancel",
+                Content = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 HorizontalAlignment = HorizontalAlignment.Right
             };
 
@@ -339,7 +344,6 @@ namespace ToDo_App.UI.Views
             };
 
             TextBlock confirmationText = new TextBlock {
-                Text = "Are you sure you want to permanently delete this note?",
                 TextWrapping = TextWrapping.Wrap,
                 TextAlignment = TextAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -356,7 +360,7 @@ namespace ToDo_App.UI.Views
             };
 
             Button cancelDeleteFromTrashButton = new Button { 
-                Content = "Cancel",
+                Content = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 Height = 40,
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
@@ -367,7 +371,7 @@ namespace ToDo_App.UI.Views
             };
 
             Button confirmDeleteFromTrashButton = new Button {
-                Content = "Delete",
+                Content = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
                 Height = 40,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Style = (Style)Application.Current.Resources["PrimaryAction"]
@@ -405,19 +409,19 @@ namespace ToDo_App.UI.Views
             };
 
             Button emptyTrashButton = new Button {
-                Content = "Empty trash",
+                Content = Res.ResourceManager.GetString("dialog/empty_bin", _currentCulture),
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
             emptyTrashButton.Click += (sender, e) => {
                 selectedTrashNoteId = Guid.Empty;
-                confirmationText.Text = "Are you sure you want to permanently delete all notes in the trash bin?";
+                confirmationText.Text = Res.ResourceManager.GetString("dialog/empty_bin_confirm", _currentCulture);
 
                 confirmationPanel.Visibility = Visibility.Visible;
                 trashListView.Visibility = Visibility.Collapsed;
             };
 
             Button closeTrashBinButton = new Button {
-                Content = "Close",
+                Content = Res.ResourceManager.GetString("dialog/close", _currentCulture),
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
 
@@ -438,7 +442,7 @@ namespace ToDo_App.UI.Views
                             restoreHeading, restoreColumnButtons, confirmationPanel);
 
             ContentDialog dialog = new ContentDialog {
-                Title = "Trash bin",
+                Title = Res.ResourceManager.GetString("button/trash_bin", _currentCulture),
                 Content = dialogContent,
                 XamlRoot = this.XamlRoot,
                 RequestedTheme = this.ActualTheme
@@ -1586,8 +1590,10 @@ namespace ToDo_App.UI.Views
         // Shows on the toolbar that the board is filtered, and by which tags
         private void updateFilterUi()
         {
+            var activeText = Localizer.HandlePlurals(filterString("filter/button_active"),
+                tagFilter.TagIds.Count, _currentCulture.Name);
             FilterButton.Content = tagFilter.IsActive
-                ? string.Format(filterString("filter/button_active"), tagFilter.TagIds.Count)
+                ? activeText
                 : filterString("filter/button");
             FilterBar.Visibility = tagFilter.IsActive ? Visibility.Visible : Visibility.Collapsed;
             FilterBarLabel.Text = filterString("filter/showing");
@@ -1778,6 +1784,7 @@ namespace ToDo_App.UI.Views
             AddToDoButton.Content = Res.ResourceManager.GetString("button/add_todo", _currentCulture);
             ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
             ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);
+            TrashBinButtonTextBlock.Text = Res.ResourceManager.GetString("button/trash_bin", _currentCulture);
             updateFilterUi();
 
             foreach (ComboBoxItem item in LanguageSelector.Items)

@@ -136,7 +136,7 @@
                         <Button.Content>
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <SymbolIcon Symbol="Delete"/>
-                                <TextBlock Text="Trash Bin"></TextBlock>
+                                <TextBlock x:Name="TrashBinButtonTextBlock"></TextBlock>
                             </StackPanel>
                         </Button.Content>
                     </Button>

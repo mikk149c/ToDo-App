@@ -148,7 +148,7 @@
         <value>Accent color</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>Delete "{0}"? This can't be undone.</value>
+        <value>Move "{0}" to trash bin?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
         <value>Delete "{0}" and the [[{1} note|{1} notes]] in it? This can't be undone.</value>
@@ -220,7 +220,7 @@
         <value>Merge</value>
     </data>
     <data name="dialog/merge_tag_confirm" xml:space="preserve">
-        <value>Another tag is already called "{1}". Merge "{0}" into it? Its {2} note(s) will get "{1}" instead.</value>
+        <value>Another tag is already called "{1}". Merge "{0}" into it? Its [[{2} note|{2} notes]] will get "{1}" instead.</value>
     </data>
     <data name="filter/button" xml:space="preserve">
         <value>Filter</value>
@@ -229,7 +229,7 @@
         <value>Filter ({0})</value>
     </data>
     <data name="filter/match_label" xml:space="preserve">
-        <value>Show todos with</value>
+        <value>Show ToDos with:</value>
     </data>
     <data name="filter/match_any" xml:space="preserve">
         <value>Any of the tags</value>
@@ -241,12 +241,36 @@
         <value>Clear filter</value>
     </data>
     <data name="filter/showing" xml:space="preserve">
-        <value>Filtered by</value>
+        <value>Filtered by:</value>
     </data>
     <data name="filter/no_tags" xml:space="preserve">
         <value>There are no tags on the board yet.</value>
     </data>
     <data name="filter/remove_tag" xml:space="preserve">
-        <value>Stop filtering by {0}</value>
+        <value>Stop filtering by "{0}"</value>
+    </data>
+    <data name="dialog/empty_bin_confirm" xml:space="preserve">
+        <value>Are you sure you want to permanently delete all notes in the trash bin?</value>
+    </data>
+    <data name="dialog/empty_bin" xml:space="preserve">
+        <value>Empty trash</value>
+    </data>
+    <data name="dialog/close" xml:space="preserve">
+        <value>Close</value>
+    </data>
+    <data name="dialog/restore_which_column" xml:space="preserve">
+        <value>Select which column to restore "{0}" to.</value>
+    </data>
+    <data name="dialog/content_permanent_delete_note" xml:space="preserve">
+        <value>Permanently delete "{0}"? This can't be undone.</value>
+    </data>
+    <data name="button/trash_bin" xml:space="preserve">
+        <value>Trash bin</value>
+    </data>
+    <data name="dialog/restore_tooltip" xml:space="preserve">
+        <value>Restore note</value>
+    </data>
+    <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
+        <value>Delete note permanently</value>
     </data>
 </root>
