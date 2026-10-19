@@ -31,10 +31,16 @@
             <SolidColorBrush x:Key="OnAccentBrush" Color="White" />
 
             <x:Double x:Key="AppFontSize">14</x:Double>
+            <x:String x:Key="AppFontFamily">Segoe UI</x:String>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{ThemeResource AppFontFamily}"/>
+            </Style>
 
             <Style x:Key="MyLabel" TargetType="TextBlock">
                 <Setter Property="Foreground"
                         Value="{ThemeResource AccentTextBrush}" />
+                <Setter Property="FontFamily" Value="{ThemeResource AppFontFamily}"/>
             </Style>
 
             <Style x:Key="Action" TargetType="Button">
