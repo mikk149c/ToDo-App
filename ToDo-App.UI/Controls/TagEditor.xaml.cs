@@ -344,8 +344,13 @@ namespace ToDo_App.UI.Controls
         private void askToMerge(TagEntry source, NoteTag target, Guid sourceId)
         {
             mergeTarget = target;
-            MergeConfirmText.Text = string.Format(localizationStrings["dialog/merge_tag_confirm"],
-                source.Name, target.Name, board?.CountNotesWithTag(sourceId) ?? 0);
+            var confirmTextWithNumber = Localizer.HandlePlurals(
+                localizationStrings["dialog/merge_tag_confirm"],
+                board?.CountNotesWithTag(sourceId) ?? 0,
+                localizationStrings["lang_code"],
+                2);
+            MergeConfirmText.Text = string.Format(confirmTextWithNumber,
+                source.Name, target.Name);
             FlyoutErrorText.Visibility = Visibility.Collapsed;
             FlyoutActions.Visibility = Visibility.Collapsed;
             ColorPanel.Visibility = Visibility.Collapsed;
