@@ -1016,6 +1016,14 @@ namespace ToDo_App.UI.Views
                 MinHeight = 100
             };
 
+            var contentScrollViewer = new ScrollViewer
+            {
+                Content = contentBox,
+                MaxHeight = 400,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled
+            };
+
             var tagEditor = new TagEditor(boardController, Array.Empty<NoteTag>(), tagEditorStrings());
 
             var dialog = new ThemedContentDialog
@@ -1029,7 +1037,7 @@ namespace ToDo_App.UI.Views
                 Content = new StackPanel
                 {
                     Spacing = 8,
-                    Children = { titleBox, contentBox, tagEditor }
+                    Children = { titleBox, contentScrollViewer, tagEditor }
                 }
             };
             // Keep the dialog open if a typed tag isn't valid, so the user can see why
@@ -1199,6 +1207,14 @@ namespace ToDo_App.UI.Views
                 TextWrapping = TextWrapping.Wrap,
                 MinHeight = 100
             };
+
+            var contentScrollViewer = new ScrollViewer
+            {
+                Content = contentBox,
+                MaxHeight = 400,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled
+            };
             
             var tagEditor = new TagEditor(boardController, note.Tags, tagEditorStrings());
 
@@ -1213,7 +1229,7 @@ namespace ToDo_App.UI.Views
                 Content = new StackPanel
                 {
                     Spacing = 8,
-                    Children = { titleBox, contentBox, tagEditor }
+                    Children = { titleBox, contentScrollViewer, tagEditor }
                 }
             };
             // Keep the dialog open if a typed tag isn't valid, so the user can see why
