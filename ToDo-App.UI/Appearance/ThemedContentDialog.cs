@@ -1,4 +1,5 @@
 
+using Microsoft.UI;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;
 
@@ -13,14 +14,12 @@ namespace ToDo_App.UI.Appearance
 
             Resources = new ResourceDictionary
             {
-                ["AccentButtonBackground"] =
-                    new SolidColorBrush(accent),
-
-                ["AccentButtonBackgroundPointerOver"] =
-                    new SolidColorBrush(lighten(accent, 0.12)),
-
-                ["AccentButtonBackgroundPressed"] =
-                    new SolidColorBrush(darken(accent, 0.12))
+                ["AccentButtonBackground"] = new SolidColorBrush(accent),
+                ["AccentButtonBackgroundPointerOver"] = new SolidColorBrush(lighten(accent, 0.12)),
+                ["AccentButtonBackgroundPressed"] = new SolidColorBrush(darken(accent, 0.12)),
+                ["AccentButtonForeground"] = new SolidColorBrush(Colors.White),
+                ["AccentButtonForegroundPointerOver"] = new SolidColorBrush(Colors.White),
+                ["AccentButtonForegroundPressed"] = new SolidColorBrush(Colors.White)
             };
         }
 
