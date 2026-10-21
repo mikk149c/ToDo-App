@@ -36,7 +36,6 @@ namespace ToDo_App.UI.Views
         ScrollViewer? verticalScrollTarget = null;
         
         CultureInfo _currentCulture;
-        private string? _currentFont;
         
         public MainPage()
         {
@@ -67,7 +66,21 @@ namespace ToDo_App.UI.Views
 
         private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
         {
-            onLanguageSelected(LanguageSelector.GetSelectedLanguage());
+            // onFontChanged();
+            var language = ((App)Application.Current).Appearance.Current.Language;
+            var font = ((App)Application.Current).Appearance.Current.Font;
+
+            if (language != null)
+            {
+                onLanguageSelected(language);
+                if (language != "kln")
+                    onFontChanged(font);
+            }
+            else
+            {
+                LanguageSelector.SetSelectedLanguage("en-US");
+            }
+            
             loadInitialBoard();
         }
 
@@ -1714,7 +1727,7 @@ namespace ToDo_App.UI.Views
             _currentCulture = new CultureInfo(language);
 
             if (refreshThroughFontChange)
-                onFontChanged(_currentFont);
+                onFontChanged(((App)Application.Current).Appearance.Current.Font);
             else
                 refreshUi();
         }

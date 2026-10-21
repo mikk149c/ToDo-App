@@ -23,10 +23,16 @@ namespace ToDo_App.UI.Controls
             sync();
         }
 
-        public string GetSelectedLanguage()
+        public void SetSelectedLanguage(string language)
         {
-            var selected = LanguageComboBox.SelectedItem as ComboBoxItem;
-            return (string)selected.Tag;
+            appearance.SetLanguage(language);
+            foreach (ComboBoxItem item in LanguageComboBox.Items)
+            {
+                if ((string)item.Tag == language)
+                {
+                    LanguageComboBox.SelectedItem = item;
+                }
+            }
         }
 
         private void OnLanguageSelectionChanged(object sender, SelectionChangedEventArgs e)
