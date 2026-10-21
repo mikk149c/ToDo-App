@@ -190,7 +190,7 @@ namespace ToDo_App.UI.Views
                 StackPanel buttons = new StackPanel {
                     Orientation = Orientation.Horizontal,
                     Spacing = 4,
-                    VerticalAlignment = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Top
                 };
 
                 Button restoreButton = new Button{ Content = new SymbolIcon(Symbol.Undo) };
@@ -1016,6 +1016,14 @@ namespace ToDo_App.UI.Views
                 MinHeight = 100
             };
 
+            var contentScrollViewer = new ScrollViewer
+            {
+                Content = contentBox,
+                MaxHeight = 400,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled
+            };
+
             var tagEditor = new TagEditor(boardController, Array.Empty<NoteTag>(), tagEditorStrings());
 
             var dialog = new ThemedContentDialog
@@ -1029,7 +1037,7 @@ namespace ToDo_App.UI.Views
                 Content = new StackPanel
                 {
                     Spacing = 8,
-                    Children = { titleBox, contentBox, tagEditor }
+                    Children = { titleBox, contentScrollViewer, tagEditor }
                 }
             };
             // Keep the dialog open if a typed tag isn't valid, so the user can see why
@@ -1199,6 +1207,14 @@ namespace ToDo_App.UI.Views
                 TextWrapping = TextWrapping.Wrap,
                 MinHeight = 100
             };
+
+            var contentScrollViewer = new ScrollViewer
+            {
+                Content = contentBox,
+                MaxHeight = 400,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled
+            };
             
             var tagEditor = new TagEditor(boardController, note.Tags, tagEditorStrings());
 
@@ -1213,7 +1229,7 @@ namespace ToDo_App.UI.Views
                 Content = new StackPanel
                 {
                     Spacing = 8,
-                    Children = { titleBox, contentBox, tagEditor }
+                    Children = { titleBox, contentScrollViewer, tagEditor }
                 }
             };
             // Keep the dialog open if a typed tag isn't valid, so the user can see why
@@ -1324,56 +1340,36 @@ namespace ToDo_App.UI.Views
                 Text = note.Content,
                 TextWrapping = TextWrapping.Wrap
             };
-            
-            var editButton = new Button
+
+            var noteTextPanel = new StackPanel
             {
-                Content = new SymbolIcon(Symbol.Edit),
-                VerticalAlignment = VerticalAlignment.Center
+                Spacing = 4,
+                VerticalAlignment = VerticalAlignment.Top,
+                Children = { titleText }
             };
+            if (note.Tags.Count > 0) { noteTextPanel.Children.Add(buildTagsRow(note)); }
+            noteTextPanel.Children.Add(descriptionText);
+            
+            var editButton = new Button { Content = new SymbolIcon(Symbol.Edit) };
             ToolTipService.SetToolTip(editButton, Res.ResourceManager.GetString("button/edit_tooltip", _currentCulture));
             editButton.Click += (s, e) => onEditTodoClicked(note);
         
-            var attachButton = new Button
-            {
-                Content = new SymbolIcon(Symbol.Attach),
-                VerticalAlignment = VerticalAlignment.Bottom
-            };
+            var attachButton = new Button { Content = new SymbolIcon(Symbol.Attach) };
             ToolTipService.SetToolTip(attachButton, Res.ResourceManager.GetString("button/attach_file_tooltip", _currentCulture));
             attachButton.Click += (s, e) => onAttachFileClicked(note, attachButton);
         
-            var deleteButton = new Button
-            {
-                Content = new SymbolIcon(Symbol.Delete),
-                VerticalAlignment = VerticalAlignment.Bottom
-            };
+            var deleteButton = new Button { Content = new SymbolIcon(Symbol.Delete) };
             ToolTipService.SetToolTip(deleteButton, Res.ResourceManager.GetString("button/delete_tooltip", _currentCulture));
             deleteButton.Click += (s, e) => onDeleteTodoClicked(note);
 
-            var titleRow = new Grid
+            var noteActionButtons = new StackPanel
             {
-                ColumnSpacing = 8,
-                ColumnDefinitions =
-                {
-                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                    new ColumnDefinition { Width = GridLength.Auto }
-                },
-                Children = { titleText, editButton }
+                Orientation = Orientation.Vertical,
+                Spacing = 4,
+                VerticalAlignment = VerticalAlignment.Top,
+                Children = { editButton, attachButton, deleteButton }
             };
-            Grid.SetColumn(editButton, 1);
-        
-            var descriptionRow = new Grid
-            {
-                ColumnSpacing = 8,
-                ColumnDefinitions =
-                {
-                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                    new ColumnDefinition { Width = GridLength.Auto }
-                },
-                Children = { descriptionText, attachButton }
-            };
-            Grid.SetColumn(attachButton, 1);
 
-            Grid attachmentRow;
             if (note.File != null)
             {
                 attachButton.IsEnabled = false;
@@ -1399,7 +1395,7 @@ namespace ToDo_App.UI.Views
                     Content = new SymbolIcon(Symbol.Cancel),
                     VerticalAlignment = VerticalAlignment.Bottom
                 };
-                ToolTipService.SetToolTip(attachButton, Res.ResourceManager.GetString("button/remove_attached_file_tooltip", _currentCulture));
+                ToolTipService.SetToolTip(removeAttachmentButton, Res.ResourceManager.GetString("button/remove_attached_file_tooltip", _currentCulture));
                 removeAttachmentButton.Click += (s, e) => onRemoveAttachmentClicked(note);
 
                 var attachmentButtonsStack = new StackPanel
@@ -1411,42 +1407,21 @@ namespace ToDo_App.UI.Views
                         attachedFileButton,
                         removeAttachmentButton
                     }
-                };
-                
-                attachmentRow = new Grid
-                {
-                    ColumnSpacing = 8,
-                    ColumnDefinitions =
-                    {
-                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                        new ColumnDefinition { Width = GridLength.Auto }
-                    },
-                    Children =  { attachmentButtonsStack, deleteButton }
-                };
-            }
-            else
-            {
-                attachmentRow = new Grid
-                {
-                    ColumnSpacing = 8,
-                    ColumnDefinitions =
-                    {
-                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                        new ColumnDefinition { Width = GridLength.Auto }
-                    },
-                    Children =  { deleteButton }
-                };
-            }
-            Grid.SetColumn(deleteButton, 1);
+                };             
+                noteTextPanel.Children.Add(attachmentButtonsStack);
+            }          
 
-            var cardContent = new StackPanel { Spacing = 4 };
-            cardContent.Children.Add(titleRow);
-            if (note.Tags.Count > 0)
+            var cardContent = new Grid
             {
-                cardContent.Children.Add(buildTagsRow(note));
-            }
-            cardContent.Children.Add(descriptionRow);
-            cardContent.Children.Add(attachmentRow);
+                ColumnSpacing = 8,
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = GridLength.Auto }
+                },
+                Children = { noteTextPanel, noteActionButtons }
+            };
+            Grid.SetColumn(noteActionButtons, 1);
 
             var card = new Border
             {
