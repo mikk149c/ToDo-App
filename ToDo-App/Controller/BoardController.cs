@@ -1,4 +1,4 @@
-﻿using ToDo_App.Interfaces;
+using ToDo_App.Interfaces;
 
 namespace ToDo_App.Controller;
 
@@ -174,6 +174,8 @@ public abstract class BoardController : ITodoBoard
 
     public abstract void DeleteTag(Guid tagId);
 
+    public abstract void MergeTags(Guid sourceTagId, Guid targetTagId);
+
     public void SetNoteFileAttachment(Guid id, string newFilePath)
     {
         // The name is read here, on the computer the file is on
@@ -198,6 +200,14 @@ public abstract class BoardController : ITodoBoard
     public abstract void MoveNoteLeft(Guid noteId);
 
     public abstract void RemoveNote(Guid noteId);
+
+    public abstract void RemoveNoteFromTrashBin(Guid noteId);
+
+    public abstract void RestoreNote(Guid noteId, Guid columnId);
+
+    public abstract void EmptyTrashBin();
+
+    public List<ToDoNote> GetTrashBinNotes() { return _board.TrashBin.Notes; }
 
     public void LoadBoardFromJson(string jsonPath)
     {
@@ -249,6 +259,7 @@ public abstract class BoardController : ITodoBoard
             onColumnContentChanged(new ColumnContentChangedEventArgs(targetColumnId, GetNotesInColumn(targetColumnId)));
         }
 
+        _board.AddColumnNotesToTrashBin(columnId);
         _board.RemoveColumn(columnId);
         onColumnRemoved(new ColumnRemovedEventArgs(columnId));
         onBoardChanged(new BoardChangedEventArgs(_board));
@@ -302,6 +313,18 @@ public abstract class BoardController : ITodoBoard
         notifyTagChanged(tagId);
     }
 
+    protected void ApplyMergeTags(Guid sourceTagId, Guid targetTagId)
+    {
+        // Merging changes the tags on the cards, so the affected columns are redrawn
+        List<Guid> affectedColumnIds = _board.GetColumnIdsWithTag(sourceTagId);
+        _board.MergeTags(sourceTagId, targetTagId);
+        foreach (Guid columnId in affectedColumnIds)
+        {
+            onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        }
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
     protected void ApplyDeleteTag(Guid tagId)
     {
         List<Guid> affectedColumnIds = _board.GetColumnIdsWithTag(tagId);
@@ -351,10 +374,22 @@ public abstract class BoardController : ITodoBoard
     protected void ApplyRemoveNote(Guid noteId)
     {
         Guid columnId = _board.GetColumnIdFromNoteId(noteId);
+        _board.AddNoteToTrashBin(noteId);
         _board.RemoveNote(noteId);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
+
+    protected void ApplyRestoreNote(Guid noteId, Guid columnId)
+    {
+        _board.RestoreNoteFromTrashBin(noteId, columnId);
+        onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
+        onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+
+    protected void ApplyRemoveNoteFromTrashBin(Guid noteId) { _board.RemoveNoteFromTrashBin(noteId); }
+
+    protected void ApplyEmptyTrashBin() { _board.EmptyTrashBin(); }
 
     protected void ApplyReplaceBoard(ToDoBoard loadedBoard)
     {

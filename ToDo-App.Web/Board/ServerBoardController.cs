@@ -61,6 +61,7 @@ public sealed class ServerBoardController : LocalBoardController
             case nameof(RenameTag): RenameTag(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(SetTagColor): SetTagColor(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(DeleteTag): DeleteTag(a.Get<Guid>(0)); break;
+            case nameof(MergeTags): MergeTags(a.Get<Guid>(0), a.Get<Guid>(1)); break;
             case nameof(SetNoteFileAttachment): SetNoteFileAttachment(a.Get<Guid>(0), a.Get<AttachedFile>(1)); break;
             case nameof(RemoveNoteFileAttachment): RemoveNoteFileAttachment(a.Get<Guid>(0)); break;
             case nameof(MoveNote): MoveNote(a.Get<int>(0), a.Get<int>(1), a.Get<int>(2), a.Get<int>(3)); break;
@@ -70,6 +71,9 @@ public sealed class ServerBoardController : LocalBoardController
             case nameof(MoveNoteRight): MoveNoteRight(a.Get<Guid>(0)); break;
             case nameof(MoveNoteLeft): MoveNoteLeft(a.Get<Guid>(0)); break;
             case nameof(RemoveNote): RemoveNote(a.Get<Guid>(0)); break;
+            case nameof(RemoveNoteFromTrashBin): RemoveNoteFromTrashBin(a.Get<Guid>(0)); break;
+            case nameof(RestoreNote): RestoreNote(a.Get<Guid>(0), a.Get<Guid>(1)); break;
+            case nameof(EmptyTrashBin): EmptyTrashBin(); break;
             case nameof(ReplaceBoard): ReplaceBoard(a.Get<ToDoBoard>(0)); break;
             default: throw new KeyNotFoundException($"There's no change called '{change}'.");
         }
@@ -114,6 +118,9 @@ public sealed class ServerBoardController : LocalBoardController
     public override void DeleteTag(Guid tagId) =>
         applyAndBroadcast(() => base.DeleteTag(tagId), nameof(DeleteTag), tagId);
 
+    public override void MergeTags(Guid sourceTagId, Guid targetTagId) =>
+        applyAndBroadcast(() => base.MergeTags(sourceTagId, targetTagId), nameof(MergeTags), sourceTagId, targetTagId);
+
     protected override void SetNoteFileAttachment(Guid id, AttachedFile file) =>
         applyAndBroadcast(() => base.SetNoteFileAttachment(id, file), nameof(SetNoteFileAttachment), id, file);
 
@@ -142,6 +149,15 @@ public sealed class ServerBoardController : LocalBoardController
 
     public override void RemoveNote(Guid noteId) =>
         applyAndBroadcast(() => base.RemoveNote(noteId), nameof(RemoveNote), noteId);
+
+    public override void RemoveNoteFromTrashBin(Guid noteId) =>
+        applyAndBroadcast(() => base.RemoveNoteFromTrashBin(noteId), nameof(RemoveNoteFromTrashBin), noteId);
+
+    public override void RestoreNote(Guid noteId, Guid columnId) =>
+        applyAndBroadcast(() => base.RestoreNote(noteId, columnId), nameof(RestoreNote), noteId, columnId);
+
+    public override void EmptyTrashBin() =>
+        applyAndBroadcast(() => base.EmptyTrashBin(), nameof(EmptyTrashBin));
 
     protected override void ReplaceBoard(ToDoBoard board) =>
         applyAndBroadcast(() => base.ReplaceBoard(board), nameof(ReplaceBoard), board);

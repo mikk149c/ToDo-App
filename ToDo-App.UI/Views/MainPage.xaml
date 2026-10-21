@@ -47,11 +47,13 @@
         <Style x:Key="TodoTitle" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontFamily" Value="{ThemeResource AppFontFamily}"/>
         </Style>
 
         <Style x:Key="TodoDescription" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontFamily" Value="{ThemeResource AppFontFamily}"/>
         </Style>
 
         <!-- A tag shown on a card. The background is the tag's colour, set in code. Every palette colour
@@ -79,7 +81,8 @@
             </Grid.RowDefinitions>
 
             <!-- Toolbar above the columns -->
-            <Grid Grid.Row="0" ColumnSpacing="12">
+            <StackPanel Grid.Row="0" Spacing="8">
+            <Grid ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -89,14 +92,14 @@
                     <Button
                         x:Name="AddColumnButton"
                         Click="OnClickAddColumn"
-                        Content="Add Column"
-                        Style="{StaticResource Button_AddColumn}" />
-
-                    <Button
-                        x:Name="AddToDoButton"
-                        Click="OnAddTodoClicked"
-                        Content="Add new ToDo"
-                        Style="{StaticResource PrimaryAction}" />
+                        Style="{StaticResource PrimaryAction}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <SymbolIcon Symbol="Add"/>
+                                <TextBlock x:Name="AddColumnButtonTextBlock"></TextBlock>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
 
                     <Button
                         x:Name="ImportButton"
@@ -121,9 +124,21 @@
                             </StackPanel>
                         </Button.Content>
                     </Button>
+
+                    <Button
+                        x:Name="TrashBinButton"
+                        Click="OnTrashBinClicked"
+                        Style="{StaticResource PrimaryAction}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <SymbolIcon Symbol="Delete"/>
+                                <TextBlock x:Name="TrashBinButtonTextBlock"></TextBlock>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
                     <!-- Where the board is kept: a file on this PC (default), or the board on the server -->
                     <ToggleSwitch
                         x:Name="RemoteToggle"
@@ -132,14 +147,46 @@
                         OffContent="Local"
                         OnContent="Remote"
                         Toggled="onRemoteToggled" />
+                    <!-- Choose the tags to filter the board by. The list is built when it opens -->
+                    <DropDownButton
+                        x:Name="FilterButton"
+                        Height="32"
+                        VerticalAlignment="Center"
+                        Content="Filter">
+                        <DropDownButton.Flyout>
+                            <Flyout x:Name="FilterFlyout" Opening="onFilterFlyoutOpening" Placement="BottomEdgeAlignedRight">
+                                <StackPanel
+                                    x:Name="FilterFlyoutContent"
+                                    Width="260"
+                                    Spacing="8" />
+                            </Flyout>
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
                     <controls:AppearanceSelector x:Name="AppearanceSelector" VerticalAlignment="Center" />
-                    <ComboBox
-                        x:Name="LanguageSelector"
-                        Width="100"
-                        SelectionChanged="onLanguageSelectionChanged"
-                    />
+                    <controls:FontSelector x:Name="FontSelector" VerticalAlignment="Center"></controls:FontSelector>
+                    <controls:LanguageSelector x:Name="LanguageSelector" VerticalAlignment="Center"></controls:LanguageSelector>
                 </StackPanel>
             </Grid>
+
+            <!-- Shown while the board is filtered, so it's clear which tags are in use (#67) -->
+            <StackPanel
+                x:Name="FilterBar"
+                Orientation="Horizontal"
+                Spacing="8"
+                Visibility="Collapsed">
+                <TextBlock x:Name="FilterBarLabel" VerticalAlignment="Center" />
+                <StackPanel
+                    x:Name="FilterBarTags"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="4" />
+                <TextBlock
+                    x:Name="FilterBarMode"
+                    VerticalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                <Button x:Name="ClearFilterButton" Click="onClearFilterClicked" />
+            </StackPanel>
+            </StackPanel>
 
             <!-- Board columns (stub data) -->
             <ScrollViewer

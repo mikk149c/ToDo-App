@@ -121,6 +121,8 @@ public sealed class RemoteBoardController : BoardController, IDisposable
 
     public override void DeleteTag(Guid tagId) => send(nameof(DeleteTag), tagId);
 
+    public override void MergeTags(Guid sourceTagId, Guid targetTagId) => send(nameof(MergeTags), sourceTagId, targetTagId);
+
     protected override void SetNoteFileAttachment(Guid id, AttachedFile file) => send(nameof(SetNoteFileAttachment), id, file);
 
     public override void RemoveNoteFileAttachment(Guid id) => send(nameof(RemoveNoteFileAttachment), id);
@@ -140,6 +142,12 @@ public sealed class RemoteBoardController : BoardController, IDisposable
     public override void MoveNoteLeft(Guid noteId) => send(nameof(MoveNoteLeft), noteId);
 
     public override void RemoveNote(Guid noteId) => send(nameof(RemoveNote), noteId);
+
+    public override void RemoveNoteFromTrashBin(Guid noteId) => send(nameof(RemoveNoteFromTrashBin), noteId);
+
+    public override void RestoreNote(Guid noteId, Guid columnId) => send(nameof(RestoreNote), noteId, columnId);
+
+    public override void EmptyTrashBin() => send(nameof(EmptyTrashBin));
 
     protected override void ReplaceBoard(ToDoBoard board) => send(nameof(ReplaceBoard), board);
 
@@ -220,6 +228,7 @@ public sealed class RemoteBoardController : BoardController, IDisposable
             case nameof(RenameTag): ApplyRenameTag(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(SetTagColor): ApplySetTagColor(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(DeleteTag): ApplyDeleteTag(a.Get<Guid>(0)); break;
+            case nameof(MergeTags): ApplyMergeTags(a.Get<Guid>(0), a.Get<Guid>(1)); break;
             case nameof(SetNoteFileAttachment): ApplySetNoteFileAttachment(a.Get<Guid>(0), a.Get<AttachedFile>(1)); break;
             case nameof(RemoveNoteFileAttachment): ApplyRemoveNoteFileAttachment(a.Get<Guid>(0)); break;
             case nameof(MoveNote): ApplyMoveNote(a.Get<int>(0), a.Get<int>(1), a.Get<int>(2), a.Get<int>(3)); break;
@@ -229,6 +238,9 @@ public sealed class RemoteBoardController : BoardController, IDisposable
             case nameof(MoveNoteRight): ApplyMoveNoteRight(a.Get<Guid>(0)); break;
             case nameof(MoveNoteLeft): ApplyMoveNoteLeft(a.Get<Guid>(0)); break;
             case nameof(RemoveNote): ApplyRemoveNote(a.Get<Guid>(0)); break;
+            case nameof(RemoveNoteFromTrashBin): ApplyRemoveNoteFromTrashBin(a.Get<Guid>(0)); break;
+            case nameof(RestoreNote): ApplyRestoreNote(a.Get<Guid>(0), a.Get<Guid>(1)); break;
+            case nameof(EmptyTrashBin): ApplyEmptyTrashBin(); break;
             case nameof(ReplaceBoard): ApplyReplaceBoard(a.Get<ToDoBoard>(0)); break;
             default: throw new KeyNotFoundException($"There's no change called '{change}'.");
         }
