@@ -230,20 +230,26 @@ public class RemoteBoardControllerTests
     [Test]
     public void EveryChangeCanBeReceivedByName()
     {
-        string[] changes = typeof(BoardController)
+        MethodInfo[] methods = typeof(BoardController)
             .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
             .Where(method => method.IsAbstract)
-            .Select(method => method.Name)
-            .Distinct()
             .ToArray();
         using var remote = new RemoteBoardController(new Uri("http://127.0.0.1:9/"));
 
-        Assert.That(changes, Has.Length.GreaterThan(15));
-        foreach (string change in changes)
+        Assert.That(methods.Select(method => method.Name).Distinct().Count(), Is.GreaterThan(15));
+        foreach (IGrouping<string, MethodInfo> change in methods.GroupBy(method => method.Name))
         {
+            if (change.Any(method => method.GetParameters().Length == 0))
+            {
+                // Nothing to refuse: a change with a case just runs, one without isn't found
+                Assert.DoesNotThrow(() => host.Board.Execute(change.Key, []), $"server: {change.Key}");
+                Assert.DoesNotThrow(() => remote.ApplyChange(change.Key, []), $"remote: {change.Key}");
+                continue;
+            }
+
             // No arguments: a change with a case refuses them, one without isn't found
-            Assert.Throws<ArgumentException>(() => host.Board.Execute(change, []), $"server: {change}");
-            Assert.Throws<ArgumentException>(() => remote.ApplyChange(change, []), $"remote: {change}");
+            Assert.Throws<ArgumentException>(() => host.Board.Execute(change.Key, []), $"server: {change.Key}");
+            Assert.Throws<ArgumentException>(() => remote.ApplyChange(change.Key, []), $"remote: {change.Key}");
         }
     }
 
