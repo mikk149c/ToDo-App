@@ -12,7 +12,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="button/add_column" xml:space="preserve">
-        <value>Sung Tsengti</value>
+        <value>Lik</value>
     </data>
     <data name="button/add_note_tooltip" xml:space="preserve">
         <value>Sung mipa sätserit</value>
@@ -24,13 +24,13 @@
         <value>Yem faylti</value>
     </data>
     <data name="button/delete_column_tooltip" xml:space="preserve">
-        <value>'Aku tsengti</value>
+        <value>'Aku likit</value>
     </data>
     <data name="button/delete_tooltip" xml:space="preserve">
         <value>'Aku</value>
     </data>
     <data name="button/edit_column_title_tooltip" xml:space="preserve">
-        <value>Leykatem tstxot tsengä</value>
+        <value>Leykatem tstxot likä</value>
     </data>
     <data name="button/edit_tooltip" xml:space="preserve">
         <value>Leykatem</value>
@@ -69,37 +69,37 @@
         <value>'Aku</value>
     </data>
     <data name="dialog/delete_the_todos" xml:space="preserve">
-        <value>'Aku (ay)sätseriti</value>
+        <value>'Aku [[|me|pxe|{0}a ]]sätseriti</value>
     </data>
     <data name="dialog/export_board" xml:space="preserve">
-        <value>Sweyn tìtserit</value>
+        <value>Sweyn sähenat</value>
     </data>
     <data name="dialog/import_board" xml:space="preserve">
-        <value>Kanom tìtserit</value>
+        <value>Kanom sähenat</value>
     </data>
     <data name="dialog/json_files" xml:space="preserve">
         <value>Ayfayl alu JSON</value>
     </data>
     <data name="dialog/option_move_to_column" xml:space="preserve">
-        <value>Munge ne "{0}"</value>
+        <value>Munge ne lik alu {0}</value>
     </data>
     <data name="dialog/save" xml:space="preserve">
         <value>Sweyn</value>
     </data>
     <data name="dialog/title_add_new_column" xml:space="preserve">
-        <value>Sung Mipa Tsengti</value>
+        <value>Sung Mipa Likit</value>
     </data>
     <data name="dialog/title_add_new_note" xml:space="preserve">
         <value>Sung Mipa Sätserit</value>
     </data>
     <data name="dialog/title_delete_column_q" xml:space="preserve">
-        <value>'Aku Tsengti Srak?</value>
+        <value>'Aku Likit Srak?</value>
     </data>
     <data name="dialog/title_delete_note_q" xml:space="preserve">
         <value>'Aku Sätserit Srak?</value>
     </data>
     <data name="dialog/title_edit_column" xml:space="preserve">
-        <value>Leykatem Tsengti</value>
+        <value>Leykatem Likit</value>
     </data>
     <data name="dialog/title_edit_note" xml:space="preserve">
         <value>Leykatem Sätserit</value>
@@ -108,13 +108,13 @@
         <value>Nìnu yolem faylti.</value>
     </data>
     <data name="error/failed_to_export_board" xml:space="preserve">
-        <value>Nìnu swoleyn tìtserit nemfa fayl.</value>
+        <value>Nìnu swoleyn sähenat nemfa fayl.</value>
     </data>
     <data name="error/failed_to_import_board" xml:space="preserve">
-        <value>Nìnu kolanom tìtserit ftumfa fayl.</value>
+        <value>Nìnu kolanom sähenat ftumfa fayl.</value>
     </data>
     <data name="error/failed_to_load_board" xml:space="preserve">
-        <value>Nìnu kolanom tìtserit.</value>
+        <value>Nìnu kolanom sähenat.</value>
     </data>
     <data name="error/failed_to_open_attached_file" xml:space="preserve">
         <value>Nìnu piak soli faylur ayawnem.</value>
@@ -123,7 +123,7 @@
         <value>Nìnu 'olaku faylit ayawnem.</value>
     </data>
     <data name="error/failed_to_save_board" xml:space="preserve">
-        <value>Nìnu swoleyn tìtserit.</value>
+        <value>Nìnu swoleyn sähenat.</value>
     </data>
     <data name="language/danish" xml:space="preserve">
         <value>nìTänskì</value>
@@ -132,7 +132,7 @@
         <value>nì'Ìnglìsì</value>
     </data>
     <data name="todo/column_title" xml:space="preserve">
-        <value>Tstxo tsengä</value>
+        <value>Tstxo likä</value>
     </data>
     <data name="todo/default_description" xml:space="preserve">
         <value>Fì'u mipa sätseri lu.</value>
@@ -150,16 +150,16 @@
         <value>Fpak</value>
     </data>
     <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>'Aku "{0}"ti srak? Zene livu am'ake.</value>
+        <value>'Aku likit alu {0} srak? Zene livu am'ake.</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
-        <value>{0}a sätseriri sweylu txo pehem si?</value>
+        <value>[[S|Mes|Pxes|{0}a s]]ätseriri sweylu txo pehem si?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
-        <value>'Aku "{0}"ti sì {1}a sätserit a tok tsat srak? Zene livu am'ake.</value>
+        <value>'Aku likit alu {0} sì [[|me|pxe|{1}a ]]sätserit a tok tsat srak? Zene livu am'ake.</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>'Aku "{0}"ti srak? Zene livu am'ake.</value>
+        <value>Munge sätserit alu {0} ne sngeltseng srak?</value>
     </data>
     <data name="language/navi" xml:space="preserve">
         <value>nìNa'vi</value>
@@ -180,7 +180,7 @@
         <value>Pamrel si tstxor syonä ulte 'ampi fì'ut alu Enter</value>
     </data>
     <data name="dialog/remove_tag" xml:space="preserve">
-        <value>'Aku "{0}"ti</value>
+        <value>'Aku syonit alu {0}</value>
     </data>
     <data name="dialog/tag_name" xml:space="preserve">
         <value>Tstxo</value>
@@ -189,21 +189,81 @@
         <value>Tìng mipa tstxot</value>
     </data>
     <data name="dialog/tag_used_on" xml:space="preserve">
-        <value>Tok {0}a sätserit</value>
+        <value>Tok [['awa |me|pxe|{0}a ]]sätserit</value>
     </data>
     <data name="dialog/tag_name_taken" xml:space="preserve">
-        <value>Li fkeytok syon alu "{0}".</value>
+        <value>Li fkeytok syon alu {0}.</value>
     </data>
     <data name="dialog/new_tag_tooltip" xml:space="preserve">
-        <value>Mipa syon alu "{0}", sweyn tsat fkol krra sweyn sätserit</value>
+        <value>Mipa syon alu {0}, sweyn tsat fkol krra sweyn sätserit</value>
     </data>
     <data name="dialog/delete_tag_confirm" xml:space="preserve">
-        <value>'Aku "{0}"ti ta {1}a sätseri srak?</value>
+        <value>'Aku syonit alu {0} ta [[|me|pxe|{1}a ]]sätseri srak?</value>
     </data>
     <data name="dialog/tag_new_info" xml:space="preserve">
         <value>Mipa syon, sung tsat fkol krra sweyn sätserit</value>
     </data>
     <data name="dialog/edit_tag" xml:space="preserve">
-        <value>Leykatem "{0}"ti</value>
+        <value>Leykatem syonit alu {0}</value>
+    </data>
+    <data name="dialog/tag_colour" xml:space="preserve">
+        <value>'Opin</value>
+    </data>
+    <data name="dialog/merge" xml:space="preserve">
+        <value>Neykawang</value>
+    </data>
+    <data name="dialog/merge_tag_confirm" xml:space="preserve">
+        <value>Li fkeytok syon alu {1}. Fì'ut neykawang hu syon alu {0} srak? [[S|mes|pxes|{2}a s]]ätseriru layu syon alu {1}.</value>
+    </data>
+    <data name="filter/button" xml:space="preserve">
+        <value>Ekxan si</value>
+    </data>
+    <data name="filter/button_active" xml:space="preserve">
+        <value>Ekxan si ({0})</value>
+    </data>
+    <data name="filter/clear" xml:space="preserve">
+        <value>'Aku ekxanit</value>
+    </data>
+    <data name="filter/match_label" xml:space="preserve">
+        <value>Wìntxu sätserit a tsaru lu</value>
+    </data>
+    <data name="filter/match_all" xml:space="preserve">
+        <value>frasyon</value>
+    </data>
+    <data name="filter/match_any" xml:space="preserve">
+        <value>hìmtxewvay syon a'aw</value>
+    </data>
+    <data name="filter/no_tags" xml:space="preserve">
+        <value>Ke li ke tok kea syonìl sähenat.</value>
+    </data>
+    <data name="filter/remove_tag" xml:space="preserve">
+        <value>Ftang ekxan sivi fa syon alu {0}</value>
+    </data>
+    <data name="filter/showing" xml:space="preserve">
+        <value>Ekxan seri fa</value>
+    </data>
+    <data name="button/trash_bin" xml:space="preserve">
+        <value>Sngeltseng</value>
+    </data>
+    <data name="dialog/close" xml:space="preserve">
+        <value>Tstu si</value>
+    </data>
+    <data name="dialog/content_permanent_delete_note" xml:space="preserve">
+        <value>'Aku sätserit alu {0} srak? Zene livu am'ake.</value>
+    </data>
+    <data name="dialog/empty_bin" xml:space="preserve">
+        <value>Mek sleyku sngeltsengit</value>
+    </data>
+    <data name="dialog/empty_bin_confirm" xml:space="preserve">
+        <value>Frasätserit a tok sngeltsengit ska'a srak? Zene livu am'ake.</value>
+    </data>
+    <data name="dialog/restore_which_column" xml:space="preserve">
+        <value>Ftxey teyngta pelikmì speng sätseriti.</value>
+    </data>
+    <data name="dialog/restore_tooltip" xml:space="preserve">
+        <value>Speng sätserit</value>
+    </data>
+    <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
+        <value>Ska'a sätserit</value>
     </data>
 </root>

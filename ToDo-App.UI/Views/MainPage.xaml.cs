@@ -18,22 +18,15 @@ namespace ToDo_App.UI.Views
     {
         private const string DefaultJsonPath = "Assets/default_board.json";
         private const string UserJsonPath = "board.json";
+        private Guid selectedTrashNoteId = Guid.Empty;
         private const double ScrollSpeed = 60;
         private const double ScrollTickSpeed = 10;
-
-        private static readonly Dictionary<string, string> Languages = new()
-        {
-            {"en-US", "language/english"},
-            {"da-DK", "language/danish"},
-            {"de", "language/german"},
-            {"fo", "language/faroese"},
-            {"kln", "language/klingon"},
-            {"naq", "language/navi"}
-        };
 
         ITodoBoard boardController = new BoardController();
 
         List<Guid> columns = new List<Guid>();
+        // Which todos are shown. Only affects the view, never the board
+        TagFilter tagFilter = new TagFilter();
 
         DispatcherTimer horizontalScrollTimer = new DispatcherTimer();
         double scrollDirection = 0;
@@ -41,7 +34,6 @@ namespace ToDo_App.UI.Views
         DispatcherTimer verticalScrollTimer = new DispatcherTimer();
         double verticalScrollDirection = 0;
         ScrollViewer? verticalScrollTarget = null;
-
         
         CultureInfo _currentCulture;
         
@@ -66,15 +58,30 @@ namespace ToDo_App.UI.Views
             BoardScrollViewer.DragLeave += (s, e) => stopAutoScroll();
             verticalScrollTimer.Interval = TimeSpan.FromMilliseconds(ScrollTickSpeed);
             verticalScrollTimer.Tick += onVerticalScrollTimerTick;
+            LanguageSelector.OnLanguageSelected += onLanguageSelected;
+            FontSelector.OnFontSelected += onFontChanged;
 
             this.Loaded += onPageInitialized;
         }
 
         private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
         {
+            // onFontChanged();
+            var language = ((App)Application.Current).Appearance.Current.Language;
+            var font = ((App)Application.Current).Appearance.Current.Font;
+
+            if (language != null)
+            {
+                onLanguageSelected(language);
+                if (language != "kln")
+                    onFontChanged(font);
+            }
+            else
+            {
+                LanguageSelector.SetSelectedLanguage("en-US");
+            }
+            
             loadInitialBoard();
-            initializeLanguageSettings();
-            localizeXaml();
         }
 
         private async void loadInitialBoard()
@@ -107,7 +114,7 @@ namespace ToDo_App.UI.Views
 
         private void populateStatusColumn(Guid column)
         {
-            List<ToDoNote> items = boardController.GetNotesInColumn(column);
+            List<ToDoNote> items = tagFilter.Apply(boardController.GetNotesInColumn(column));
             StackPanel columnPanel = (StackPanel)ColumnsPanel.FindName(column.ToString());
             if (columnPanel != null)
             {
@@ -119,17 +126,344 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        private void OnAddTodoClicked(object sender, RoutedEventArgs e)
+        private void RefreshTrashBin(
+            StackPanel listPanel,
+            TextBlock confirmationText,
+            Grid trashListView,
+            StackPanel restorePanel,
+            TextBlock restoreHeading,
+            StackPanel restoreColumnButtons,
+            Grid confirmationPanel) 
         {
-            if (columns.Count == 0)
-            {
-                return;
-            }
+            listPanel.Children.Clear();
 
-            Guid firstColumn = columns[0];
-            boardController.CreateNote(firstColumn,
-                Res.ResourceManager.GetString("todo/default_title", _currentCulture),
-                Res.ResourceManager.GetString("todo/default_description", _currentCulture));
+            foreach (ToDoNote note in boardController.GetTrashBinNotes()) {       
+                TextBlock title = new TextBlock {
+                    Style = (Style)Resources["TodoTitle"],
+                    Text = note.Title,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                TextBlock expandIcon = new TextBlock { Text = ">", VerticalAlignment = VerticalAlignment.Center };
+
+                Grid titleRow = new Grid {
+                    ColumnSpacing = 8,
+                    ColumnDefinitions = {
+                        new ColumnDefinition { Width = GridLength.Auto },
+                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }},
+                    Children = { expandIcon, title }
+                };
+
+                Grid.SetColumn(title, 1);
+
+                TextBlock description = new TextBlock {
+                    Style = (Style)Resources["TodoDescription"],
+                    Text = note.Content,
+                    TextWrapping = TextWrapping.Wrap
+                };
+
+                StackPanel expandedContent = new StackPanel {
+                    Spacing = 4,
+                    Visibility = Visibility.Collapsed,
+                    Children = { description }
+                };
+
+                if (note.File != null) {
+                    var attachedFileButton = new Button {
+                        Style = (Style)Application.Current.Resources["AttachedFile"],
+                        Content = new StackPanel {
+                            Orientation = Orientation.Horizontal,
+                            Spacing = 8,
+                            Children = {
+                                new SymbolIcon(Symbol.Attach),
+                                new TextBlock { Text = note.File.Name }
+                            }
+                        }
+                    };
+                    attachedFileButton.Click += (s, e) => onAttachmentClicked(note);
+                    expandedContent.Children.Add(attachedFileButton);
+                }
+
+                Button titleButton = new Button {
+                    Content = titleRow,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    HorizontalContentAlignment = HorizontalAlignment.Stretch
+                };
+
+                titleButton.Click += (sender, e) => {
+                    bool isExpanded = expandedContent.Visibility == Visibility.Visible;
+
+                    expandedContent.Visibility = isExpanded
+                        ? Visibility.Collapsed
+                        : Visibility.Visible;
+
+                    expandIcon.Text = isExpanded ? ">" : "v";
+                };
+
+                StackPanel buttons = new StackPanel {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 4,
+                    VerticalAlignment = VerticalAlignment.Top
+                };
+
+                Button restoreButton = new Button{ Content = new SymbolIcon(Symbol.Undo) };
+                ToolTipService.SetToolTip(restoreButton, Res.ResourceManager.GetString("dialog/restore_tooltip", _currentCulture));
+                restoreButton.Click += (sender, e) => {
+                    selectedTrashNoteId = note.Id;
+                    restoreHeading.Text = string.Format(
+                        Res.ResourceManager.GetString("dialog/restore_which_column", _currentCulture),
+                        note.Title);
+                    restoreColumnButtons.Children.Clear();
+                    List<Guid> columnIds = boardController.GetStatusColumnIds();
+
+                    foreach (Guid columnId in columnIds) {
+                        string columnName = boardController.GetStatusColumnName(columnId);
+
+                        TextBlock columnNameText = new TextBlock {
+                            Style = (Style)Application.Current.Resources["MyLabel"],
+                            Text = $"{columnName}",
+                            TextAlignment = TextAlignment.Left,
+                            TextWrapping = TextWrapping.Wrap,
+                            HorizontalAlignment = HorizontalAlignment.Stretch
+                        };
+
+                        Button destinationButton = new Button {
+                            Content = columnNameText,
+                            HorizontalAlignment = HorizontalAlignment.Stretch,
+                            HorizontalContentAlignment = HorizontalAlignment.Stretch
+                        };
+
+                        destinationButton.Click += (columnSender, columnE) => {
+                            if (selectedTrashNoteId == Guid.Empty) { return; }
+                            boardController.RestoreNote( selectedTrashNoteId, columnId);
+                            selectedTrashNoteId = Guid.Empty;
+
+                            RefreshTrashBin(listPanel, confirmationText, trashListView, restorePanel,
+                                            restoreHeading, restoreColumnButtons, confirmationPanel);
+
+                            restorePanel.Visibility = Visibility.Collapsed;
+                            trashListView.Visibility = Visibility.Visible;
+                        };
+
+                        restoreColumnButtons.Children.Add(destinationButton);
+                    }
+
+                    restorePanel.Visibility = Visibility.Visible;
+                    trashListView.Visibility = Visibility.Collapsed;
+                };
+
+                Button deleteButton = new Button { Content = new SymbolIcon(Symbol.Delete) };
+                ToolTipService.SetToolTip(deleteButton, Res.ResourceManager.GetString("dialog/permanent_delete_note_tooltip", _currentCulture));
+                deleteButton.Click += (sender, e) => { 
+                    selectedTrashNoteId = note.Id;
+                    confirmationText.Text = string.Format(
+                        Res.ResourceManager.GetString("dialog/content_permanent_delete_note", _currentCulture),
+                        note.Title);
+                    confirmationPanel.Visibility = Visibility.Visible;
+                    trashListView.Visibility = Visibility.Collapsed;
+                };
+
+                buttons.Children.Add(restoreButton);
+                buttons.Children.Add(deleteButton);
+
+                // Put the clickable title and action buttons side by side.
+                Grid headerRow = new Grid {
+                    ColumnSpacing = 8,
+                    ColumnDefinitions = {
+                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                        new ColumnDefinition { Width = GridLength.Auto }},
+                    Children = { titleButton, buttons }
+                };
+
+                Grid.SetColumn(buttons, 1);
+
+                // Assemble the card.
+                StackPanel cardContent = new StackPanel { Spacing = 4 };
+
+                cardContent.Children.Add(headerRow);
+
+                if (note.Tags.Count > 0) { cardContent.Children.Add(buildTagsRow(note)); }
+
+                cardContent.Children.Add(expandedContent);
+
+                Border card = new Border {
+                    Style = (Style)Resources["TodoCard"],
+                    Child = cardContent
+                };
+
+                listPanel.Children.Add(card);
+            }
+        }
+
+        private async void OnTrashBinClicked(object sender, RoutedEventArgs e)
+        {
+            StackPanel listPanel = new StackPanel { Spacing = 8 };
+
+            Grid trashListView = new Grid {
+                RowDefinitions = {
+                    new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
+                    new RowDefinition { Height = GridLength.Auto } },
+                RowSpacing = 12,
+                MaxHeight = 550
+            };
+
+            ScrollViewer trashScrollViewer = new ScrollViewer {
+                Content = listPanel,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                MaxHeight = 500
+            };
+
+            //Restore note section
+            StackPanel restorePanel = new StackPanel {
+                Spacing = 12,
+                Visibility = Visibility.Collapsed
+            };
+
+            TextBlock restoreHeading = new TextBlock { TextWrapping = TextWrapping.Wrap };
+
+            StackPanel restoreColumnButtons = new StackPanel { Spacing = 8 };
+
+            ScrollViewer restoreColumnScrollViewer = new ScrollViewer {
+                Content = restoreColumnButtons,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                MaxHeight = 400
+            };
+
+            Button cancelRestoreButton = new Button {
+                Content = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+
+            cancelRestoreButton.Click += (sender, e) => {
+                selectedTrashNoteId = Guid.Empty;
+                restorePanel.Visibility = Visibility.Collapsed;
+                trashListView.Visibility = Visibility.Visible;
+            };
+
+            restorePanel.Children.Add(restoreHeading);
+            restorePanel.Children.Add(restoreColumnScrollViewer);
+            restorePanel.Children.Add(cancelRestoreButton);
+
+            //Confirm delete section
+            Grid confirmationPanel = new Grid {
+                Visibility = Visibility.Collapsed,
+                MinHeight = 180,
+                RowDefinitions = {
+                    new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
+                    new RowDefinition { Height = GridLength.Auto }
+                }
+            };
+
+            TextBlock confirmationText = new TextBlock {
+                TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            Grid confirmationButtons = new Grid {
+                ColumnDefinitions = {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                },
+                ColumnSpacing = 8,
+                Margin = new Thickness(0, 12, 0, 0)
+            };
+
+            Button cancelDeleteFromTrashButton = new Button { 
+                Content = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
+                Height = 40,
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+            cancelDeleteFromTrashButton.Click += (sender, e) => {
+                selectedTrashNoteId = Guid.Empty;
+                confirmationPanel.Visibility = Visibility.Collapsed;
+                trashListView.Visibility = Visibility.Visible;
+            };
+
+            Button confirmDeleteFromTrashButton = new Button {
+                Content = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
+                Height = 40,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Style = (Style)Application.Current.Resources["PrimaryAction"]
+            };
+            confirmDeleteFromTrashButton.Click += (sender, e) => {
+                if (selectedTrashNoteId == Guid.Empty) { 
+                    boardController.EmptyTrashBin(); 
+                }
+                else {
+                    boardController.RemoveNoteFromTrashBin(selectedTrashNoteId);
+                    selectedTrashNoteId = Guid.Empty;   
+                }
+                RefreshTrashBin(listPanel, confirmationText,trashListView, restorePanel, 
+                                restoreHeading, restoreColumnButtons, confirmationPanel);
+                confirmationPanel.Visibility = Visibility.Collapsed;
+                trashListView.Visibility = Visibility.Visible;
+            };
+            Grid.SetColumn(confirmDeleteFromTrashButton, 0);
+            Grid.SetColumn(cancelDeleteFromTrashButton, 1);
+
+            confirmationButtons.Children.Add(confirmDeleteFromTrashButton);
+            confirmationButtons.Children.Add(cancelDeleteFromTrashButton);
+
+            Grid.SetRow(confirmationText, 0); Grid.SetRow(confirmationButtons, 1);
+            confirmationPanel.Children.Add(confirmationText);
+            confirmationPanel.Children.Add(confirmationButtons);
+
+            //Build the trash bin
+            Grid trashFooter = new Grid {
+                ColumnDefinitions = {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                },
+                ColumnSpacing = 8
+            };
+
+            Button emptyTrashButton = new Button {
+                Content = Res.ResourceManager.GetString("dialog/empty_bin", _currentCulture),
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+            emptyTrashButton.Click += (sender, e) => {
+                selectedTrashNoteId = Guid.Empty;
+                confirmationText.Text = Res.ResourceManager.GetString("dialog/empty_bin_confirm", _currentCulture);
+
+                confirmationPanel.Visibility = Visibility.Visible;
+                trashListView.Visibility = Visibility.Collapsed;
+            };
+
+            Button closeTrashBinButton = new Button {
+                Content = Res.ResourceManager.GetString("dialog/close", _currentCulture),
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+
+            Grid.SetColumn(emptyTrashButton, 0); Grid.SetColumn(closeTrashBinButton, 1);
+            trashFooter.Children.Add(emptyTrashButton);
+            trashFooter.Children.Add(closeTrashBinButton);
+            
+            Grid.SetRow(trashScrollViewer, 0); Grid.SetRow(trashFooter, 1);
+            trashListView.Children.Add(trashScrollViewer);
+            trashListView.Children.Add(trashFooter);
+
+            Grid dialogContent = new Grid { Width = 500 };
+            dialogContent.Children.Add(trashListView);
+            dialogContent.Children.Add(restorePanel);
+            dialogContent.Children.Add(confirmationPanel);
+
+            RefreshTrashBin(listPanel, confirmationText,trashListView, restorePanel, 
+                            restoreHeading, restoreColumnButtons, confirmationPanel);
+
+            ContentDialog dialog = new ContentDialog {
+                Title = Res.ResourceManager.GetString("button/trash_bin", _currentCulture),
+                Content = dialogContent,
+                XamlRoot = this.XamlRoot,
+                RequestedTheme = this.ActualTheme
+            };
+            closeTrashBinButton.Click += (sender, e) => { dialog.Hide(); };
+
+            await dialog.ShowAsync();
         }
 
         private async void onImportBoardClicked(object sender, RoutedEventArgs e)
@@ -212,6 +546,12 @@ namespace ToDo_App.UI.Views
                 throw new ArgumentException("Wrong EventArgs type");
             }
 
+            // A loaded board may not have the filtered tags, and the new column is drawn with the filter
+            if (tagFilter.Prune(boardController.GetTags()))
+            {
+                updateFilterUi();
+            }
+
             var column = buildColumn(args.ColumnId, args.Name);
             AddColumnToUI(column, args.ColumnId);
         }
@@ -260,6 +600,13 @@ namespace ToDo_App.UI.Views
                 throw new ArgumentException("Wrong EventArgs type");
             }
             
+            // The filter turns off tags that are gone, which can show todos in every column
+            if (tagFilter.Prune(boardController.GetTags()))
+            {
+                refreshFilter();
+                return;
+            }
+
             clearColumnItems(args.ColumnId);
             populateStatusColumn(args.ColumnId);
         }
@@ -280,6 +627,9 @@ namespace ToDo_App.UI.Views
                     populateStatusColumn(columnId);
                 }
             }
+
+            // A renamed or recoloured tag is also shown in the filter bar
+            updateFilterUi();
         }
 
         private void onColumnOrderChanged(object? sender, EventArgs e)
@@ -576,6 +926,8 @@ namespace ToDo_App.UI.Views
                     }
                 }
                 List<ToDoNote> notes = boardController.GetNotesInColumn(columnId);
+                // The cards are only the shown todos, so hidden todos keep their positions
+                dropIndex = tagFilter.ToColumnIndex(notes, dropIndex);
                 int currentIndex = notes.FindIndex(n => n.Id == noteId);
                 if (currentIndex != -1 && currentIndex < dropIndex)
                 {
@@ -665,19 +1017,28 @@ namespace ToDo_App.UI.Views
                 MinHeight = 100
             };
 
+            var contentScrollViewer = new ScrollViewer
+            {
+                Content = contentBox,
+                MaxHeight = 400,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled
+            };
+
             var tagEditor = new TagEditor(boardController, Array.Empty<NoteTag>(), tagEditorStrings());
 
-            var dialog = new ContentDialog
+            var dialog = new ThemedContentDialog
             {
                 XamlRoot = this.XamlRoot,
                 Title = Res.ResourceManager.GetString("dialog/title_add_new_note", _currentCulture),
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/add", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 Content = new StackPanel
                 {
                     Spacing = 8,
-                    Children = { titleBox, contentBox, tagEditor }
+                    Children = { titleBox, contentScrollViewer, tagEditor }
                 }
             };
             // Keep the dialog open if a typed tag isn't valid, so the user can see why
@@ -702,13 +1063,14 @@ namespace ToDo_App.UI.Views
                 Text = boardController.GetStatusColumnName(columnId)
             };
 
-            ContentDialog dialog = new ContentDialog
+            ContentDialog dialog = new ThemedContentDialog
             {
                 Title = Res.ResourceManager.GetString("dialog/title_edit_column", _currentCulture),
                 Content = nameBox,
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/save", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 XamlRoot = this.XamlRoot
             };
 
@@ -735,9 +1097,15 @@ namespace ToDo_App.UI.Views
             ComboBox? todoActionBox = null;
             if (noteCount > 0 && otherColumns.Count > 0)
             {
+                var headerText = Localizer.HandlePlurals(
+                    Res.ResourceManager.GetString("dialog/content_delete_column_consequence", _currentCulture),
+                    noteCount, _currentCulture.Name);
+                var deleteText = Localizer.HandlePlurals(
+                    Res.ResourceManager.GetString("dialog/delete_the_todos", _currentCulture),
+                    noteCount, _currentCulture.Name);
                 todoActionBox = new ComboBox
                 {
-                    Header = String.Format(Res.ResourceManager.GetString("dialog/content_delete_column_consequence", _currentCulture), noteCount),
+                    Header = headerText,
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
                 foreach (Guid otherColumn in otherColumns)
@@ -748,12 +1116,15 @@ namespace ToDo_App.UI.Views
                         Tag = otherColumn
                     });
                 }
-                todoActionBox.Items.Add(new ComboBoxItem { Content = Res.ResourceManager.GetString("dialog/delete_the_todos", _currentCulture) });
+                todoActionBox.Items.Add(new ComboBoxItem { Content = deleteText });
                 todoActionBox.SelectedIndex = 0;
             }
             else if (noteCount > 0)
             {
-                message.Text = String.Format(Res.ResourceManager.GetString("dialog/content_delete_column_no_space", _currentCulture), columnName, noteCount);
+                var textWithNumber = Localizer.HandlePlurals(
+                    Res.ResourceManager.GetString("dialog/content_delete_column_no_space", _currentCulture),
+                    noteCount, _currentCulture.Name, 1);
+                message.Text = String.Format(textWithNumber, columnName);
             }
 
             StackPanel content = new StackPanel { Spacing = 12 };
@@ -763,13 +1134,14 @@ namespace ToDo_App.UI.Views
                 content.Children.Add(todoActionBox);
             }
 
-            ContentDialog dialog = new ContentDialog
+            ContentDialog dialog = new ThemedContentDialog
             {
                 Title = Res.ResourceManager.GetString("dialog/title_delete_column_q", _currentCulture),
                 Content = content,
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 XamlRoot = this.XamlRoot
             };
 
@@ -801,7 +1173,7 @@ namespace ToDo_App.UI.Views
 
         private async void onDeleteTodoClicked(ToDoNote note)
         {
-            var dialog = new ContentDialog
+            var dialog = new ThemedContentDialog
             {
                 XamlRoot = this.XamlRoot,
                 Title = Res.ResourceManager.GetString("dialog/title_delete_note_q", _currentCulture),
@@ -809,6 +1181,7 @@ namespace ToDo_App.UI.Views
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 Content = String.Format(Res.ResourceManager.GetString("dialog/content_delete_note", _currentCulture), note.Title),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme
             };
 
             ContentDialogResult result = await dialog.ShowAsync();
@@ -835,20 +1208,29 @@ namespace ToDo_App.UI.Views
                 TextWrapping = TextWrapping.Wrap,
                 MinHeight = 100
             };
+
+            var contentScrollViewer = new ScrollViewer
+            {
+                Content = contentBox,
+                MaxHeight = 400,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled
+            };
             
             var tagEditor = new TagEditor(boardController, note.Tags, tagEditorStrings());
 
-            var dialog = new ContentDialog
+            var dialog = new ThemedContentDialog
             {
                 XamlRoot = this.XamlRoot,
                 Title = Res.ResourceManager.GetString("dialog/title_edit_note", _currentCulture),
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/save", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 Content = new StackPanel
                 {
                     Spacing = 8,
-                    Children = { titleBox, contentBox, tagEditor }
+                    Children = { titleBox, contentScrollViewer, tagEditor }
                 }
             };
             // Keep the dialog open if a typed tag isn't valid, so the user can see why
@@ -959,56 +1341,36 @@ namespace ToDo_App.UI.Views
                 Text = note.Content,
                 TextWrapping = TextWrapping.Wrap
             };
-            
-            var editButton = new Button
+
+            var noteTextPanel = new StackPanel
             {
-                Content = new SymbolIcon(Symbol.Edit),
-                VerticalAlignment = VerticalAlignment.Center
+                Spacing = 4,
+                VerticalAlignment = VerticalAlignment.Top,
+                Children = { titleText }
             };
+            if (note.Tags.Count > 0) { noteTextPanel.Children.Add(buildTagsRow(note)); }
+            noteTextPanel.Children.Add(descriptionText);
+            
+            var editButton = new Button { Content = new SymbolIcon(Symbol.Edit) };
             ToolTipService.SetToolTip(editButton, Res.ResourceManager.GetString("button/edit_tooltip", _currentCulture));
             editButton.Click += (s, e) => onEditTodoClicked(note);
         
-            var attachButton = new Button
-            {
-                Content = new SymbolIcon(Symbol.Attach),
-                VerticalAlignment = VerticalAlignment.Bottom
-            };
+            var attachButton = new Button { Content = new SymbolIcon(Symbol.Attach) };
             ToolTipService.SetToolTip(attachButton, Res.ResourceManager.GetString("button/attach_file_tooltip", _currentCulture));
             attachButton.Click += (s, e) => onAttachFileClicked(note, attachButton);
         
-            var deleteButton = new Button
-            {
-                Content = new SymbolIcon(Symbol.Delete),
-                VerticalAlignment = VerticalAlignment.Bottom
-            };
+            var deleteButton = new Button { Content = new SymbolIcon(Symbol.Delete) };
             ToolTipService.SetToolTip(deleteButton, Res.ResourceManager.GetString("button/delete_tooltip", _currentCulture));
             deleteButton.Click += (s, e) => onDeleteTodoClicked(note);
 
-            var titleRow = new Grid
+            var noteActionButtons = new StackPanel
             {
-                ColumnSpacing = 8,
-                ColumnDefinitions =
-                {
-                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                    new ColumnDefinition { Width = GridLength.Auto }
-                },
-                Children = { titleText, editButton }
+                Orientation = Orientation.Vertical,
+                Spacing = 4,
+                VerticalAlignment = VerticalAlignment.Top,
+                Children = { editButton, attachButton, deleteButton }
             };
-            Grid.SetColumn(editButton, 1);
-        
-            var descriptionRow = new Grid
-            {
-                ColumnSpacing = 8,
-                ColumnDefinitions =
-                {
-                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                    new ColumnDefinition { Width = GridLength.Auto }
-                },
-                Children = { descriptionText, attachButton }
-            };
-            Grid.SetColumn(attachButton, 1);
 
-            Grid attachmentRow;
             if (note.File != null)
             {
                 attachButton.IsEnabled = false;
@@ -1034,7 +1396,7 @@ namespace ToDo_App.UI.Views
                     Content = new SymbolIcon(Symbol.Cancel),
                     VerticalAlignment = VerticalAlignment.Bottom
                 };
-                ToolTipService.SetToolTip(attachButton, Res.ResourceManager.GetString("button/remove_attached_file_tooltip", _currentCulture));
+                ToolTipService.SetToolTip(removeAttachmentButton, Res.ResourceManager.GetString("button/remove_attached_file_tooltip", _currentCulture));
                 removeAttachmentButton.Click += (s, e) => onRemoveAttachmentClicked(note);
 
                 var attachmentButtonsStack = new StackPanel
@@ -1046,42 +1408,21 @@ namespace ToDo_App.UI.Views
                         attachedFileButton,
                         removeAttachmentButton
                     }
-                };
-                
-                attachmentRow = new Grid
-                {
-                    ColumnSpacing = 8,
-                    ColumnDefinitions =
-                    {
-                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                        new ColumnDefinition { Width = GridLength.Auto }
-                    },
-                    Children =  { attachmentButtonsStack, deleteButton }
-                };
-            }
-            else
-            {
-                attachmentRow = new Grid
-                {
-                    ColumnSpacing = 8,
-                    ColumnDefinitions =
-                    {
-                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                        new ColumnDefinition { Width = GridLength.Auto }
-                    },
-                    Children =  { deleteButton }
-                };
-            }
-            Grid.SetColumn(deleteButton, 1);
+                };             
+                noteTextPanel.Children.Add(attachmentButtonsStack);
+            }          
 
-            var cardContent = new StackPanel { Spacing = 4 };
-            cardContent.Children.Add(titleRow);
-            if (note.Tags.Count > 0)
+            var cardContent = new Grid
             {
-                cardContent.Children.Add(buildTagsRow(note));
-            }
-            cardContent.Children.Add(descriptionRow);
-            cardContent.Children.Add(attachmentRow);
+                ColumnSpacing = 8,
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = GridLength.Auto }
+                },
+                Children = { noteTextPanel, noteActionButtons }
+            };
+            Grid.SetColumn(noteActionButtons, 1);
 
             var card = new Border
             {
@@ -1116,16 +1457,187 @@ namespace ToDo_App.UI.Views
             return tagsRow;
         }
 
+        // --- Filter the board by tags (#67, #69) ---
+
+        private string filterString(string key)
+        {
+            return Res.ResourceManager.GetString(key, _currentCulture) ?? key;
+        }
+
+        // Rebuilt every time it opens, so it lists the tags the board has right now
+        private void onFilterFlyoutOpening(object? sender, object e)
+        {
+            FilterFlyoutContent.Children.Clear();
+            List<NoteTag> tags = boardController.GetTags();
+            if (tags.Count == 0)
+            {
+                FilterFlyoutContent.Children.Add(new TextBlock
+                {
+                    Text = filterString("filter/no_tags"),
+                    TextWrapping = TextWrapping.Wrap
+                });
+                return;
+            }
+
+            foreach (NoteTag tag in tags)
+            {
+                Guid tagId = tag.Id;
+                var content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+                content.Children.Add(new Microsoft.UI.Xaml.Shapes.Ellipse
+                {
+                    Width = 10,
+                    Height = 10,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Fill = new SolidColorBrush(AccentPalette.Find(tag.Color).Color)
+                });
+                content.Children.Add(new TextBlock { Text = tag.Name, VerticalAlignment = VerticalAlignment.Center });
+
+                var checkBox = new CheckBox { Content = content, IsChecked = tagFilter.TagIds.Contains(tagId) };
+                AutomationProperties.SetName(checkBox, tag.Name);
+                checkBox.Checked += (s, args) => onFilterTagToggled(tagId, true);
+                checkBox.Unchecked += (s, args) => onFilterTagToggled(tagId, false);
+                FilterFlyoutContent.Children.Add(checkBox);
+            }
+
+            // How several selected tags are combined
+            FilterFlyoutContent.Children.Add(new TextBlock { Text = filterString("filter/match_label") });
+            var matchAny = new RadioButton
+            {
+                Content = filterString("filter/match_any"),
+                GroupName = "TagMatchMode",
+                IsChecked = tagFilter.Mode == TagMatchMode.Any
+            };
+            var matchAll = new RadioButton
+            {
+                Content = filterString("filter/match_all"),
+                GroupName = "TagMatchMode",
+                IsChecked = tagFilter.Mode == TagMatchMode.All
+            };
+            matchAny.Checked += (s, args) => onFilterModeChanged(TagMatchMode.Any);
+            matchAll.Checked += (s, args) => onFilterModeChanged(TagMatchMode.All);
+            FilterFlyoutContent.Children.Add(matchAny);
+            FilterFlyoutContent.Children.Add(matchAll);
+
+            var clearButton = new Button { Content = filterString("filter/clear") };
+            clearButton.Click += (s, args) =>
+            {
+                FilterFlyout.Hide();
+                onClearFilterClicked(s, args);
+            };
+            FilterFlyoutContent.Children.Add(clearButton);
+        }
+
+        private void onFilterTagToggled(Guid tagId, bool isSelected)
+        {
+            if (isSelected)
+            {
+                tagFilter.Select(tagId);
+            }
+            else
+            {
+                tagFilter.Deselect(tagId);
+            }
+            refreshFilter();
+        }
+
+        private void onFilterModeChanged(TagMatchMode mode)
+        {
+            tagFilter.Mode = mode;
+            refreshFilter();
+        }
+
+        private void onClearFilterClicked(object sender, RoutedEventArgs e)
+        {
+            tagFilter.Clear();
+            refreshFilter();
+        }
+
+        // Redraws every column with the current filter. The board itself is untouched
+        private void refreshFilter()
+        {
+            foreach (Guid columnId in columns)
+            {
+                clearColumnItems(columnId);
+                populateStatusColumn(columnId);
+            }
+            updateFilterUi();
+        }
+
+        // Shows on the toolbar that the board is filtered, and by which tags
+        private void updateFilterUi()
+        {
+            var activeText = Localizer.HandlePlurals(filterString("filter/button_active"),
+                tagFilter.TagIds.Count, _currentCulture.Name);
+            FilterButton.Content = tagFilter.IsActive
+                ? activeText
+                : filterString("filter/button");
+            FilterBar.Visibility = tagFilter.IsActive ? Visibility.Visible : Visibility.Collapsed;
+            FilterBarLabel.Text = filterString("filter/showing");
+            ClearFilterButton.Content = filterString("filter/clear");
+            FilterBarMode.Text = tagFilter.TagIds.Count > 1
+                ? filterString(tagFilter.Mode == TagMatchMode.All ? "filter/match_all" : "filter/match_any")
+                : "";
+
+            FilterBarTags.Children.Clear();
+            List<NoteTag> boardTags = boardController.GetTags();
+            foreach (Guid tagId in tagFilter.TagIds)
+            {
+                NoteTag? tag = boardTags.Find(candidate => candidate.Id == tagId);
+                if (tag != null)
+                {
+                    FilterBarTags.Children.Add(buildFilterTag(tag));
+                }
+            }
+        }
+
+        // A tag in the filter bar: its name in its colour, and a ✕ to stop filtering by it
+        private Border buildFilterTag(NoteTag tag)
+        {
+            Guid tagId = tag.Id;
+            var removeButton = new Button
+            {
+                Content = new FontIcon { Glyph = "", FontSize = 10, Foreground = new SolidColorBrush(Colors.White) },
+                Padding = new Thickness(4),
+                MinWidth = 0,
+                MinHeight = 0,
+                Background = new SolidColorBrush(Colors.Transparent),
+                BorderThickness = new Thickness(0)
+            };
+            string label = string.Format(filterString("filter/remove_tag"), tag.Name);
+            AutomationProperties.SetName(removeButton, label);
+            ToolTipService.SetToolTip(removeButton, label);
+            removeButton.Click += (s, args) => onFilterTagToggled(tagId, false);
+
+            var content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
+            content.Children.Add(new TextBlock
+            {
+                Style = (Style)Resources["TodoTagText"],
+                Text = tag.Name,
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            content.Children.Add(removeButton);
+
+            return new Border
+            {
+                Style = (Style)Resources["TodoTag"],
+                Padding = new Thickness(8, 0, 2, 0),
+                Background = new SolidColorBrush(AccentPalette.Find(tag.Color).Color),
+                Child = content
+            };
+        }
+
         private Dictionary<string, string> tagEditorStrings()
         {
             string[] keys =
             {
                 "todo/property_tags", "dialog/add_tag_placeholder", "dialog/remove_tag", "dialog/edit_tag",
                 "dialog/new_tag_tooltip", "dialog/tag_name", "dialog/tag_used_on", "dialog/tag_new_info",
-                "dialog/tag_name_taken", "dialog/tag_colour", "dialog/rename", "dialog/delete", "dialog/cancel", "dialog/delete_tag_confirm"
+                "dialog/tag_name_taken", "dialog/tag_colour", "dialog/rename", "dialog/delete", "dialog/cancel", "dialog/delete_tag_confirm", "dialog/merge", "dialog/merge_tag_confirm"
             };
             // A missing translation shows the key instead of crashing the dialog
-            return keys.ToDictionary(key => key, key => Res.ResourceManager.GetString(key, _currentCulture) ?? key);
+            var dict = keys.ToDictionary(key => key, key => Res.ResourceManager.GetString(key, _currentCulture) ?? key);
+            dict.Add("lang_code", _currentCulture.Name);
+            return dict;
         }
 
         private void onNote_DragStarting(ToDoNote note, DragStartingEventArgs args)
@@ -1149,13 +1661,14 @@ namespace ToDo_App.UI.Views
                 PlaceholderText = Res.ResourceManager.GetString("todo/column_title", _currentCulture)
             };
 
-            ContentDialog dialog = new ContentDialog //Enter column name
+            ContentDialog dialog = new ThemedContentDialog
             {
                 Title = Res.ResourceManager.GetString("dialog/title_add_new_column", _currentCulture),
                 Content = columnNameBox,
                 PrimaryButtonText = Res.ResourceManager.GetString("dialog/add", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
+                RequestedTheme = this.ActualTheme,
                 XamlRoot = this.Content.XamlRoot
             };
 
@@ -1169,97 +1682,67 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        private void initializeLanguageSettings()
+        void onLanguageSelected(string language)
         {
-            // ApplicationData needs a packaged app. When the app runs unpackaged (from an IDE or `dotnet run`)
-            // it throws, so the language can't be remembered there and the default language is used
-            string? selectedLanguage = null;
-            try
-            {
-                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-                selectedLanguage = localSettings.Values["selectedLanguage"]?.ToString();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"Could not load the selected language: {e.Message}");
-            }
+            var refreshThroughFontChange = language == "kln" || _currentCulture != null && _currentCulture.Name == "kln";
+            
+            _currentCulture = new CultureInfo(language);
 
-            if (selectedLanguage == null)
-                selectedLanguage = "en-US";
-            
-            _currentCulture = new CultureInfo(selectedLanguage);
-            
-            foreach (var language in Languages)
-            {
-                LanguageSelector.Items.Add(new ComboBoxItem
-                {
-                    Content = Res.ResourceManager.GetString(language.Value, _currentCulture),
-                    Tag = language.Key
-                });
-            }
-            
-            var initialIndex = 0;
-            if (Languages.ContainsKey(selectedLanguage))
-            {
-                for (int i = 0; i < LanguageSelector.Items.Count; i++)
-                {
-                    var item = (ComboBoxItem)LanguageSelector.Items[i];
-                    if (item.Tag.Equals(selectedLanguage))
-                    {
-                        initialIndex = i;
-                    }
-                }
-            }
-            
-            LanguageSelector.SelectedIndex = initialIndex;
+            if (refreshThroughFontChange)
+                onFontChanged(((App)Application.Current).Appearance.Current.Font);
+            else
+                refreshUi();
         }
 
-        private void onLanguageSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
+        void onFontChanged(string? selectedFont)
         {
-            var item = selectionChangedEventArgs.AddedItems[0] as ComboBoxItem;
-            var language = item.Tag.ToString();
-            _currentCulture = new CultureInfo(language);
+            var language = _currentCulture.Name;
+            var defaultFont = language == "kln" ? "Georgia" : "Segoe UI";
+            var newFont = selectedFont ?? defaultFont;
             
-            // Refresh static UI elements
-            localizeXaml();
+            var resources = Application.Current.Resources;
+            resources["AppFontFamily"] = newFont;
+            resources["ContentControlThemeFontFamily"] = newFont;
+            resources["MTCMediaFontFamily"] = newFont;
+            resources["PhoneFontFamilyNormal"] = newFont;
+            resources["PhoneFontFamilySemiLight"] = newFont;
+            resources["PivotHeaderItemFontFamily"] = newFont;
+            resources["PivotTitleFontFamily"] = newFont;
+            resources["KeyTipFontFamily"] = newFont;
             
-            // Refresh dynamic UI elements for each column
-            foreach (var guid in columns)
-            {
-                rebuildColumn(guid, boardController.GetStatusColumnName(guid));
-            }
-            
-            // Only remembered in a packaged app, see initializeLanguageSettings
-            try
-            {
-                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-                localSettings.Values["selectedLanguage"] = language;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"Could not save the selected language: {e.Message}");
-            }
+            var font = (string)Application.Current.Resources["AppFontFamily"];
+            AddColumnButtonTextBlock.FontFamily = new FontFamily(font);
+            ImportButtonTextBlock.FontFamily = new FontFamily(font);
+            ExportButtonTextBlock.FontFamily = new FontFamily(font);
+            TrashBinButtonTextBlock.FontFamily = new FontFamily(font);
+            FilterButton.FontFamily = new FontFamily(font);
+            ((ComboBox)LanguageSelector.FindName("LanguageComboBox")).FontFamily = new FontFamily(font);
+
+            refreshUi();
         }
         
-        private void localizeXaml()
+        private void refreshUi()
         {
-            AddColumnButton.Content = Res.ResourceManager.GetString("button/add_column", _currentCulture);
-            AddToDoButton.Content = Res.ResourceManager.GetString("button/add_todo", _currentCulture);
+            // Refresh static UI elements
+            AddColumnButtonTextBlock.Text = Res.ResourceManager.GetString("button/add_column", _currentCulture);
             ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
             ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);
-
-            foreach (ComboBoxItem item in LanguageSelector.Items)
-            {
-                var languageStringName = Languages[item.Tag.ToString()];
-                item.Content = Res.ResourceManager.GetString(languageStringName, _currentCulture);
-            }
+            TrashBinButtonTextBlock.Text = Res.ResourceManager.GetString("button/trash_bin", _currentCulture);
             
+            // Refresh toolbar components
+            updateFilterUi();
             AppearanceSelector.SetStrings(
                 Res.ResourceManager.GetString("button/tooltip_light", _currentCulture),
                 Res.ResourceManager.GetString("button/tooltip_system_default", _currentCulture),
                 Res.ResourceManager.GetString("button/tooltip_dark", _currentCulture),
                 Res.ResourceManager.GetString("button/tooltip_accent_color", _currentCulture)
                 );
+            
+            // Refresh dynamic UI elements for each column
+            foreach (var guid in columns)
+            {
+                rebuildColumn(guid, boardController.GetStatusColumnName(guid));
+            }
         }
     }
 }

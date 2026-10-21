@@ -42,7 +42,7 @@
         <value>Beschreibung</value>
     </data>
     <data name="button/add_column" xml:space="preserve">
-        <value>Spalte Hinzufügen</value>
+        <value>Spalte</value>
     </data>
     <data name="button/add_todo" xml:space="preserve">
         <value>Notiz Hinzufügen</value>
@@ -69,7 +69,7 @@
         <value>Neue ToDo</value>
     </data>
     <data name="todo/default_description" xml:space="preserve">
-        <value>Das ist eine neue Todo.</value>
+        <value>Das ist eine neue ToDo.</value>
     </data>
     <data name="dialog/save" xml:space="preserve">
         <value>Speichern</value>
@@ -78,7 +78,7 @@
         <value>Löschen</value>
     </data>
     <data name="dialog/delete_the_todos" xml:space="preserve">
-        <value>Notiz(en) löschen</value>
+        <value>Die [[Notiz|Notizen]] löschen</value>
     </data>
     <data name="dialog/title_add_new_column" xml:space="preserve">
         <value>Neue Spalte Hinzufügen</value>
@@ -149,17 +149,14 @@
     <data name="dialog/remove_tag" xml:space="preserve">
         <value>"{0}" entfernen</value>
     </data>
-    <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>"{0}" löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
-    </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
-        <value>"{0}" und die {1} Notiz(en) darin löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+        <value>"{0}" und die [[Notiz|{1} Notizen]] darin löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
     </data>
     <data name="dialog/content_delete_note" xml:space="preserve">
-        <value>"{0}" löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+        <value>"{0}" in den Papierkorb verschieben?</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
-        <value>Was soll mit die {0} Notiz(en) in diese Spalte geschehen?</value>
+        <value>Was soll mit die [[Notiz|{0} Notizen]] in diese Spalte geschehen?</value>
     </data>
     <data name="error/failed_to_attach_file" xml:space="preserve">
         <value>Die Datei konnte nicht anhängt werden.</value>
@@ -183,7 +180,7 @@
         <value>Die Tafel konnte nicht gespeichert werden.</value>
     </data>
     <data name="dialog/delete_tag_confirm" xml:space="preserve">
-        <value>"{0}" von alle {1} Notiz(en) entfernen?</value>
+        <value>"{0}" von [[die Notiz|alle {1} Notizen]] entfernen?</value>
     </data>
     <data name="dialog/edit_tag" xml:space="preserve">
         <value>"{0}" bearbeiten</value>
@@ -204,6 +201,69 @@
         <value>Neuer Tag, wird beim Speichern der Notiz hinzugefügt.</value>
     </data>
     <data name="dialog/tag_used_on" xml:space="preserve">
-        <value>{0} Notiz(en) benutzt es</value>
+        <value>{0} [[Notiz|Notizen]] benutzt es</value>
+    </data>
+    <data name="dialog/tag_colour" xml:space="preserve">
+        <value>Farbe</value>
+    </data>
+    <data name="dialog/merge" xml:space="preserve">
+        <value>Zusammenlegen</value>
+    </data>
+    <data name="dialog/merge_tag_confirm" xml:space="preserve">
+        <value>Es gibt schon ein Tag mit dem Namen "{1}". Soll es in "{0}" zusammenlegen werden? Die [[Notiz|{2} Notizen]] werden stattdessen "{1}" bekommen.</value>
+    </data>
+    <data name="filter/button" xml:space="preserve">
+        <value>Filtern</value>
+    </data>
+    <data name="filter/button_active" xml:space="preserve">
+        <value>Filtern ({0})</value>
+    </data>
+    <data name="filter/clear" xml:space="preserve">
+        <value>Filter Löschen</value>
+    </data>
+    <data name="filter/match_all" xml:space="preserve">
+        <value>Alle Tags</value>
+    </data>
+    <data name="filter/match_any" xml:space="preserve">
+        <value>Beliebige der Tags</value>
+    </data>
+    <data name="filter/match_label" xml:space="preserve">
+        <value>Zeig ToDos mit:</value>
+    </data>
+    <data name="filter/no_tags" xml:space="preserve">
+        <value>Es gibt noch keine Tags auf der Tafel.</value>
+    </data>
+    <data name="filter/showing" xml:space="preserve">
+        <value>Gefiltert nach:</value>
+    </data>
+    <data name="filter/remove_tag" xml:space="preserve">
+        <value>Filterung nach "{0}" unheben</value>
+    </data>
+    <data name="dialog/content_permanent_delete_note" xml:space="preserve">
+        <value>"{0}" endgültig löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+    </data>
+    <data name="button/trash_bin" xml:space="preserve">
+        <value>Papierkorb</value>
+    </data>
+    <data name="dialog/close" xml:space="preserve">
+        <value>Schließen</value>
+    </data>
+    <data name="dialog/empty_bin" xml:space="preserve">
+        <value>Den Papierkorb leeren</value>
+    </data>
+    <data name="dialog/empty_bin_confirm" xml:space="preserve">
+        <value>Bist du sicher, dass du alle Notizen im Papierkorb endgültig löschen möchtest?</value>
+    </data>
+    <data name="dialog/restore_which_column" xml:space="preserve">
+        <value>Wähle aus, in welcher Spalte "{0}" wiederhergestellt werden soll.</value>
+    </data>
+    <data name="dialog/content_delete_column" xml:space="preserve">
+        <value>"{0}" löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
+    </data>
+    <data name="dialog/restore_tooltip" xml:space="preserve">
+        <value>Notiz wiedergestellen</value>
+    </data>
+    <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
+        <value>Endgültig Notiz löschen</value>
     </data>
 </root>

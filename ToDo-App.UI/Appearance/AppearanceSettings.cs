@@ -19,6 +19,8 @@ namespace ToDo_App.UI.Appearance
 
         /// <summary>Accent colour as #RRGGBB. Unknown values fall back to the default accent.</summary>
         public string AccentColor { get; init; } = AccentPalette.Default.Hex;
+        public string Language { get; init; } = "en-US";
+        public string? Font { get; init; } = null;
     }
 
     [JsonSourceGenerationOptions(WriteIndented = true, UseStringEnumConverter = true)]
