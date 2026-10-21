@@ -139,6 +139,14 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
+                    <!-- Where the board is kept: a file on this PC (default), or the board on the server -->
+                    <ToggleSwitch
+                        x:Name="RemoteToggle"
+                        MinWidth="0"
+                        VerticalAlignment="Center"
+                        OffContent="Local"
+                        OnContent="Remote"
+                        Toggled="onRemoteToggled" />
                     <!-- Choose the tags to filter the board by. The list is built when it opens -->
                     <DropDownButton
                         x:Name="FilterButton"

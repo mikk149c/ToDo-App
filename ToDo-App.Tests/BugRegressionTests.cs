@@ -16,7 +16,7 @@ public class BugRegressionTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         plannedId = controller.CreateColumn("Planned");
         progressId = controller.CreateColumn("In Progress");
         noteId = controller.CreateNote(plannedId, "First note", "Køb bananer");
@@ -145,7 +145,7 @@ public class BugRegressionTests
     private static string saveOtherBoard()
     {
         string jsonPath = Path.Combine(Path.GetTempPath(), $"todo-tests-{Guid.NewGuid()}.json");
-        var other = new BoardController();
+        var other = new LocalBoardController();
         other.CreateColumn("Loaded column");
         other.SaveBoardToJson(jsonPath);
         return jsonPath;

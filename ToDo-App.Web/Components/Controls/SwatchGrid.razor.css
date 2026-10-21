@@ -1,0 +1,21 @@
+.swatch-grid {
+    display: grid;
+    gap: 6px;
+}
+
+.swatch {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 4px;
+}
+
+.swatch:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+/* The selected colour gets a ring in the text colour, so it's visible on every swatch */
+.swatch[aria-checked="true"] {
+    box-shadow: 0 0 0 2px var(--flyout-background), 0 0 0 4px var(--text-primary);
+}

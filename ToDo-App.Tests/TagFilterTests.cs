@@ -14,7 +14,7 @@ public class TagFilterTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         columnId = controller.CreateColumn("Planned");
         controller.CreateNote(columnId, "Work", "", tagNames: new[] { "Work" });
         controller.CreateNote(columnId, "Home", "", tagNames: new[] { "Home" });

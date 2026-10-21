@@ -16,7 +16,7 @@ public class BoardControllerTrashBinTests
     [SetUp]
     public void SetUp()
     {
-        _controller = new BoardController();
+        _controller = new LocalBoardController();
         _columnId = _controller.CreateColumn("Planned");
         _otherColumnId = _controller.CreateColumn("In Progress");
         _noteId = _controller.CreateNote(

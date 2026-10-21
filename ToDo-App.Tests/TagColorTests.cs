@@ -22,7 +22,7 @@ public class TagColorTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         plannedId = controller.CreateColumn("Planned");
         progressId = controller.CreateColumn("In Progress");
         firstNoteId = controller.CreateNote(plannedId, "First", "", tagNames: new[] { "Work", "Home" });
@@ -221,7 +221,7 @@ public class TagColorTests
         controller.SetTagColor(workId, Blue);
         controller.SaveBoardToJson(jsonPath);
 
-        var reloaded = new BoardController();
+        var reloaded = new LocalBoardController();
         reloaded.LoadBoardFromJson(jsonPath);
 
         List<NoteTag> work = reloaded.GetStatusColumnIds()

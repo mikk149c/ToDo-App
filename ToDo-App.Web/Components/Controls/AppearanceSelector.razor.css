@@ -1,0 +1,67 @@
+.appearance-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.theme-toggles {
+    display: flex;
+}
+
+.theme-toggle {
+    border-radius: 0;
+    padding: 7px 11px;
+    margin-left: -1px;
+}
+
+.theme-toggle.first {
+    border-radius: 4px 0 0 4px;
+    margin-left: 0;
+}
+
+.theme-toggle.last {
+    border-radius: 0 4px 4px 0;
+}
+
+/* The selected theme is shown in the user's accent colour */
+.theme-toggle[aria-pressed="true"],
+.theme-toggle[aria-pressed="true"]:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+    position: relative;
+}
+
+.accent {
+    position: relative;
+}
+
+.accent-button {
+    padding: 7px 11px;
+}
+
+.swatch-dot {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.accent-flyout {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 20;
+    padding: 12px;
+    background: var(--flyout-background);
+    border: 1px solid var(--card-stroke);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+/* Clicking anywhere outside the flyout closes it */
+.flyout-dismiss {
+    position: fixed;
+    inset: 0;
+    z-index: 19;
+}

@@ -1,0 +1,58 @@
+/* Same pill shape as in the Windows app. The two zones are transparent until hovered or pressed */
+.tag-chip {
+    display: inline-flex;
+    align-items: stretch;
+    height: 28px;
+    border: 1px solid var(--control-stroke);
+    border-radius: 14px;
+    background: var(--control-fill);
+}
+
+/* Not on the board yet: dashed accent outline and an accent "+", so it stands out without relying on colour alone */
+.tag-chip.new {
+    border: 1.5px dashed var(--accent-text);
+}
+
+.tag-zone {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 1px;
+    min-width: 0;
+}
+
+.edit-zone {
+    padding: 0 8px;
+    gap: 4px;
+    border-radius: 13px 0 0 13px;
+}
+
+.remove-zone {
+    width: 26px;
+    border-radius: 0 13px 13px 0;
+}
+
+.tag-zone:hover:not(:disabled) {
+    background: var(--subtle-fill-hover);
+}
+
+.tag-zone:active:not(:disabled) {
+    background: var(--subtle-fill-pressed);
+}
+
+.divider {
+    width: 1px;
+    margin: 5px 0;
+    background: var(--control-stroke);
+}
+
+.new-icon {
+    display: inline-flex;
+    color: var(--accent-text);
+}
+
+.color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}

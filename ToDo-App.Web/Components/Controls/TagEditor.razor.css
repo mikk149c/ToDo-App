@@ -1,0 +1,90 @@
+.tag-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tag-input {
+    position: relative;
+}
+
+.suggestions {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 30;
+    margin: 2px 0 0;
+    padding: 4px;
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+    background: var(--flyout-background);
+    border: 1px solid var(--card-stroke);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.suggestions li {
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.suggestions li:hover,
+.suggestions li.highlighted {
+    background: var(--subtle-fill-hover);
+}
+
+.tag-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.chip-anchor {
+    position: relative;
+}
+
+/* Fixed, so the dialog's edge can't cut it off. Hidden until placeFlyout (app.js) has put it next to the tag */
+.tag-flyout {
+    position: fixed;
+    left: 0;
+    top: 0;
+    visibility: hidden;
+    z-index: 40;
+    max-height: calc(100vh - 16px);
+    overflow-y: auto;
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: var(--flyout-background);
+    border: 1px solid var(--card-stroke);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.color-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.flyout-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.flyout-actions .primary-action {
+    padding: 5px 11px;
+    border-radius: 4px;
+}
+
+/* Clicking anywhere outside the flyout closes it */
+.flyout-dismiss {
+    position: fixed;
+    inset: 0;
+    z-index: 39;
+}
