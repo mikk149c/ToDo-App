@@ -266,4 +266,25 @@
     <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
         <value>Ska'a sätserit</value>
     </data>
+    <data name="button/language_tooltip" xml:space="preserve">
+        <value>Lì'fya</value>
+    </data>
+    <data name="button/font_tooltip" xml:space="preserve">
+        <value>Pamrelä 'ur</value>
+    </data>
+    <data name="button/board_remote" xml:space="preserve">
+        <value>Wep</value>
+    </data>
+    <data name="button/board_local" xml:space="preserve">
+        <value>Fìtseng</value>
+    </data>
+    <data name="button/board_source_tooltip" xml:space="preserve">
+        <value>Fìtseng: sähena a tok fìeltut lefngap. Wep: sähena a tok tsengti alu {0}</value>
+    </data>
+    <data name="error/attachment_only_on_pc" xml:space="preserve">
+        <value>Yamem faylti alu {0} fa Windowsä sä'o ulte tok tsal eltut lefngap, alunta ke tsun tsaru piak sivi fa wepä sä'o.</value>
+    </data>
+    <data name="error/failed_to_connect" xml:space="preserve">
+        <value>Ke tsolun tsaheyl sivi hu eltu lefngap a tok tsengti alu {0}</value>
+    </data>
 </root>

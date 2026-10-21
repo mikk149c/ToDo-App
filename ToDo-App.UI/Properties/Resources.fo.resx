@@ -266,4 +266,25 @@
     <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
         <value>Strika upprit um ævir</value>
     </data>
+    <data name="button/language_tooltip" xml:space="preserve">
+        <value>Mál</value>
+    </data>
+    <data name="button/board_local" xml:space="preserve">
+        <value>Á staðnum</value>
+    </data>
+    <data name="button/board_remote" xml:space="preserve">
+        <value>Ambætari</value>
+    </data>
+    <data name="button/board_source_tooltip" xml:space="preserve">
+        <value>Á staðnum: talvan ið liggur á hesi telduni. Ambætari: talvan ið liggur hjá ambætaranum á {0}</value>
+    </data>
+    <data name="button/font_tooltip" xml:space="preserve">
+        <value>Stavsnið</value>
+    </data>
+    <data name="error/attachment_only_on_pc" xml:space="preserve">
+        <value>"{0}" var fest í Windows-appina og liggur í telduni, tessvegna kan hon ikki áppnast úr kaganum.</value>
+    </data>
+    <data name="error/failed_to_connect" xml:space="preserve">
+        <value>Kundi ikki sambinda við ambætaranum á {0}</value>
+    </data>
 </root>

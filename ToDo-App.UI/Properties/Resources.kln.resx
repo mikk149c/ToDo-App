@@ -246,7 +246,7 @@
         <value>SoQmoH</value>
     </data>
     <data name="dialog/content_permanent_delete_note" xml:space="preserve">
-        <value>«{0}» teqlu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>«{0}» Qaw'lu' DaneH'a'? DaQaw'Ha'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_column" xml:space="preserve">
         <value>«{0}» teqlu' DaneH'a'? DateqHa'laHbe'.</value>
@@ -255,7 +255,7 @@
         <value>Hoch veQ yIQaw'</value>
     </data>
     <data name="dialog/empty_bin_confirm" xml:space="preserve">
-        <value>veQ Daq Hoch ghu'lIS Qaw'lu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>veQ Daq Hoch ghu'lIS Qaw'lu' DaneH'a'? DaQaw'Ha'laHbe'.</value>
     </data>
     <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
         <value>ghu'lIS yIQaw'</value>
@@ -264,6 +264,27 @@
         <value>ghu'lIS yInobHa'</value>
     </data>
     <data name="dialog/restore_which_column" xml:space="preserve">
-        <value>nuqDaq ghu'lIS luqemlu' DaneH?</value>
+        <value>nuqDaq ghu'lIS qemlu' DaneH?</value>
+    </data>
+    <data name="button/language_tooltip" xml:space="preserve">
+        <value>Hol</value>
+    </data>
+    <data name="button/board_remote" xml:space="preserve">
+        <value>turwI'Daq</value>
+    </data>
+    <data name="button/board_local" xml:space="preserve">
+        <value>De'wI'Daq</value>
+    </data>
+    <data name="button/board_source_tooltip" xml:space="preserve">
+        <value>De'wI'Daq: De'wI'vam teywI' 'echlet. turwI'Daq: {0} turwI' teywI' 'echlet</value>
+    </data>
+    <data name="button/font_tooltip" xml:space="preserve">
+        <value>ngutlh tu'qom</value>
+    </data>
+    <data name="error/attachment_only_on_pc" xml:space="preserve">
+        <value>«{0}» luvevmeH wInDoS nIqHom lo'lu'pu' 'ej De'wI'Daq 'oH, vaj DapoSmoHmeH weQmoQnaQ nIqHom Dalo'laHbe'.</value>
+    </data>
+    <data name="error/failed_to_connect" xml:space="preserve">
+        <value>lInlaHbe' {0} turwI'</value>
     </data>
 </root>
