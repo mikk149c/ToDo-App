@@ -90,6 +90,7 @@
                                     SystemLabel="@Strings["button/tooltip_system_default"]"
                                     DarkLabel="@Strings["button/tooltip_dark"]"
                                     AccentLabel="@Strings["button/tooltip_accent_color"]" />
+                <FontSelector FontLabel="@Strings["button/font_tooltip"]" />
                 <select class="language-selector" aria-label="@Strings["button/language_tooltip"]"
                         title="@Strings["button/language_tooltip"]" value="@Strings.CurrentLanguage" @onchange="onLanguageSelectionChanged">
                     @foreach (var language in UiStrings.Languages)
@@ -98,7 +99,6 @@
                         <option value="@language.Key">@language.Value</option>
                     }
                 </select>
-                <FontSelector FontLabel="@Strings["button/font_tooltip"]" />
             </div>
         </header>
 
