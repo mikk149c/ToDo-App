@@ -284,4 +284,7 @@
     <data name="error/attachment_only_on_pc" xml:space="preserve">
         <value>"{0}" blev vedhæftet i Windows-appen og ligger på den pc, så den kan ikke åbnes fra browseren.</value>
     </data>
+    <data name="button/font_tooltip" xml:space="preserve">
+        <value>Skrifttype</value>
+    </data>
 </root>

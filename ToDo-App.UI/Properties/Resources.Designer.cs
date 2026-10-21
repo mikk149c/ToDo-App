@@ -96,6 +96,33 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Local.
+        /// </summary>
+        internal static string button_board_local {
+            get {
+                return ResourceManager.GetString("button/board_local", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remote.
+        /// </summary>
+        internal static string button_board_remote {
+            get {
+                return ResourceManager.GetString("button/board_remote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local: the board on this PC. Remote: the board on the server at {0}.
+        /// </summary>
+        internal static string button_board_source_tooltip {
+            get {
+                return ResourceManager.GetString("button/board_source_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete column.
         /// </summary>
         internal static string button_delete_column_tooltip {
@@ -141,11 +168,29 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Font.
+        /// </summary>
+        internal static string button_font_tooltip {
+            get {
+                return ResourceManager.GetString("button/font_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import.
         /// </summary>
         internal static string button_import {
             get {
                 return ResourceManager.GetString("button/import", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        internal static string button_language_tooltip {
+            get {
+                return ResourceManager.GetString("button/language_tooltip", resourceCulture);
             }
         }
         
@@ -573,11 +618,29 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &quot;{0}&quot; was attached in the Windows app and is saved on that PC, so it can&apos;t be opened from the browser..
+        /// </summary>
+        internal static string error_attachment_only_on_pc {
+            get {
+                return ResourceManager.GetString("error/attachment_only_on_pc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to attach file..
         /// </summary>
         internal static string error_failed_to_attach_file {
             get {
                 return ResourceManager.GetString("error/failed_to_attach_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not connect to the server at {0}.
+        /// </summary>
+        internal static string error_failed_to_connect {
+            get {
+                return ResourceManager.GetString("error/failed_to_connect", resourceCulture);
             }
         }
         

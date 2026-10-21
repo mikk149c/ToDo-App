@@ -291,4 +291,7 @@
     <data name="error/attachment_only_on_pc" xml:space="preserve">
         <value>"{0}" was attached in the Windows app and is saved on that PC, so it can't be opened from the browser.</value>
     </data>
+    <data name="button/font_tooltip" xml:space="preserve">
+        <value>Font</value>
+    </data>
 </root>

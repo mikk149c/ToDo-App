@@ -3,7 +3,7 @@
 
 @* Picks the font of the whole app, the web version of the font selector in the Windows app. A browser can't list
    the fonts on a PC, so these are the common ones; a font the PC doesn't have falls back to the browser's. *@
-<select class="font-selector" aria-label="@Label" title="@Label" value="@(Appearance.Current.Font ?? "")" @onchange="OnFontChanged">
+<select class="font-selector" aria-label="@FontLabel" title="@FontLabel" value="@(Appearance.Current.Font ?? "")" @onchange="OnFontChanged">
     <option value="">@DefaultText</option>
     @foreach (string font in Fonts)
     {
@@ -12,6 +12,8 @@
 </select>
 
 @code {
+    [Parameter] public string FontLabel { get; set; } = "Font";
+    
     private static readonly string[] Fonts =
     {
         "Arial", "Calibri", "Cambria", "Candara", "Comic Sans MS", "Consolas", "Courier New", "Georgia",
