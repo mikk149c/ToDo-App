@@ -1842,6 +1842,8 @@ namespace ToDo_App.UI.Views
                 Res.ResourceManager.GetString("button/tooltip_dark", _currentCulture),
                 Res.ResourceManager.GetString("button/tooltip_accent_color", _currentCulture)
                 );
+            FontSelector.SetLocalizedStrings(Res.ResourceManager.GetString("button/font_tooltip", _currentCulture));
+            LanguageSelector.SetLocalizedStrings(Res.ResourceManager.GetString("button/language_tooltip", _currentCulture));
             
             // Refresh dynamic UI elements for each column
             foreach (var guid in columns)
