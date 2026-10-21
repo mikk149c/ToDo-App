@@ -49,6 +49,8 @@ public partial class TagEditor
     private string? flyoutError;
     private bool isConfirmingDelete;
     private string deleteConfirmText = "";
+    private NoteTag? mergeTarget;
+    private string mergeConfirmText = "";
 
     // Focus to move once the page has drawn the change: a chip that was just added isn't there before
     private TagEntry? focusChipAfterRender;
@@ -199,8 +201,9 @@ public partial class TagEditor
         flyoutName = entry.Name;
         flyoutError = null;
         isConfirmingDelete = false;
+        mergeTarget = null;
         flyoutInfoText = entry.Id is Guid tagId
-            ? string.Format(Strings["dialog/tag_used_on"], Board.CountNotesWithTag(tagId))
+            ? plural("dialog/tag_used_on", Board.CountNotesWithTag(tagId), 0)
             : Strings["dialog/tag_new_info"];
         focusFlyoutAfterRender = true;
     }
@@ -241,10 +244,15 @@ public partial class TagEditor
             return;
         }
 
+        // Renaming a tag on the board to another board tag's name offers to merge the two instead (#68)
+        if (flyoutEntry.Id is Guid sourceId && findBoardTag(name, exceptId: sourceId) is NoteTag target)
+        {
+            askToMerge(flyoutEntry, target, sourceId);
+            return;
+        }
+
         // Two different tags can't share a name, whether they're on the board or only in this dialog
-        bool nameTaken = findEntry(name, except: flyoutEntry) != null
-                         || (flyoutEntry.Id is Guid id && findBoardTag(name, exceptId: id) != null);
-        if (nameTaken)
+        if (findEntry(name, except: flyoutEntry) != null)
         {
             flyoutError = string.Format(Strings["dialog/tag_name_taken"], name);
             return;
@@ -292,8 +300,54 @@ public partial class TagEditor
             return;
         }
 
-        deleteConfirmText = string.Format(Strings["dialog/delete_tag_confirm"], flyoutEntry.Name, Board.CountNotesWithTag(tagId));
+        deleteConfirmText = plural("dialog/delete_tag_confirm", Board.CountNotesWithTag(tagId), 1, flyoutEntry.Name);
         isConfirmingDelete = true;
+    }
+
+    private void askToMerge(TagEntry source, NoteTag target, Guid sourceId)
+    {
+        mergeTarget = target;
+        mergeConfirmText = plural("dialog/merge_tag_confirm", Board.CountNotesWithTag(sourceId), 2, source.Name, target.Name);
+        flyoutError = null;
+    }
+
+    private void OnConfirmMergeClicked()
+    {
+        if (flyoutEntry?.Id is not Guid sourceId || mergeTarget == null)
+        {
+            return;
+        }
+
+        // Every todo with the tag gets the target instead, straight away, including this one
+        Board.MergeTags(sourceId, mergeTarget.Id);
+
+        if (entries.Exists(entry => entry != flyoutEntry && entry.Id == mergeTarget.Id))
+        {
+            // This todo had both tags, so it keeps the target once
+            removeEntry(flyoutEntry);
+            flyoutEntry = null;
+        }
+        else
+        {
+            flyoutEntry.Id = mergeTarget.Id;
+            flyoutEntry.Name = mergeTarget.Name;
+            flyoutEntry.Color = mergeTarget.Color;
+            closeFlyout();
+        }
+        mergeTarget = null;
+    }
+
+    private void OnCancelMergeClicked()
+    {
+        mergeTarget = null;
+    }
+
+    // A text with plural forms. numberIndex is the placeholder that holds the number, the other
+    // placeholders are filled from args by their position
+    private string plural(string key, int number, int numberIndex, params object[] args)
+    {
+        string text = ToDo_App.UI.Localizer.HandlePlurals(Strings[key], number, Strings.GetValueOrDefault("lang_code", "en-US"), numberIndex);
+        return args.Length == 0 ? text : string.Format(text, args);
     }
 
     private void OnConfirmDeleteClicked()

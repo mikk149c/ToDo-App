@@ -22,8 +22,10 @@ public sealed class BrowserPreferences
     {
         string? theme = await getAsync("theme");
         string? accent = await getAsync("accent");
+        string? font = await getAsync("font");
         return new AppearanceSettings
         {
+            Font = string.IsNullOrWhiteSpace(font) ? null : font,
             Theme = Enum.TryParse(theme, out ThemePreference parsed) ? parsed : ThemePreference.SystemDefault,
             AccentColor = AccentPalette.Find(accent).Hex
         };
@@ -33,6 +35,7 @@ public sealed class BrowserPreferences
     {
         await setAsync("theme", settings.Theme.ToString());
         await setAsync("accent", settings.AccentColor);
+        await setAsync("font", settings.Font ?? "");
     }
 
     public Task<string?> LoadLanguageAsync() => getAsync("language");

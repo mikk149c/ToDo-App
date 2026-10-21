@@ -165,11 +165,57 @@ public class WebAppTests
     [Test]
     public void EveryLanguageHasAName()
     {
+        // Each language is named in itself, so the name doesn't depend on the language that is shown
+        Assert.That(UiStrings.Languages.Keys, Does.Contain(UiStrings.DefaultLanguage));
+        foreach (var language in UiStrings.Languages)
+        {
+            Assert.That(language.Value, Is.Not.Empty, language.Key);
+        }
+    }
+
+    [TestCase("en-US", 1, "What should happen to the 1 note in this column?")]
+    [TestCase("en-US", 3, "What should happen to the 3 notes in this column?")]
+    public void PluralFormsFollowTheNumber(string language, int count, string expected)
+    {
+        var strings = new UiStrings();
+        strings.SetLanguage(language);
+
+        Assert.That(strings.FormatPlural("dialog/content_delete_column_consequence", count, 0), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void PluralTextsKeepTheirOtherPlaceholders()
+    {
         var strings = new UiStrings();
 
-        foreach (string nameKey in UiStrings.Languages.Values)
+        // {1} is the number and {0} the column name, which is filled in after the plural form is chosen
+        string text = strings.FormatPlural("dialog/content_delete_column_no_space", 2, 1, "Review");
+
+        Assert.That(text, Does.Contain("\"Review\"").And.Contain("2 notes"));
+        Assert.That(text, Does.Not.Contain("[[").And.Not.Contain("{"));
+    }
+
+    [Test]
+    public void EveryTextWithPluralFormsIsReadable()
+    {
+        // Texts the page shows with a number must never reach the user with the [[a|b]] markers left in
+        string[] keys =
         {
-            Assert.That(strings[nameKey], Is.Not.EqualTo(nameKey), nameKey);
+            "dialog/delete_the_todos", "dialog/content_delete_column_consequence", "dialog/content_delete_column_no_space",
+            "dialog/tag_used_on", "dialog/delete_tag_confirm", "dialog/merge_tag_confirm", "filter/button_active"
+        };
+
+        foreach (string language in UiStrings.Languages.Keys)
+        {
+            var strings = new UiStrings();
+            strings.SetLanguage(language);
+            foreach (string key in keys)
+            {
+                foreach (int count in new[] { 1, 2, 5 })
+                {
+                    Assert.That(strings.FormatPlural(key, count, 0, "a", "b", "c"), Does.Not.Contain("[["), $"{language} {key} {count}");
+                }
+            }
         }
     }
 
