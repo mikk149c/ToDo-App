@@ -12,7 +12,7 @@ window.todoApp = {
 
     // See AppearanceManager.cs. theme is "light", "dark" or "system"
     appearance: {
-        apply(theme, accent, accentTextDark) {
+        apply(theme, accent, accentTextDark, font) {
             const root = document.documentElement;
             root.dataset.theme = theme;
             root.style.setProperty("--accent", accent);
@@ -20,13 +20,20 @@ window.todoApp = {
             if (accentTextDark) {
                 root.style.setProperty("--accent-text-dark", accentTextDark);
             }
+            // The chosen font, or null to use the app's own (the fallback in app.css)
+            if (font) {
+                root.style.setProperty("--app-font", `"${font.replace(/["\\]/g, "")}", system-ui, sans-serif`);
+            } else {
+                root.style.removeProperty("--app-font");
+            }
         },
 
         // Runs before the page is drawn. The accent text for dark backgrounds follows once C# applies the appearance
         applyStored() {
             const theme = { Light: "light", Dark: "dark" }[todoApp.preferences.get("theme")] ?? "system";
             const accent = todoApp.preferences.get("accent");
-            todoApp.appearance.apply(theme, /^#[0-9A-Fa-f]{6}$/.test(accent ?? "") ? accent : "#512BD4", null);
+            todoApp.appearance.apply(theme, /^#[0-9A-Fa-f]{6}$/.test(accent ?? "") ? accent : "#512BD4", null,
+                todoApp.preferences.get("font"));
         }
     },
 

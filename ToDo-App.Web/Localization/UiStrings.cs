@@ -12,16 +12,8 @@ public sealed class UiStrings
 {
     public const string DefaultLanguage = "en-US";
 
-    // Language code to the key of its name, as in the Windows app
-    public static readonly IReadOnlyDictionary<string, string> Languages = new Dictionary<string, string>
-    {
-        {"en-US", "language/english"},
-        {"da-DK", "language/danish"},
-        {"de", "language/german"},
-        {"fo", "language/faroese"},
-        {"kln", "language/klingon"},
-        {"naq", "language/navi"}
-    };
+    // Language code to the language's own name (not translated), as in the Windows app
+    public static readonly IReadOnlyDictionary<string, string> Languages = ToDo_App.UI.Localizer.Languages;
 
     private static readonly ResourceManager Resources =
         new ResourceManager("ToDo_App.Web.Properties.Resources", typeof(UiStrings).Assembly);
@@ -39,6 +31,17 @@ public sealed class UiStrings
     public string Format(string key, params object[] args)
     {
         return string.Format(this[key], args);
+    }
+
+    /// <summary>
+    /// The text for a key with its plural forms resolved for <paramref name="number"/> ("[[note|notes]]") and then
+    /// formatted. <paramref name="numberIndex"/> is the placeholder that holds the number. The other placeholders
+    /// keep their position in <paramref name="args"/>.
+    /// </summary>
+    public string FormatPlural(string key, int number, int numberIndex, params object[] args)
+    {
+        string text = ToDo_App.UI.Localizer.HandlePlurals(this[key], number, CurrentLanguage, numberIndex);
+        return args.Length == 0 ? text : string.Format(text, args);
     }
 
     /// <summary>Switches language. An unknown language code falls back to the default language.</summary>

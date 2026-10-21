@@ -16,4 +16,7 @@ public sealed record AppearanceSettings
 
     /// <summary>Accent colour as #RRGGBB. Unknown values fall back to the default accent.</summary>
     public string AccentColor { get; init; } = AccentPalette.Default.Hex;
+
+    /// <summary>The font the user chose, or null for the app's own font.</summary>
+    public string? Font { get; init; }
 }
