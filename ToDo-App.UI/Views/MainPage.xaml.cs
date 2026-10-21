@@ -1712,7 +1712,6 @@ namespace ToDo_App.UI.Views
             
             var font = (string)Application.Current.Resources["AppFontFamily"];
             AddColumnButtonTextBlock.FontFamily = new FontFamily(font);
-            AddToDoButton.FontFamily = new FontFamily(font);
             ImportButtonTextBlock.FontFamily = new FontFamily(font);
             ExportButtonTextBlock.FontFamily = new FontFamily(font);
             TrashBinButtonTextBlock.FontFamily = new FontFamily(font);
