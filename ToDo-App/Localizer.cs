@@ -5,11 +5,11 @@ public class Localizer
     public static readonly Dictionary<string, string> Languages = new()
     {
         {"en-US", "English"},
-        {"da-DK", "dansk"},
-        {"de", "deutsch"},
-        {"fo", "føroyskt"},
-        {"kln", "tlhIngan Hol"},
-        {"naq", "lì'fya leNa'vi"}
+        {"da-DK", "Dansk"},
+        {"de", "Deutsch"},
+        {"fo", "Føroyskt"},
+        {"kln", "tlhIngan Hol (Klingon)"},
+        {"naq", "Lì'fya leNa'vi"}
     };
 
     private static readonly Dictionary<string, List<Func<int,bool>>> PluralityPatterns = new()
