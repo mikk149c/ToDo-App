@@ -34,7 +34,6 @@ namespace ToDo_App.UI.Views
         DispatcherTimer verticalScrollTimer = new DispatcherTimer();
         double verticalScrollDirection = 0;
         ScrollViewer? verticalScrollTarget = null;
-
         
         CultureInfo _currentCulture;
         
@@ -59,15 +58,30 @@ namespace ToDo_App.UI.Views
             BoardScrollViewer.DragLeave += (s, e) => stopAutoScroll();
             verticalScrollTimer.Interval = TimeSpan.FromMilliseconds(ScrollTickSpeed);
             verticalScrollTimer.Tick += onVerticalScrollTimerTick;
+            LanguageSelector.OnLanguageSelected += onLanguageSelected;
+            FontSelector.OnFontSelected += onFontChanged;
 
             this.Loaded += onPageInitialized;
         }
 
         private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
         {
+            // onFontChanged();
+            var language = ((App)Application.Current).Appearance.Current.Language;
+            var font = ((App)Application.Current).Appearance.Current.Font;
+
+            if (language != null)
+            {
+                onLanguageSelected(language);
+                if (language != "kln")
+                    onFontChanged(font);
+            }
+            else
+            {
+                LanguageSelector.SetSelectedLanguage("en-US");
+            }
+            
             loadInitialBoard();
-            initializeLanguageSettings();
-            localizeXaml();
         }
 
         private async void loadInitialBoard()
@@ -1681,98 +1695,69 @@ namespace ToDo_App.UI.Views
             }
         }
 
-        private void initializeLanguageSettings()
+        void onLanguageSelected(string language)
         {
-            // ApplicationData needs a packaged app. When the app runs unpackaged (from an IDE or `dotnet run`)
-            // it throws, so the language can't be remembered there and the default language is used
-            string? selectedLanguage = null;
-            try
-            {
-                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-                selectedLanguage = localSettings.Values["selectedLanguage"]?.ToString();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"Could not load the selected language: {e.Message}");
-            }
+            var refreshThroughFontChange = language == "kln" || _currentCulture != null && _currentCulture.Name == "kln";
+            
+            _currentCulture = new CultureInfo(language);
 
-            if (selectedLanguage == null)
-                selectedLanguage = "en-US";
-            
-            _currentCulture = new CultureInfo(selectedLanguage);
-            
-            foreach (var language in Localizer.Languages)
-            {
-                LanguageSelector.Items.Add(new ComboBoxItem
-                {
-                    Content = language.Value,
-                    Tag = language.Key
-                });
-            }
-            
-            var initialIndex = 0;
-            if (Localizer.Languages.ContainsKey(selectedLanguage))
-            {
-                for (int i = 0; i < LanguageSelector.Items.Count; i++)
-                {
-                    var item = (ComboBoxItem)LanguageSelector.Items[i];
-                    if (item.Tag.Equals(selectedLanguage))
-                    {
-                        initialIndex = i;
-                    }
-                }
-            }
-            
-            LanguageSelector.SelectedIndex = initialIndex;
+            if (refreshThroughFontChange)
+                onFontChanged(((App)Application.Current).Appearance.Current.Font);
+            else
+                refreshUi();
         }
 
-        private void onLanguageSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
+        void onFontChanged(string? selectedFont)
         {
-            var item = selectionChangedEventArgs.AddedItems[0] as ComboBoxItem;
-            var language = item.Tag.ToString();
-            _currentCulture = new CultureInfo(language);
+            var language = _currentCulture.Name;
+            var defaultFont = language == "kln" ? "Georgia" : "Segoe UI";
+            var newFont = selectedFont ?? defaultFont;
             
-            // Refresh static UI elements
-            localizeXaml();
+            var resources = Application.Current.Resources;
+            resources["AppFontFamily"] = newFont;
+            resources["ContentControlThemeFontFamily"] = newFont;
+            resources["MTCMediaFontFamily"] = newFont;
+            resources["PhoneFontFamilyNormal"] = newFont;
+            resources["PhoneFontFamilySemiLight"] = newFont;
+            resources["PivotHeaderItemFontFamily"] = newFont;
+            resources["PivotTitleFontFamily"] = newFont;
+            resources["KeyTipFontFamily"] = newFont;
             
-            // Refresh dynamic UI elements for each column
-            foreach (var guid in columns)
-            {
-                rebuildColumn(guid, boardController.GetStatusColumnName(guid));
-            }
-            
-            // Only remembered in a packaged app, see initializeLanguageSettings
-            try
-            {
-                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-                localSettings.Values["selectedLanguage"] = language;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"Could not save the selected language: {e.Message}");
-            }
+            var font = (string)Application.Current.Resources["AppFontFamily"];
+            AddColumnButtonTextBlock.FontFamily = new FontFamily(font);
+            AddToDoButton.FontFamily = new FontFamily(font);
+            ImportButtonTextBlock.FontFamily = new FontFamily(font);
+            ExportButtonTextBlock.FontFamily = new FontFamily(font);
+            TrashBinButtonTextBlock.FontFamily = new FontFamily(font);
+            FilterButton.FontFamily = new FontFamily(font);
+            ((ComboBox)LanguageSelector.FindName("LanguageComboBox")).FontFamily = new FontFamily(font);
+
+            refreshUi();
         }
         
-        private void localizeXaml()
+        private void refreshUi()
         {
+            // Refresh static UI elements
             AddColumnButtonTextBlock.Text = Res.ResourceManager.GetString("button/add_column", _currentCulture);
             AddToDoButton.Content = Res.ResourceManager.GetString("button/add_todo", _currentCulture);
             ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
             ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);
             TrashBinButtonTextBlock.Text = Res.ResourceManager.GetString("button/trash_bin", _currentCulture);
-            updateFilterUi();
-
-            foreach (ComboBoxItem item in LanguageSelector.Items)
-            {
-                item.Content = Localizer.Languages[item.Tag.ToString()];
-            }
             
+            // Refresh toolbar components
+            updateFilterUi();
             AppearanceSelector.SetStrings(
                 Res.ResourceManager.GetString("button/tooltip_light", _currentCulture),
                 Res.ResourceManager.GetString("button/tooltip_system_default", _currentCulture),
                 Res.ResourceManager.GetString("button/tooltip_dark", _currentCulture),
                 Res.ResourceManager.GetString("button/tooltip_accent_color", _currentCulture)
                 );
+            
+            // Refresh dynamic UI elements for each column
+            foreach (var guid in columns)
+            {
+                rebuildColumn(guid, boardController.GetStatusColumnName(guid));
+            }
         }
     }
 }

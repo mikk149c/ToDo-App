@@ -51,6 +51,26 @@ namespace ToDo_App.UI.Appearance
             update(Current with { AccentColor = accent.Hex });
         }
 
+        public void SetLanguage(string language)
+        {
+            if (Current.Language == language)
+            {
+                return;
+            }
+
+            update(Current with { Language = language });
+        }
+
+        public void SetFont(string? font)
+        {
+            if (Current.Font == font)
+            {
+                return;
+            }
+
+            update(Current with { Font = font });
+        }
+
         private void update(AppearanceSettings settings)
         {
             Current = settings;

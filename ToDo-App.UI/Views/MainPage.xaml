@@ -47,11 +47,13 @@
         <Style x:Key="TodoTitle" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontFamily" Value="{ThemeResource AppFontFamily}"/>
         </Style>
 
         <Style x:Key="TodoDescription" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontFamily" Value="{ThemeResource AppFontFamily}"/>
         </Style>
 
         <!-- A tag shown on a card. The background is the tag's colour, set in code. Every palette colour
@@ -142,10 +144,11 @@
                     </Button>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
                     <!-- Choose the tags to filter the board by. The list is built when it opens -->
                     <DropDownButton
                         x:Name="FilterButton"
+                        Height="32"
                         VerticalAlignment="Center"
                         Content="Filter">
                         <DropDownButton.Flyout>
@@ -158,11 +161,8 @@
                         </DropDownButton.Flyout>
                     </DropDownButton>
                     <controls:AppearanceSelector x:Name="AppearanceSelector" VerticalAlignment="Center" />
-                    <ComboBox
-                        x:Name="LanguageSelector"
-                        Width="130"
-                        SelectionChanged="onLanguageSelectionChanged"
-                    />
+                    <controls:FontSelector x:Name="FontSelector" VerticalAlignment="Center"></controls:FontSelector>
+                    <controls:LanguageSelector x:Name="LanguageSelector" VerticalAlignment="Center"></controls:LanguageSelector>
                 </StackPanel>
             </Grid>
 
