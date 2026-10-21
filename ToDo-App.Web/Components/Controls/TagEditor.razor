@@ -58,7 +58,7 @@
 
                         <p class="secondary-text">@flyoutInfoText</p>
 
-                        @if (!isConfirmingDelete)
+                        @if (!isConfirmingDelete && mergeTarget == null)
                         {
                             <div class="color-panel">
                                 <span id="@colorHeaderId">@Strings["dialog/tag_colour"]</span>
@@ -73,7 +73,16 @@
                             <p class="error-text" role="alert">@flyoutError</p>
                         }
 
-                        @if (isConfirmingDelete)
+                        @if (mergeTarget != null)
+                        {
+                            @* Renaming to another tag's name asks before merging the two *@
+                            <p>@mergeConfirmText</p>
+                            <div class="flyout-actions">
+                                <button type="button" class="primary-action" @onclick="OnConfirmMergeClicked">@Strings["dialog/merge"]</button>
+                                <button type="button" @onclick="OnCancelMergeClicked">@Strings["dialog/cancel"]</button>
+                            </div>
+                        }
+                        else if (isConfirmingDelete)
                         {
                             @* Delete asks before removing the tag from every todo *@
                             <p>@deleteConfirmText</p>

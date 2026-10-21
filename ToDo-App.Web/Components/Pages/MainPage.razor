@@ -9,8 +9,10 @@
         @* Toolbar above the columns *@
         <header class="toolbar">
             <div class="toolbar-actions">
-                <button type="button" class="primary-action" @onclick="OnClickAddColumn">@Strings["button/add_column"]</button>
-                <button type="button" class="primary-action" @onclick="OnAddTodoClicked">@Strings["button/add_todo"]</button>
+                <button type="button" class="primary-action" @onclick="OnClickAddColumn">
+                    <Icon Name="add" />
+                    <span>@Strings["button/add_column"]</span>
+                </button>
 
                 @* A label around the hidden file input, so the picker opens from the keyboard too *@
                 <label class="button primary-action @(isImporting ? "disabled" : null)">
@@ -23,9 +25,67 @@
                     <Icon Name="save" />
                     <span>@Strings["button/export"]</span>
                 </a>
+
+                <button type="button" class="primary-action" @onclick="onTrashBinClicked">
+                    <Icon Name="delete" />
+                    <span>@Strings["button/trash_bin"]</span>
+                </button>
             </div>
 
             <div class="toolbar-settings">
+                @* Choose the tags to filter the board by *@
+                <div class="filter-anchor">
+                    <button type="button" class="filter-button" aria-haspopup="dialog" aria-expanded="@(isFilterOpen ? "true" : "false")"
+                            @onclick="toggleFilter">
+                        <span>@filterButtonText</span>
+                        <Icon Name="chevron-down" />
+                    </button>
+
+                    @if (isFilterOpen)
+                    {
+                        <div class="page-dismiss" @onclick="closeFilter"></div>
+                        <div class="filter-flyout" role="dialog" aria-label="@Strings["filter/button"]"
+                             @onkeydown="onFilterKeyDown" @onkeydown:stopPropagation>
+                            @{
+                                List<NoteTag> boardTags = Board.GetTags();
+                            }
+                            @if (boardTags.Count == 0)
+                            {
+                                <p class="secondary-text">@Strings["filter/no_tags"]</p>
+                            }
+                            else
+                            {
+                                @foreach (NoteTag tag in boardTags)
+                                {
+                                    Guid tagId = tag.Id;
+                                    <label class="filter-option">
+                                        <input type="checkbox" checked="@tagFilter.TagIds.Contains(tagId)"
+                                               @onchange="e => onFilterTagToggled(tagId, (bool)(e.Value ?? false))" />
+                                        <span class="color-dot" style="background: @AccentPalette.Find(tag.Color).Hex"></span>
+                                        <span>@tag.Name</span>
+                                    </label>
+                                }
+
+                                @* How several selected tags are combined *@
+                                <fieldset class="filter-mode">
+                                    <legend>@Strings["filter/match_label"]</legend>
+                                    <label class="filter-option">
+                                        <input type="radio" name="tag-match-mode" checked="@(tagFilter.Mode == TagMatchMode.Any)"
+                                               @onchange="() => tagFilter.Mode = TagMatchMode.Any" />
+                                        <span>@Strings["filter/match_any"]</span>
+                                    </label>
+                                    <label class="filter-option">
+                                        <input type="radio" name="tag-match-mode" checked="@(tagFilter.Mode == TagMatchMode.All)"
+                                               @onchange="() => tagFilter.Mode = TagMatchMode.All" />
+                                        <span>@Strings["filter/match_all"]</span>
+                                    </label>
+                                </fieldset>
+                            }
+                            <button type="button" @onclick="onClearFilterClicked">@Strings["filter/clear"]</button>
+                        </div>
+                    }
+                </div>
+
                 <AppearanceSelector LightLabel="@Strings["button/tooltip_light"]"
                                     SystemLabel="@Strings["button/tooltip_system_default"]"
                                     DarkLabel="@Strings["button/tooltip_dark"]"
@@ -34,9 +94,11 @@
                         title="@Strings["button/language_tooltip"]" value="@Strings.CurrentLanguage" @onchange="onLanguageSelectionChanged">
                     @foreach (var language in UiStrings.Languages)
                     {
-                        <option value="@language.Key">@Strings[language.Value]</option>
+                        @* Each language is named in itself, so it can be found whatever language is shown *@
+                        <option value="@language.Key">@language.Value</option>
                     }
                 </select>
+                <FontSelector />
             </div>
         </header>
 
@@ -45,12 +107,37 @@
             <p class="save-error" role="alert"><strong>@Strings["error/failed_to_save_board"]</strong> @Host.SaveError</p>
         }
 
+        @if (tagFilter.IsActive)
+        {
+            @* Shows that the board is filtered, and by which tags *@
+            <div class="filter-bar" role="status">
+                <span>@Strings["filter/showing"]</span>
+                @foreach (NoteTag tag in Board.GetTags().Where(tag => tagFilter.TagIds.Contains(tag.Id)))
+                {
+                    Guid tagId = tag.Id;
+                    <span class="filter-tag" style="background: @AccentPalette.Find(tag.Color).Hex">
+                        <span>@tag.Name</span>
+                        <button type="button" title="@Strings.Format("filter/remove_tag", tag.Name)"
+                                aria-label="@Strings.Format("filter/remove_tag", tag.Name)"
+                                @onclick="() => onFilterTagToggled(tagId, false)">
+                            <Icon Name="cancel" Size="10" />
+                        </button>
+                    </span>
+                }
+                @if (tagFilter.TagIds.Count > 1)
+                {
+                    <span class="secondary-text">@Strings[tagFilter.Mode == TagMatchMode.All ? "filter/match_all" : "filter/match_any"]</span>
+                }
+                <button type="button" @onclick="onClearFilterClicked">@Strings["filter/clear"]</button>
+            </div>
+        }
+
         @* Board columns *@
         <main class="board">
             @foreach (Guid columnId in Board.GetStatusColumnIds())
             {
                 Guid id = columnId;
-                List<ToDoNote> notes = Board.GetNotesInColumn(id);
+                List<ToDoNote> notes = tagFilter.Apply(Board.GetNotesInColumn(id));
                 <section class="board-column @(draggedColumnId == id ? "dragging" : null)" @key="id"
                          aria-label="@Board.GetStatusColumnName(id)"
                          @ondragover:preventDefault @ondrop="() => onColumnDrop(id, null)">
@@ -88,10 +175,30 @@
                                      @ondragover:preventDefault @ondrop="() => onColumnDrop(id, index)" @ondrop:stopPropagation>
                                 <div class="card-row">
                                     <h3 class="todo-title">@note.Title</h3>
-                                    <button type="button" class="icon-button" title="@Strings["button/edit_tooltip"]"
-                                            aria-label="@Strings["button/edit_tooltip"]" @onclick="() => onEditTodoClicked(note)">
-                                        <Icon Name="edit" />
-                                    </button>
+                                    @* Edit, attach and delete sit together in the upper right *@
+                                    <div class="card-buttons">
+                                        <button type="button" class="icon-button" title="@Strings["button/edit_tooltip"]"
+                                                aria-label="@Strings["button/edit_tooltip"]" @onclick="() => onEditTodoClicked(note)">
+                                            <Icon Name="edit" />
+                                        </button>
+                                        @if (note.File == null)
+                                        {
+                                            <label class="button icon-button" title="@Strings["button/attach_file_tooltip"]">
+                                                <InputFile class="visually-hidden" aria-label="@Strings["button/attach_file_tooltip"]"
+                                                           OnChange="e => onAttachFileChosen(note, e)" />
+                                                <Icon Name="attach" />
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="icon-button" disabled
+                                                    aria-label="@Strings["button/attach_file_tooltip"]"><Icon Name="attach" /></button>
+                                        }
+                                        <button type="button" class="icon-button" title="@Strings["button/delete_tooltip"]"
+                                                aria-label="@Strings["button/delete_tooltip"]" @onclick="() => deleteNoteDialog = note">
+                                            <Icon Name="delete" />
+                                        </button>
+                                    </div>
                                 </div>
 
                                 @if (note.Tags.Count > 0)
@@ -104,51 +211,30 @@
                                     </ul>
                                 }
 
-                                <div class="card-row">
-                                    <p class="todo-description">@note.Content</p>
-                                    @if (note.File == null)
-                                    {
-                                        <label class="button icon-button" title="@Strings["button/attach_file_tooltip"]">
-                                            <InputFile class="visually-hidden" aria-label="@Strings["button/attach_file_tooltip"]"
-                                                       OnChange="e => onAttachFileChosen(note, e)" />
-                                            <Icon Name="attach" />
-                                        </label>
-                                    }
-                                    else
-                                    {
-                                        <button type="button" class="icon-button" disabled
-                                                aria-label="@Strings["button/attach_file_tooltip"]"><Icon Name="attach" /></button>
-                                    }
-                                </div>
+                                <p class="todo-description">@note.Content</p>
 
-                                <div class="card-row">
+                                @if (note.File != null)
+                                {
                                     <div class="attachment">
-                                        @if (note.File != null)
+                                        @if (Attachments.IsStored(note.File.FullPath))
                                         {
-                                            @if (Attachments.IsStored(note.File.FullPath))
-                                            {
-                                                <a class="button attached-file" href="@($"attachments/{note.Id}")" target="_blank" rel="noopener">
-                                                    <Icon Name="attach" /><span>@note.File.Name</span>
-                                                </a>
-                                            }
-                                            else
-                                            {
-                                                @* Attached in the Windows app: the path is on a PC, not on this server *@
-                                                <button type="button" class="attached-file" @onclick="() => onAttachmentOnPcClicked(note)">
-                                                    <Icon Name="attach" /><span>@note.File.Name</span>
-                                                </button>
-                                            }
-                                            <button type="button" class="icon-button" title="@Strings["button/remove_attached_file_tooltip"]"
-                                                    aria-label="@Strings["button/remove_attached_file_tooltip"]" @onclick="() => onRemoveAttachmentClicked(note)">
-                                                <Icon Name="cancel" />
+                                            <a class="button attached-file" href="@($"attachments/{note.Id}")" target="_blank" rel="noopener">
+                                                <Icon Name="attach" /><span>@note.File.Name</span>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            @* Attached in the Windows app: the path is on a PC, not on this server *@
+                                            <button type="button" class="attached-file" @onclick="() => onAttachmentOnPcClicked(note)">
+                                                <Icon Name="attach" /><span>@note.File.Name</span>
                                             </button>
                                         }
+                                        <button type="button" class="icon-button" title="@Strings["button/remove_attached_file_tooltip"]"
+                                                aria-label="@Strings["button/remove_attached_file_tooltip"]" @onclick="() => onRemoveAttachmentClicked(note)">
+                                            <Icon Name="cancel" />
+                                        </button>
                                     </div>
-                                    <button type="button" class="icon-button" title="@Strings["button/delete_tooltip"]"
-                                            aria-label="@Strings["button/delete_tooltip"]" @onclick="() => deleteNoteDialog = note">
-                                        <Icon Name="delete" />
-                                    </button>
-                                </div>
+                                }
                             </article>
                         }
                     </div>
@@ -221,6 +307,97 @@
         <ContentDialog Title="@Strings["dialog/title_delete_note_q"]" PrimaryButtonText="@Strings["dialog/delete"]"
                        CloseButtonText="@Strings["dialog/cancel"]" Primary="() => onDeleteTodoConfirmed(noteToDelete)" Closed="closeDialogs">
             <p>@Strings.Format("dialog/content_delete_note", noteToDelete.Title)</p>
+        </ContentDialog>
+    }
+
+    @if (isTrashOpen)
+    {
+        @* Deleted todos wait here. Each step (list, where to restore, sure to delete) replaces the one before *@
+        <ContentDialog Title="@Strings["button/trash_bin"]" CloseButtonText="@Strings["dialog/close"]" Closed="closeDialogs">
+            @switch (trashStep)
+            {
+                case TrashStep.Restore when selectedTrashNote() is ToDoNote restoreNote:
+                    <p>@Strings.Format("dialog/restore_which_column", restoreNote.Title)</p>
+                    <div class="trash-choices">
+                        @foreach (Guid columnId in Board.GetStatusColumnIds())
+                        {
+                            Guid id = columnId;
+                            <button type="button" @onclick="() => onTrashRestoreConfirmed(id)">@Board.GetStatusColumnName(id)</button>
+                        }
+                    </div>
+                    <div class="trash-actions">
+                        <button type="button" @onclick="backToTrashList">@Strings["dialog/cancel"]</button>
+                    </div>
+                    break;
+
+                case TrashStep.Delete when selectedTrashNote() is ToDoNote deleteNote:
+                    <p>@Strings.Format("dialog/content_permanent_delete_note", deleteNote.Title)</p>
+                    <div class="trash-actions">
+                        <button type="button" class="primary-action" @onclick="onTrashDeleteConfirmed">@Strings["dialog/delete"]</button>
+                        <button type="button" @onclick="backToTrashList">@Strings["dialog/cancel"]</button>
+                    </div>
+                    break;
+
+                case TrashStep.Empty:
+                    <p>@Strings["dialog/empty_bin_confirm"]</p>
+                    <div class="trash-actions">
+                        <button type="button" class="primary-action" @onclick="onEmptyTrashConfirmed">@Strings["dialog/empty_bin"]</button>
+                        <button type="button" @onclick="backToTrashList">@Strings["dialog/cancel"]</button>
+                    </div>
+                    break;
+
+                default:
+                    List<ToDoNote> trashed = trashNotes();
+                    <div class="trash-list">
+                        @foreach (ToDoNote note in trashed)
+                        {
+                            bool isExpanded = expandedTrashNotes.Contains(note.Id);
+                            <article class="todo-card trash-card" @key="note.Id">
+                                <div class="card-row">
+                                    <button type="button" class="trash-title" aria-expanded="@(isExpanded ? "true" : "false")"
+                                            @onclick="() => toggleTrashNote(note.Id)">
+                                        <span aria-hidden="true">@(isExpanded ? "v" : ">")</span>
+                                        <span class="todo-title">@note.Title</span>
+                                    </button>
+                                    <div class="card-buttons">
+                                        <button type="button" class="icon-button" title="@Strings["dialog/restore_tooltip"]"
+                                                aria-label="@Strings["dialog/restore_tooltip"]" @onclick="() => onTrashRestoreClicked(note)">
+                                            <Icon Name="undo" />
+                                        </button>
+                                        <button type="button" class="icon-button" title="@Strings["dialog/permanent_delete_note_tooltip"]"
+                                                aria-label="@Strings["dialog/permanent_delete_note_tooltip"]" @onclick="() => onTrashDeleteClicked(note)">
+                                            <Icon Name="delete" />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                @if (note.Tags.Count > 0)
+                                {
+                                    <ul class="todo-tags" aria-label="@Strings["todo/property_tags"]">
+                                        @foreach (NoteTag tag in note.Tags)
+                                        {
+                                            <li class="todo-tag" style="background: @AccentPalette.Find(tag.Color).Hex">@tag.Name</li>
+                                        }
+                                    </ul>
+                                }
+
+                                @if (isExpanded)
+                                {
+                                    <p class="todo-description">@note.Content</p>
+                                    @if (note.File != null)
+                                    {
+                                        @* Not a link: the attachment of a deleted todo can't be opened from here *@
+                                        <span class="attached-file"><Icon Name="attach" /><span>@note.File.Name</span></span>
+                                    }
+                                }
+                            </article>
+                        }
+                    </div>
+                    <div class="trash-actions">
+                        <button type="button" disabled="@(trashed.Count == 0)" @onclick="onEmptyTrashClicked">@Strings["dialog/empty_bin"]</button>
+                    </div>
+                    break;
+            }
         </ContentDialog>
     }
 

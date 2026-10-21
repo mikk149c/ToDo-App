@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 using ToDo_App.Web.Appearance;
 using ToDo_App.Web.Board;
@@ -32,6 +33,15 @@ public partial class MainPage
         public TagEditor? TagEditor;
     }
 
+    // The steps of the trash bin dialog: the list, then asking where to restore a todo, or asking before deleting
+    private enum TrashStep
+    {
+        List,
+        Restore,
+        Delete,
+        Empty
+    }
+
     private bool isReady;
     private bool isImporting;
     private Guid? draggedNoteId;
@@ -48,6 +58,15 @@ public partial class MainPage
     private NoteDialogState? noteDialog;
     private ToDoNote? deleteNoteDialog;
     private (string Title, string Message)? errorDialog;
+
+    // Which todos are shown. Only affects what this tab shows, never the board
+    private readonly TagFilter tagFilter = new TagFilter();
+    private bool isFilterOpen;
+
+    private bool isTrashOpen;
+    private TrashStep trashStep;
+    private Guid? trashNoteId;
+    private readonly HashSet<Guid> expandedTrashNotes = new HashSet<Guid>();
 
     [Inject] private BoardHost Host { get; set; } = null!;
     [Inject] private AttachmentStore Attachments { get; set; } = null!;
@@ -81,6 +100,7 @@ public partial class MainPage
         // The language and appearance are remembered in the browser, so they're read once it's connected
         Strings.SetLanguage(await Preferences.LoadLanguageAsync());
         await Appearance.AttachAsync();
+        await Appearance.SetLanguageAsync(Strings.CurrentLanguage);
         isReady = true;
 
         if (Host.LoadError != null)
@@ -93,7 +113,12 @@ public partial class MainPage
     private void onBoardEvent(object? sender, EventArgs eventArgs)
     {
         // Events can come from another tab's connection, so redraw on this tab's own
-        InvokeAsync(StateHasChanged);
+        InvokeAsync(() =>
+        {
+            // The filter turns itself off when the last tag it was filtering by is gone
+            tagFilter.Prune(Board.GetTags());
+            StateHasChanged();
+        });
     }
 
     public void Dispose()
@@ -109,17 +134,6 @@ public partial class MainPage
     }
 
     // --- Toolbar ---
-
-    private void OnAddTodoClicked()
-    {
-        List<Guid> columns = Board.GetStatusColumnIds();
-        if (columns.Count == 0)
-        {
-            return;
-        }
-
-        Board.CreateNote(columns[0], Strings["todo/default_title"], Strings["todo/default_description"]);
-    }
 
     private async Task onImportBoardChosen(InputFileChangeEventArgs e)
     {
@@ -150,6 +164,7 @@ public partial class MainPage
     {
         string language = e.Value?.ToString() ?? UiStrings.DefaultLanguage;
         Strings.SetLanguage(language);
+        await Appearance.SetLanguageAsync(Strings.CurrentLanguage);
         await Preferences.SaveLanguageAsync(Strings.CurrentLanguage);
     }
 
@@ -191,17 +206,17 @@ public partial class MainPage
         // Only ask what to do with the ToDos when there are some, and somewhere to move them
         if (noteCount > 0 && otherColumns.Count > 0)
         {
-            deleteColumnQuestion = Strings.Format("dialog/content_delete_column_consequence", noteCount);
+            deleteColumnQuestion = Strings.FormatPlural("dialog/content_delete_column_consequence", noteCount, 0);
             foreach (Guid otherColumn in otherColumns)
             {
                 deleteColumnOptions.Add((otherColumn.ToString(), Strings.Format("dialog/option_move_to_column", Board.GetStatusColumnName(otherColumn))));
             }
-            deleteColumnOptions.Add(("", Strings["dialog/delete_the_todos"]));
+            deleteColumnOptions.Add(("", Strings.FormatPlural("dialog/delete_the_todos", noteCount, 0)));
             deleteColumnChoice = deleteColumnOptions[0].Value;
         }
         else if (noteCount > 0)
         {
-            deleteColumnMessage = Strings.Format("dialog/content_delete_column_no_space", columnName, noteCount);
+            deleteColumnMessage = Strings.FormatPlural("dialog/content_delete_column_no_space", noteCount, 1, columnName);
         }
 
         deleteColumnId = columnId;
@@ -320,6 +335,133 @@ public partial class MainPage
         }
     }
 
+    // --- Filter by tags ---
+
+    private string filterButtonText => tagFilter.IsActive
+        ? Strings.FormatPlural("filter/button_active", tagFilter.TagIds.Count, 0)
+        : Strings["filter/button"];
+
+    private void toggleFilter()
+    {
+        isFilterOpen = !isFilterOpen;
+    }
+
+    private void closeFilter()
+    {
+        isFilterOpen = false;
+    }
+
+    private void onFilterKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            closeFilter();
+        }
+    }
+
+    private void onFilterTagToggled(Guid tagId, bool isSelected)
+    {
+        if (isSelected)
+        {
+            tagFilter.Select(tagId);
+        }
+        else
+        {
+            tagFilter.Deselect(tagId);
+        }
+    }
+
+    private void onClearFilterClicked()
+    {
+        tagFilter.Clear();
+        isFilterOpen = false;
+    }
+
+    // --- Trash bin ---
+
+    private List<ToDoNote> trashNotes()
+    {
+        return Board.GetTrashBinNotes().ToList();
+    }
+
+    private ToDoNote? selectedTrashNote()
+    {
+        return trashNoteId is Guid id ? trashNotes().Find(note => note.Id == id) : null;
+    }
+
+    private void onTrashBinClicked()
+    {
+        backToTrashList();
+        isTrashOpen = true;
+    }
+
+    private void backToTrashList()
+    {
+        trashStep = TrashStep.List;
+        trashNoteId = null;
+    }
+
+    private void toggleTrashNote(Guid noteId)
+    {
+        if (!expandedTrashNotes.Remove(noteId))
+        {
+            expandedTrashNotes.Add(noteId);
+        }
+    }
+
+    private void onTrashRestoreClicked(ToDoNote note)
+    {
+        trashNoteId = note.Id;
+        trashStep = TrashStep.Restore;
+    }
+
+    private void onTrashDeleteClicked(ToDoNote note)
+    {
+        trashNoteId = note.Id;
+        trashStep = TrashStep.Delete;
+    }
+
+    private void onEmptyTrashClicked()
+    {
+        trashNoteId = null;
+        trashStep = TrashStep.Empty;
+    }
+
+    private void onTrashRestoreConfirmed(Guid columnId)
+    {
+        if (trashNoteId is Guid noteId)
+        {
+            changeTrash(() => Board.RestoreNote(noteId, columnId));
+        }
+    }
+
+    private void onTrashDeleteConfirmed()
+    {
+        if (trashNoteId is Guid noteId)
+        {
+            changeTrash(() => Board.RemoveNoteFromTrashBin(noteId));
+        }
+    }
+
+    private void onEmptyTrashConfirmed()
+    {
+        changeTrash(Board.EmptyTrashBin);
+    }
+
+    // Another tab may have emptied or restored the same todo, so a refused change is shown instead of crashing
+    private void changeTrash(Action change)
+    {
+        try
+        {
+            change();
+        }
+        catch (Exception exception) when (exception is ArgumentException or KeyNotFoundException or InvalidOperationException)
+        {
+            errorDialog = (Strings["button/trash_bin"], exception.Message);
+        }
+        backToTrashList();
+    }
+
     // --- Drag and drop ---
 
     private void onNoteDragStarting(ToDoNote note)
@@ -352,7 +494,8 @@ public partial class MainPage
             List<ToDoNote> notes = Board.GetNotesInColumn(columnId);
             int currentIndex = notes.FindIndex(note => note.Id == noteId);
             int lastIndex = currentIndex == -1 ? notes.Count : notes.Count - 1;
-            int dropIndex = cardIndex ?? lastIndex;
+            // The card is a position among the todos that are shown, so hidden todos stay where they are
+            int dropIndex = cardIndex is int shownIndex ? tagFilter.ToColumnIndex(notes, shownIndex) : lastIndex;
             if (dropIndex != currentIndex)
             {
                 Board.MoveNoteToColumn(noteId, columnId, dropIndex);
@@ -374,6 +517,8 @@ public partial class MainPage
         deleteColumnId = null;
         noteDialog = null;
         deleteNoteDialog = null;
+        isTrashOpen = false;
+        backToTrashList();
     }
 
     private static void onEnter(KeyboardEventArgs e, Action action)
@@ -390,9 +535,13 @@ public partial class MainPage
         {
             "todo/property_tags", "dialog/add_tag_placeholder", "dialog/remove_tag", "dialog/edit_tag",
             "dialog/new_tag_tooltip", "dialog/tag_name", "dialog/tag_used_on", "dialog/tag_new_info",
-            "dialog/tag_name_taken", "dialog/tag_colour", "dialog/rename", "dialog/delete", "dialog/cancel", "dialog/delete_tag_confirm"
+            "dialog/tag_name_taken", "dialog/tag_colour", "dialog/rename", "dialog/delete", "dialog/cancel", "dialog/delete_tag_confirm",
+            "dialog/merge", "dialog/merge_tag_confirm"
         };
         // A missing translation shows the key instead of crashing the dialog
-        return keys.ToDictionary(key => key, key => Strings[key]);
+        Dictionary<string, string> texts = keys.ToDictionary(key => key, key => Strings[key]);
+        // The editor picks the plural forms of its texts by language
+        texts["lang_code"] = Strings.CurrentLanguage;
+        return texts;
     }
 }

@@ -20,6 +20,11 @@ public sealed class AppearanceManager
         this.js = js;
     }
 
+    // Klingon is shown in Georgia unless another font is chosen, as in the Windows app
+    private const string KlingonDefaultFont = "Georgia";
+
+    private string language = "en-US";
+
     public AppearanceSettings Current { get; private set; } = new AppearanceSettings();
 
     public event EventHandler? Changed;
@@ -43,6 +48,19 @@ public sealed class AppearanceManager
             : updateAsync(Current with { AccentColor = accent.Hex });
     }
 
+    public Task SetFontAsync(string? font)
+    {
+        font = string.IsNullOrWhiteSpace(font) ? null : font;
+        return Current.Font == font ? Task.CompletedTask : updateAsync(Current with { Font = font });
+    }
+
+    /// <summary>Tells the manager which language is shown, as that can change the default font.</summary>
+    public async Task SetLanguageAsync(string languageCode)
+    {
+        language = languageCode;
+        await applyAsync();
+    }
+
     private async Task updateAsync(AppearanceSettings settings)
     {
         Current = settings;
@@ -63,7 +81,8 @@ public sealed class AppearanceManager
 
         try
         {
-            await js.InvokeVoidAsync("todoApp.appearance.apply", theme, accent, Lighten(accent, DarkThemeTextLightening));
+            string? font = Current.Font ?? (language == "kln" ? KlingonDefaultFont : null);
+            await js.InvokeVoidAsync("todoApp.appearance.apply", theme, accent, Lighten(accent, DarkThemeTextLightening), font);
         }
         catch (JSException)
         {
