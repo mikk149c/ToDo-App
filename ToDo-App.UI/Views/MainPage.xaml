@@ -102,12 +102,6 @@
                     </Button>
 
                     <Button
-                        x:Name="AddToDoButton"
-                        Click="OnAddTodoClicked"
-                        Content="Add new ToDo"
-                        Style="{StaticResource PrimaryAction}" />
-
-                    <Button
                         x:Name="ImportButton"
                         Click="onImportBoardClicked"
                         Style="{StaticResource PrimaryAction}">

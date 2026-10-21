@@ -466,19 +466,6 @@ namespace ToDo_App.UI.Views
             await dialog.ShowAsync();
         }
 
-        private void OnAddTodoClicked(object sender, RoutedEventArgs e)
-        {
-            if (columns.Count == 0)
-            {
-                return;
-            }
-
-            Guid firstColumn = columns[0];
-            boardController.CreateNote(firstColumn,
-                Res.ResourceManager.GetString("todo/default_title", _currentCulture),
-                Res.ResourceManager.GetString("todo/default_description", _currentCulture));
-        }
-
         private async void onImportBoardClicked(object sender, RoutedEventArgs e)
         {
             try
@@ -1739,7 +1726,6 @@ namespace ToDo_App.UI.Views
         {
             // Refresh static UI elements
             AddColumnButtonTextBlock.Text = Res.ResourceManager.GetString("button/add_column", _currentCulture);
-            AddToDoButton.Content = Res.ResourceManager.GetString("button/add_todo", _currentCulture);
             ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
             ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);
             TrashBinButtonTextBlock.Text = Res.ResourceManager.GetString("button/trash_bin", _currentCulture);
