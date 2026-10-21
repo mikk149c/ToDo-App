@@ -32,6 +32,8 @@ public class LocalBoardController : BoardController
 
     public override void DeleteTag(Guid tagId) => ApplyDeleteTag(tagId);
 
+    public override void MergeTags(Guid sourceTagId, Guid targetTagId) => ApplyMergeTags(sourceTagId, targetTagId);
+
     protected override void SetNoteFileAttachment(Guid id, AttachedFile file) => ApplySetNoteFileAttachment(id, file);
 
     public override void RemoveNoteFileAttachment(Guid id) => ApplyRemoveNoteFileAttachment(id);
@@ -51,6 +53,12 @@ public class LocalBoardController : BoardController
     public override void MoveNoteLeft(Guid noteId) => ApplyMoveNoteLeft(noteId);
 
     public override void RemoveNote(Guid noteId) => ApplyRemoveNote(noteId);
+
+    public override void RemoveNoteFromTrashBin(Guid noteId) => ApplyRemoveNoteFromTrashBin(noteId);
+
+    public override void RestoreNote(Guid noteId, Guid columnId) => ApplyRestoreNote(noteId, columnId);
+
+    public override void EmptyTrashBin() => ApplyEmptyTrashBin();
 
     protected override void ReplaceBoard(ToDoBoard board) => ApplyReplaceBoard(board);
 }
