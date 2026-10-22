@@ -35,7 +35,7 @@
     <data name="dialog/save" xml:space="preserve">
         <value>yIpol</value>
     </data>
-    <data name="dialog/delete" xml:space="preserve">
+    <data name="dialog/remove" xml:space="preserve">
         <value>yIteq</value>
     </data>
     <data name="dialog/add" xml:space="preserve">
@@ -45,7 +45,7 @@
         <value>yIqIl</value>
     </data>
     <data name="button/delete_tooltip" xml:space="preserve">
-        <value>yIteq</value>
+        <value>yIQaw'</value>
     </data>
     <data name="button/tooltip_dark" xml:space="preserve">
         <value>Hurgh</value>
@@ -53,14 +53,14 @@
     <data name="button/tooltip_light" xml:space="preserve">
         <value>wov</value>
     </data>
-    <data name="button/edit_tooltip" xml:space="preserve">
-        <value>yIDI'</value>
+    <data name="button/edit_note_tooltip" xml:space="preserve">
+        <value>ghu'lIS yIDI'</value>
     </data>
     <data name="button/edit_column_title_tooltip" xml:space="preserve">
         <value>war pong yIDI'</value>
     </data>
     <data name="button/delete_column_tooltip" xml:space="preserve">
-        <value>war yIteq</value>
+        <value>war yIQaw'</value>
     </data>
     <data name="button/add_todo" xml:space="preserve">
         <value>ghu'lIS yIchel</value>
@@ -81,9 +81,9 @@
         <value>ghu'lIS chu' yIchel</value>
     </data>
     <data name="dialog/title_delete_column_q" xml:space="preserve">
-        <value>war teqlu' DaneH'a'?</value>
+        <value>war Qaw'lu' DaneH'a'?</value>
     </data>
-    <data name="dialog/title_delete_note_q" xml:space="preserve">
+    <data name="dialog/title_remove_note_q" xml:space="preserve">
         <value>ghu'lIS teqlu' DaneH'a'?</value>
     </data>
     <data name="dialog/title_edit_column" xml:space="preserve">
@@ -149,11 +149,11 @@
     <data name="dialog/import_board" xml:space="preserve">
         <value>teywI' 'echlet yIHev</value>
     </data>
-    <data name="dialog/content_delete_note" xml:space="preserve">
+    <data name="dialog/content_remove_note" xml:space="preserve">
         <value>veQ DaqDaq «{0}» qemlu' DaneH'a'?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
-        <value>«{0}» [[ghu'lIS|{1} ghu'lISmey]] rarchuq je luteqlu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>«{0}» [[ghu'lIS|{1} ghu'lISmey]] rarchuq je luQaw'lu' DaneH'a'? DaQaw'Ha'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
         <value>nuqDaq jaH warvam [[ghu'lIS|{0} ghu'lISmey]]?</value>
@@ -249,7 +249,7 @@
         <value>«{0}» Qaw'lu' DaneH'a'? DaQaw'Ha'laHbe'.</value>
     </data>
     <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>«{0}» teqlu' DaneH'a'? DateqHa'laHbe'.</value>
+        <value>«{0}» Qaw'lu' DaneH'a'? DaQaw'Ha'laHbe'.</value>
     </data>
     <data name="dialog/empty_bin" xml:space="preserve">
         <value>Hoch veQ yIQaw'</value>
@@ -286,5 +286,11 @@
     </data>
     <data name="error/failed_to_connect" xml:space="preserve">
         <value>lInlaHbe' {0} turwI'</value>
+    </data>
+    <data name="dialog/delete_permanent" xml:space="preserve">
+        <value>yIQaw'</value>
+    </data>
+    <data name="button/remove_note_tooltip" xml:space="preserve">
+        <value>ghu'lIS yIteq</value>
     </data>
 </root>

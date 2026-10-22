@@ -480,7 +480,7 @@ namespace ToDo_App.UI.Views
             };
 
             Button confirmDeleteFromTrashButton = new Button {
-                Content = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
+                Content = Res.ResourceManager.GetString("dialog/delete_permanent", _currentCulture),
                 Height = 40,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Style = (Style)Application.Current.Resources["PrimaryAction"]
@@ -1239,7 +1239,7 @@ namespace ToDo_App.UI.Views
             {
                 Title = Res.ResourceManager.GetString("dialog/title_delete_column_q", _currentCulture),
                 Content = content,
-                PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete_permanent", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
                 RequestedTheme = this.ActualTheme,
@@ -1277,10 +1277,10 @@ namespace ToDo_App.UI.Views
             var dialog = new ThemedContentDialog
             {
                 XamlRoot = this.XamlRoot,
-                Title = Res.ResourceManager.GetString("dialog/title_delete_note_q", _currentCulture),
-                PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
+                Title = Res.ResourceManager.GetString("dialog/title_remove_note_q", _currentCulture),
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/remove", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
-                Content = String.Format(Res.ResourceManager.GetString("dialog/content_delete_note", _currentCulture), note.Title),
+                Content = String.Format(Res.ResourceManager.GetString("dialog/content_remove_note", _currentCulture), note.Title),
                 DefaultButton = ContentDialogButton.Primary,
                 RequestedTheme = this.ActualTheme
             };
@@ -1453,7 +1453,7 @@ namespace ToDo_App.UI.Views
             noteTextPanel.Children.Add(descriptionText);
             
             var editButton = new Button { Content = new SymbolIcon(Symbol.Edit) };
-            ToolTipService.SetToolTip(editButton, Res.ResourceManager.GetString("button/edit_tooltip", _currentCulture));
+            ToolTipService.SetToolTip(editButton, Res.ResourceManager.GetString("button/edit_note_tooltip", _currentCulture));
             editButton.Click += (s, e) => onEditTodoClicked(note);
         
             var attachButton = new Button { Content = new SymbolIcon(Symbol.Attach) };
@@ -1461,7 +1461,7 @@ namespace ToDo_App.UI.Views
             attachButton.Click += (s, e) => onAttachFileClicked(note, attachButton);
         
             var deleteButton = new Button { Content = new SymbolIcon(Symbol.Delete) };
-            ToolTipService.SetToolTip(deleteButton, Res.ResourceManager.GetString("button/delete_tooltip", _currentCulture));
+            ToolTipService.SetToolTip(deleteButton, Res.ResourceManager.GetString("button/remove_note_tooltip", _currentCulture));
             deleteButton.Click += (s, e) => onDeleteTodoClicked(note);
 
             var noteActionButtons = new StackPanel
