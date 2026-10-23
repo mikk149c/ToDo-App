@@ -293,4 +293,7 @@
     <data name="button/remove_note_tooltip" xml:space="preserve">
         <value>Tak uppritið burtur</value>
     </data>
+    <data name="error/change_not_saved" xml:space="preserve">
+        <value>Tín broyting bleiv ikki goymd.</value>
+    </data>
 </root>

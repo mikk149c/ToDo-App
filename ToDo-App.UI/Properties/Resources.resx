@@ -283,7 +283,7 @@
         <value>Local: the board on this PC. Remote: the board on the server at {0}</value>
     </data>
     <data name="error/change_not_saved" xml:space="preserve">
-        <value>Your change wasn't saved</value>
+        <value>Your change wasn't saved.</value>
     </data>
     <data name="error/failed_to_connect" xml:space="preserve">
         <value>Could not connect to the server at {0}</value>

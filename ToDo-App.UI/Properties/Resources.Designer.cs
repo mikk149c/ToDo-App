@@ -645,6 +645,15 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your change wasn&apos;t saved..
+        /// </summary>
+        internal static string error_change_not_saved {
+            get {
+                return ResourceManager.GetString("error/change_not_saved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to attach file..
         /// </summary>
         internal static string error_failed_to_attach_file {

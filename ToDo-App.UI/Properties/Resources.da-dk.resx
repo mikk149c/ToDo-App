@@ -293,4 +293,7 @@
     <data name="button/remove_note_tooltip" xml:space="preserve">
         <value>Fjern note</value>
     </data>
+    <data name="error/change_not_saved" xml:space="preserve">
+        <value>Din ændring blev ikke gemt.</value>
+    </data>
 </root>

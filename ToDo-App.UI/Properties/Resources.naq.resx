@@ -293,4 +293,7 @@
     <data name="button/remove_note_tooltip" xml:space="preserve">
         <value>'Aku sätserit</value>
     </data>
+    <data name="error/change_not_saved" xml:space="preserve">
+        <value>Ke swoleyn fkol ngeyä sälatemit.</value>
+    </data>
 </root>

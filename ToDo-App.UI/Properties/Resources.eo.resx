@@ -266,4 +266,7 @@
     <data name="dialog/restore_which_column" xml:space="preserve">
         <value>Elektu kiun kolumnon, ke tie refaru noton.</value>
     </data>
+    <data name="error/change_not_saved" xml:space="preserve">
+        <value>Via aliiĝo ne estis konservita.</value>
+    </data>
 </root>
