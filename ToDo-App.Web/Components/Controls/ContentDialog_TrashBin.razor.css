@@ -68,9 +68,7 @@
 
 .content-dialog.compact-dialog .dialog-content {
     flex: 0 1 auto;
-    width: 100%;
     min-width: 0;
-    box-sizing: border-box;
     overflow-x: hidden;
     overflow-y: auto;
 }
