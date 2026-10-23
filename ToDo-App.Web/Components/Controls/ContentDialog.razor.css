@@ -28,14 +28,15 @@
 }
 
 .dialog-buttons {
-    display: flex;
-    justify-content: flex-end;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-top: 24px;
 }
 
 .dialog-buttons button {
     min-width: 96px;
+    width: 100%;
 }
 
 .dialog-buttons .primary-action {
