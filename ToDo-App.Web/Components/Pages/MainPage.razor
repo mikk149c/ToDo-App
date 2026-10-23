@@ -313,7 +313,7 @@
     @if (isTrashOpen)
     {
         @* Deleted todos wait here. Each step (list, where to restore, sure to delete) replaces the one before *@
-        <ContentDialog Title="@Strings["button/trash_bin"]" CloseButtonText="@Strings["dialog/close"]" Closed="closeDialogs">
+        <ContentDialog_TrashBin Title="@Strings["button/trash_bin"]" CloseButtonText="@Strings["dialog/close"]" Closed="closeDialogs">
             @switch (trashStep)
             {
                 case TrashStep.Restore when selectedTrashNote() is ToDoNote restoreNote:
@@ -398,7 +398,7 @@
                     </div>
                     break;
             }
-        </ContentDialog>
+        </ContentDialog_TrashBin>
     }
 
     @if (errorDialog is (string errorTitle, string errorMessage))
