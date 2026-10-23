@@ -32,8 +32,8 @@
     <data name="button/add_todo" xml:space="preserve">
         <value>Tilføj Note</value>
     </data>
-    <data name="dialog/delete" xml:space="preserve">
-        <value>Slet</value>
+    <data name="dialog/remove" xml:space="preserve">
+        <value>Fjern</value>
     </data>
     <data name="dialog/add" xml:space="preserve">
         <value>Tilføj</value>
@@ -89,8 +89,8 @@
     <data name="button/edit_column_title_tooltip" xml:space="preserve">
         <value>Rediger kolonnetitlen</value>
     </data>
-    <data name="button/edit_tooltip" xml:space="preserve">
-        <value>Rediger</value>
+    <data name="button/edit_note_tooltip" xml:space="preserve">
+        <value>Rediger note</value>
     </data>
     <data name="button/remove_attached_file_tooltip" xml:space="preserve">
         <value>Fjern den vedhæftede fil</value>
@@ -110,8 +110,8 @@
     <data name="dialog/title_delete_column_q" xml:space="preserve">
         <value>Slet Kolonne?</value>
     </data>
-    <data name="dialog/title_delete_note_q" xml:space="preserve">
-        <value>Slet Note?</value>
+    <data name="dialog/title_remove_note_q" xml:space="preserve">
+        <value>Fjern Note?</value>
     </data>
     <data name="dialog/title_edit_column" xml:space="preserve">
         <value>Rediger Kolonne</value>
@@ -140,7 +140,7 @@
     <data name="button/tooltip_system_default" xml:space="preserve">
         <value>Styresystemets standardindstilling</value>
     </data>
-    <data name="dialog/content_delete_note" xml:space="preserve">
+    <data name="dialog/content_remove_note" xml:space="preserve">
         <value>Flyt "{0}" til papirkurven?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
@@ -283,5 +283,14 @@
     </data>
     <data name="error/attachment_only_on_pc" xml:space="preserve">
         <value>"{0}" blev vedhæftet i Windows-appen og ligger på den pc, så den kan ikke åbnes fra browseren.</value>
+    </data>
+    <data name="button/font_tooltip" xml:space="preserve">
+        <value>Skrifttype</value>
+    </data>
+    <data name="dialog/delete_permanent" xml:space="preserve">
+        <value>Slet</value>
+    </data>
+    <data name="button/remove_note_tooltip" xml:space="preserve">
+        <value>Fjern note</value>
     </data>
 </root>

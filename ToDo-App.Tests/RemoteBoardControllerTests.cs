@@ -124,6 +124,24 @@ public class RemoteBoardControllerTests
         Assert.That(recorder.Names, Is.EqualTo(new[] { nameof(ITodoBoard.ColumnContentChanged), nameof(ITodoBoard.BoardChanged) }));
     }
 
+    // The developer delay in the Windows app: changes from the server wait, and still end up applied in order
+    [Test]
+    public void IncomingDelayHoldsChangesFromTheServerBack()
+    {
+        RemoteBoardController client = connect(out _);
+        client.IncomingDelay = TimeSpan.FromMilliseconds(400);
+        Guid columnId = client.GetStatusColumnIds()[0];
+        DateTime start = DateTime.UtcNow;
+
+        Guid noteId = host.Board.CreateNote(columnId, "First", "");
+        host.Board.SetNoteTitle(noteId, "Second");
+
+        Thread.Sleep(150);
+        Assert.That(holds(() => client.GetNotesInColumn(columnId).Exists(note => note.Id == noteId)), Is.False, "held back");
+        waitUntil(() => client.GetNotesInColumn(columnId).SingleOrDefault(note => note.Id == noteId)?.Title == "Second", "both changes");
+        Assert.That(DateTime.UtcNow - start, Is.GreaterThanOrEqualTo(TimeSpan.FromMilliseconds(400)));
+    }
+
     [Test]
     public void NewNotesAndTagsGetTheSameIdsEverywhere()
     {
@@ -232,7 +250,7 @@ public class RemoteBoardControllerTests
     {
         MethodInfo[] methods = typeof(BoardController)
             .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-            .Where(method => method.IsAbstract)
+            .Where(method => method.IsVirtual && !method.IsFinal)
             .ToArray();
         using var remote = new RemoteBoardController(new Uri("http://127.0.0.1:9/"));
 

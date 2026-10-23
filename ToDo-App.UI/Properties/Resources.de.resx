@@ -74,8 +74,8 @@
     <data name="dialog/save" xml:space="preserve">
         <value>Speichern</value>
     </data>
-    <data name="dialog/delete" xml:space="preserve">
-        <value>Löschen</value>
+    <data name="dialog/remove" xml:space="preserve">
+        <value>Entfernen</value>
     </data>
     <data name="dialog/delete_the_todos" xml:space="preserve">
         <value>Die [[Notiz|Notizen]] löschen</value>
@@ -89,8 +89,8 @@
     <data name="dialog/title_delete_column_q" xml:space="preserve">
         <value>Spalte Löschen?</value>
     </data>
-    <data name="dialog/title_delete_note_q" xml:space="preserve">
-        <value>Notiz Löschen?</value>
+    <data name="dialog/title_remove_note_q" xml:space="preserve">
+        <value>Notiz Entfernen?</value>
     </data>
     <data name="dialog/title_edit_column" xml:space="preserve">
         <value>Spalte Bearbeiten</value>
@@ -101,8 +101,8 @@
     <data name="button/edit_column_title_tooltip" xml:space="preserve">
         <value>Spaltetitel bearbeiten</value>
     </data>
-    <data name="button/edit_tooltip" xml:space="preserve">
-        <value>Bearbeiten</value>
+    <data name="button/edit_note_tooltip" xml:space="preserve">
+        <value>Notiz bearbeiten</value>
     </data>
     <data name="button/export" xml:space="preserve">
         <value>Exportieren</value>
@@ -152,7 +152,7 @@
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
         <value>"{0}" und die [[Notiz|{1} Notizen]] darin löschen? Diese Handlung kann man nicht ungeschehen machen.</value>
     </data>
-    <data name="dialog/content_delete_note" xml:space="preserve">
+    <data name="dialog/content_remove_note" xml:space="preserve">
         <value>"{0}" in den Papierkorb verschieben?</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
@@ -265,5 +265,32 @@
     </data>
     <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
         <value>Endgültig Notiz löschen</value>
+    </data>
+    <data name="button/language_tooltip" xml:space="preserve">
+        <value>Sprache</value>
+    </data>
+    <data name="button/board_local" xml:space="preserve">
+        <value>Lokal</value>
+    </data>
+    <data name="button/board_remote" xml:space="preserve">
+        <value>Server</value>
+    </data>
+    <data name="button/board_source_tooltip" xml:space="preserve">
+        <value>Lokal: die Tafel von diesem Rechner. Server: die Tafel von dem Server am {0}</value>
+    </data>
+    <data name="button/font_tooltip" xml:space="preserve">
+        <value>Schriftart</value>
+    </data>
+    <data name="error/attachment_only_on_pc" xml:space="preserve">
+        <value>"{0}" war im Windows-app angehängt und liegt im Rechner, deswegen kann es nicht vom Browser geöffnet werden.</value>
+    </data>
+    <data name="error/failed_to_connect" xml:space="preserve">
+        <value>Konnte nicht mit dem Server am {0} verbinden</value>
+    </data>
+    <data name="dialog/delete_permanent" xml:space="preserve">
+        <value>Löschen</value>
+    </data>
+    <data name="button/remove_note_tooltip" xml:space="preserve">
+        <value>Notiz entfernen</value>
     </data>
 </root>

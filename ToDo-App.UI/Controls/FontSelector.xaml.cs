@@ -37,6 +37,11 @@ namespace ToDo_App.UI.Controls
             sync();
         }
 
+        public void SetLocalizedStrings(string font)
+        {
+            ToolTipService.SetToolTip(FontComboBox, font);
+        }
+
         private void OnFontSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (isSyncing || FontComboBox.SelectedItem is not ComboBoxItem { Tag: string font })
