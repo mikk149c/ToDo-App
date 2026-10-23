@@ -42,6 +42,12 @@ public sealed class RemoteBoardController : BoardController, IDisposable
     // The version of the last change in the board. Only used on the controller's thread
     private long version;
 
+    /// <summary>
+    /// For testing only: how long each change from the server waits before it's applied, to see what a slow server
+    /// looks like on a fast network. Zero, the default, applies changes as soon as they arrive.
+    /// </summary>
+    public TimeSpan IncomingDelay { get; set; } = TimeSpan.Zero;
+
     /// <param name="serverUrl">The server's address, for example http://localhost:8080/.</param>
     /// <param name="handlerFactory">For tests: makes the HTTP handler to reach the server through.</param>
     public RemoteBoardController(Uri serverUrl, Func<HttpMessageHandler>? handlerFactory = null)
@@ -61,8 +67,17 @@ public sealed class RemoteBoardController : BoardController, IDisposable
             })
             .WithAutomaticReconnect()
             .Build();
-        hub.On<long, string, JsonElement[]>(ChangedMessage,
-            (changeVersion, change, arguments) => post(() => applyFromServer(changeVersion, change, arguments)));
+        hub.On<long, string, JsonElement[]>(ChangedMessage, async (changeVersion, change, arguments) =>
+        {
+            // For testing: hold each change back, as a slow server would. A change that still arrives out of order
+            // is a missed version to applyFromServer, which loads the whole board again
+            TimeSpan delay = IncomingDelay;
+            if (delay > TimeSpan.Zero)
+            {
+                await Task.Delay(delay);
+            }
+            post(() => applyFromServer(changeVersion, change, arguments));
+        });
         // Changes sent while the connection was down are lost, so start again from the whole board
         hub.Reconnected += _ =>
         {
