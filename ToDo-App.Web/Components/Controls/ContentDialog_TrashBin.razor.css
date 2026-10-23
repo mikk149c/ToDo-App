@@ -84,7 +84,7 @@
     overflow-y: auto;
 }
 
-.content-dialog.compact-dialog .dialog-content ::deep p {
+.content-dialog .dialog-content ::deep p {
     white-space: normal;
     overflow-wrap: anywhere;
     word-break: normal;
