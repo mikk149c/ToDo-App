@@ -300,6 +300,10 @@
     gap: 8px;
 }
 
+.trash-choices .trash-column-choice {
+    color: var(--accent-text);
+}
+
 .trash-actions {
     display: flex;
     gap: 8px;

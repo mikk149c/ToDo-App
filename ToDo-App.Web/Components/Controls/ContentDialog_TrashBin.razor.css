@@ -33,23 +33,12 @@
     overflow-y: auto;
     width: 100%;
     box-sizing: border-box;
-}
-
-.dialog-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 24px;
-    flex-shrink: 0;
+    padding-bottom: 8px;
 }
 
 .dialog-buttons button {
     min-width: 96px;
-}
-
-.dialog-buttons .primary-action {
-    padding: 5px 11px;
-    border-radius: 4px;
+    width: 100%;
 }
 
 .dialog-buttons {
@@ -57,11 +46,13 @@
     grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
     width: 100%;
-    margin-top: auto;
+    margin-top: 24px;
+    flex-shrink: 0;
 }
 
-.dialog-buttons button {
-    width: 100%;
+.dialog-buttons .primary-action {
+    padding: 5px 11px;
+    border-radius: 4px;
 }
 
 .dialog-buttons.single-button-right ::deep button:only-child {

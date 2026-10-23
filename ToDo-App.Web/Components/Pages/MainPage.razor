@@ -329,7 +329,10 @@
                             @foreach (Guid columnId in Board.GetStatusColumnIds())
                             {
                                 Guid id = columnId;
-                                <button type="button" @onclick="() => onTrashRestoreConfirmed(id)">@Board.GetStatusColumnName(id)</button>
+                                <button type="button" class="trash-column-choice" @onclick="() => 
+                                    onTrashRestoreConfirmed(id)">
+                                    @Board.GetStatusColumnName(id)
+                                </button>
                             }
                         </div>
                         break;
