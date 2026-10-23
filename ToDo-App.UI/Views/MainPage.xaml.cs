@@ -6,6 +6,7 @@ using ToDo_App.Client;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 using ToDo_App.UI.Appearance;
+using ToDo_App.UI.Board;
 using ToDo_App.UI.Controls;
 using Windows.ApplicationModel.DataTransfer;
 using Res = ToDo_App.UI.Resources;
@@ -29,7 +30,13 @@ namespace ToDo_App.UI.Views
 
         // Local by default. The Remote toggle replaces it with a RemoteBoardController (see useBoard)
         ITodoBoard boardController = new LocalBoardController();
+        // Every change to the board goes through this, so one on the server's board is grayed out until it's back
+        readonly BoardChanges changes;
         bool isSwitchingBoard;
+
+        // The server board while Remote is on, and the test delay for changes from it (developer builds only)
+        RemoteBoardController? remoteBoard;
+        TimeSpan serverDelay = TimeSpan.Zero;
 
         List<Guid> columns = new List<Guid>();
         // Which todos are shown. Only affects the view, never the board
@@ -63,6 +70,14 @@ namespace ToDo_App.UI.Views
             FontSelector.OnFontSelected += onFontChanged;
 
             this.Loaded += onPageInitialized;
+
+            changes = new BoardChanges(() => boardController, DispatcherQueue);
+            changes.Failed += onChangeFailed;
+
+#if DEBUG
+            // Only when run as a developer (a Debug build): slow down changes from the server to test how that looks
+            ServerDelayBox.Visibility = Visibility.Visible;
+#endif
         }
 
         private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
@@ -129,7 +144,8 @@ namespace ToDo_App.UI.Views
 
             if (RemoteToggle.IsOn)
             {
-                var remote = new RemoteBoardController(serverUrl());
+                var remote = new RemoteBoardController(serverUrl()) { IncomingDelay = serverDelay };
+                remoteBoard = remote;
                 useBoard(remote);
                 try
                 {
@@ -162,6 +178,7 @@ namespace ToDo_App.UI.Views
 
         private void useLocalBoard()
         {
+            remoteBoard = null;
             useBoard(new LocalBoardController());
             loadInitialBoard();
         }
@@ -200,6 +217,28 @@ namespace ToDo_App.UI.Views
             board.BoardChanged -= onBoardChanged;
             board.ColumnOrderChanged -= onColumnOrderChanged;
             board.TagChanged -= onTagChanged;
+
+            // What was on its way to the old board isn't shown as pending on the new one
+            Pending.Clear();
+            ChangeFailedBar.IsOpen = false;
+        }
+
+        // A change the server refused. Nothing changed on the board
+        private void onChangeFailed(object? sender, Exception error)
+        {
+            ChangeFailedBar.Title = Res.ResourceManager.GetString("error/change_not_saved", _currentCulture);
+            ChangeFailedBar.Message = error.Message;
+            ChangeFailedBar.IsOpen = true;
+        }
+
+        private void onServerDelayChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            // An empty box means no delay
+            serverDelay = TimeSpan.FromMilliseconds(double.IsNaN(sender.Value) ? 0 : Math.Max(0, sender.Value));
+            if (remoteBoard != null)
+            {
+                remoteBoard.IncomingDelay = serverDelay;
+            }
         }
 
         private static Uri serverUrl()
@@ -331,7 +370,8 @@ namespace ToDo_App.UI.Views
 
                         destinationButton.Click += (columnSender, columnE) => {
                             if (selectedTrashNoteId == Guid.Empty) { return; }
-                            boardController.RestoreNote( selectedTrashNoteId, columnId);
+                            Guid restoredNoteId = selectedTrashNoteId;
+                            changes.Send(board => board.RestoreNote(restoredNoteId, columnId), columnId);
                             selectedTrashNoteId = Guid.Empty;
 
                             RefreshTrashBin(listPanel, confirmationText, trashListView, restorePanel,
@@ -487,10 +527,11 @@ namespace ToDo_App.UI.Views
             };
             confirmDeleteFromTrashButton.Click += (sender, e) => {
                 if (selectedTrashNoteId == Guid.Empty) { 
-                    boardController.EmptyTrashBin(); 
+                    changes.Send(board => board.EmptyTrashBin()); 
                 }
                 else {
-                    boardController.RemoveNoteFromTrashBin(selectedTrashNoteId);
+                    Guid deletedNoteId = selectedTrashNoteId;
+                    changes.Send(board => board.RemoveNoteFromTrashBin(deletedNoteId));
                     selectedTrashNoteId = Guid.Empty;   
                 }
                 RefreshTrashBin(listPanel, confirmationText,trashListView, restorePanel, 
@@ -640,6 +681,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove([args.ColumnId, .. args.Notes.Select(note => note.Id)]);
 
             // A loaded board may not have the filtered tags, and the new column is drawn with the filter
             if (tagFilter.Prune(boardController.GetTags()))
@@ -657,6 +699,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove([args.ColumnId]);
             
             rebuildColumn(args.ColumnId, args.NewName);
         }
@@ -674,6 +717,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove([args.ColumnId]);
 
             removeColumn(args.ColumnId);
             columns.Remove(args.ColumnId);
@@ -694,6 +738,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove([args.ColumnId, .. args.NewNotes.Select(note => note.Id)]);
             
             // The filter turns off tags that are gone, which can show todos in every column
             if (tagFilter.Prune(boardController.GetTags()))
@@ -712,6 +757,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove([args.TagId]);
 
             // Redraw every column with a card that shows the tag
             foreach (Guid columnId in columns)
@@ -733,6 +779,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove(args.ColumnIds);
 
             columns = new List<Guid>(args.ColumnIds);
 
@@ -895,6 +942,7 @@ namespace ToDo_App.UI.Views
             columnGrid.Children.Add(scrollViewer);
 
             column.Child = columnGrid;
+            Pending.SetIds(column, columnId);
 
             return column;
         }
@@ -1034,7 +1082,7 @@ namespace ToDo_App.UI.Views
                 {
                     dropIndex--;
                 }
-                boardController.MoveNoteToColumn(noteId, columnId, dropIndex);
+                changes.Send(board => board.MoveNoteToColumn(noteId, columnId, dropIndex), noteId);
             }
             else if (e.DataView.Properties.TryGetValue("columnId", out object? columnValue) && columnValue is Guid draggedColumnId)
             {
@@ -1062,7 +1110,7 @@ namespace ToDo_App.UI.Views
                     dropIndex--;
                 }
 
-                boardController.MoveColumn(draggedColumnId, dropIndex);
+                changes.Send(board => board.MoveColumn(draggedColumnId, dropIndex), draggedColumnId);
             }
         }
 
@@ -1126,7 +1174,7 @@ namespace ToDo_App.UI.Views
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled
             };
 
-            var tagEditor = new TagEditor(boardController, Array.Empty<NoteTag>(), tagEditorStrings());
+            var tagEditor = new TagEditor(boardController, changes, Array.Empty<NoteTag>(), tagEditorStrings());
 
             var dialog = new ThemedContentDialog
             {
@@ -1148,12 +1196,11 @@ namespace ToDo_App.UI.Views
             ContentDialogResult result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary) {
                 // Leaving a field empty keeps the placeholder text, as it did when the fields were prefilled
-                boardController.CreateNote(
-                    columnId,
-                    string.IsNullOrWhiteSpace(titleBox.Text) ? defaultTitle : titleBox.Text,
-                    string.IsNullOrWhiteSpace(contentBox.Text) ? defaultContent : contentBox.Text,
-                    tagNames: tagEditor.TagNames,
-                    newTagColors: tagEditor.NewTagColors);
+                string title = string.IsNullOrWhiteSpace(titleBox.Text) ? defaultTitle : titleBox.Text;
+                string content = string.IsNullOrWhiteSpace(contentBox.Text) ? defaultContent : contentBox.Text;
+                var tagNames = tagEditor.TagNames;
+                var newTagColors = tagEditor.NewTagColors;
+                changes.Send(board => board.CreateNote(columnId, title, content, tagNames: tagNames, newTagColors: newTagColors), columnId);
             }
         }
 
@@ -1178,7 +1225,8 @@ namespace ToDo_App.UI.Views
             ContentDialogResult result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                boardController.SetStatusColumnName(columnId, nameBox.Text);
+                string newName = nameBox.Text;
+                changes.Send(board => board.SetStatusColumnName(columnId, newName), columnId);
             }
         }
 
@@ -1251,11 +1299,11 @@ namespace ToDo_App.UI.Views
             {
                 if (todoActionBox?.SelectedItem is ComboBoxItem { Tag: Guid moveToColumn })
                 {
-                    boardController.RemoveColumn(columnId, moveToColumn);
+                    changes.Send(board => board.RemoveColumn(columnId, moveToColumn), columnId, moveToColumn);
                 }
                 else
                 {
-                    boardController.RemoveColumn(columnId);
+                    changes.Send(board => board.RemoveColumn(columnId), columnId);
                 }
                 recalculateColumnsPanelMinWidth();
             }
@@ -1289,7 +1337,7 @@ namespace ToDo_App.UI.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                boardController.RemoveNote(note.Id);
+                changes.Send(board => board.RemoveNote(note.Id), note.Id);
             }
         }
 
@@ -1318,7 +1366,7 @@ namespace ToDo_App.UI.Views
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled
             };
             
-            var tagEditor = new TagEditor(boardController, note.Tags, tagEditorStrings());
+            var tagEditor = new TagEditor(boardController, changes, note.Tags, tagEditorStrings());
 
             var dialog = new ThemedContentDialog
             {
@@ -1341,9 +1389,16 @@ namespace ToDo_App.UI.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                boardController.SetNoteTitle(note.Id, titleBox.Text);
-                boardController.SetNoteContent(note.Id, contentBox.Text);
-                boardController.SetNoteTags(note.Id, tagEditor.TagNames, tagEditor.NewTagColors);
+                string title = titleBox.Text;
+                string content = contentBox.Text;
+                var tagNames = tagEditor.TagNames;
+                var newTagColors = tagEditor.NewTagColors;
+                changes.Send(board =>
+                {
+                    board.SetNoteTitle(note.Id, title);
+                    board.SetNoteContent(note.Id, content);
+                    board.SetNoteTags(note.Id, tagNames, newTagColors);
+                }, note.Id);
             }
         }
 
@@ -1363,7 +1418,8 @@ namespace ToDo_App.UI.Views
                 var file = await picker.PickSingleFileAsync();
                 if (file != null)
                 {
-                    boardController.SetNoteFileAttachment(note.Id, file.Path);
+                    string path = file.Path;
+                    changes.Send(board => board.SetNoteFileAttachment(note.Id, path), note.Id);
                 }
                 else
                 {
@@ -1411,7 +1467,7 @@ namespace ToDo_App.UI.Views
         {
             try
             {
-                boardController.RemoveNoteFileAttachment(note.Id);
+                changes.Send(board => board.RemoveNoteFileAttachment(note.Id), note.Id);
             }
             catch (Exception e)
             {
@@ -1533,6 +1589,8 @@ namespace ToDo_App.UI.Views
             };
             card.DragStarting += (s, e) => onNote_DragStarting(note, e);
             card.DropCompleted += (s, e) => stopAutoScroll();
+            // Grayed out while a change to the todo, or to one of its tags, is on its way
+            Pending.SetIds(card, [note.Id, .. note.Tags.Select(tag => tag.Id)]);
             return card;
         }
 
@@ -1779,7 +1837,7 @@ namespace ToDo_App.UI.Views
             {
                 string columnName = columnNameBox.Text;
 
-                Guid newColumn = boardController.CreateColumn(columnName);
+                changes.Send(board => board.CreateColumn(columnName));
             }
         }
 
