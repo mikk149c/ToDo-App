@@ -313,7 +313,12 @@
     @if (isTrashOpen)
     {
         @* Deleted todos wait here. Each step (list, where to restore, sure to delete) replaces the one before *@
-        <ContentDialog_TrashBin Title="@Strings["button/trash_bin"]" CloseButtonText="@Strings["dialog/close"]" Closed="closeDialogs">
+        <ContentDialog_TrashBin 
+            Title="@Strings["button/trash_bin"]" 
+            CloseButtonText="@Strings["dialog/close"]" 
+            Closed="closeDialogs"
+            SingleButtonOnRight="@(trashStep == TrashStep.Restore)">
+            
             <ChildContent>
                 @switch (trashStep)
                 {

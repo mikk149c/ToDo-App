@@ -8,7 +8,7 @@
     <div class="dialog-content">
         @ChildContent
     </div>
-    <div class="dialog-buttons">
+    <div class="dialog-buttons @(SingleButtonOnRight ? "single-button-right" : "")">
         @FooterContent
     </div>
 </dialog>
@@ -23,8 +23,10 @@
 
     [Parameter, EditorRequired] public string CloseButtonText { get; set; } = "";
 
+    [Parameter] public bool SingleButtonOnRight { get; set; }
+
     [Parameter] public RenderFragment? ChildContent { get; set; }
-    
+
     [Parameter] public RenderFragment? FooterContent { get; set; }
 
     /// <summary>
