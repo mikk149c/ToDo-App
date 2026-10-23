@@ -1,14 +1,17 @@
 .content-dialog {
     width: min(540px, calc(100vw - 32px));
-    max-height: calc(100vh - 32px);
+    height: min(650px, calc(100vh - 32px));
+    box-sizing: border-box;
     padding: 24px;
     border: 1px solid var(--card-stroke);
     border-radius: 8px;
     background: var(--flyout-background);
     color: var(--text-primary);
     box-shadow: var(--shadow);
-    /* The dialog scrolls as a whole, so a tag flyout opening below the last row can be scrolled to */
-    overflow: auto;
+
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .content-dialog::backdrop {
@@ -25,6 +28,9 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .dialog-buttons {
@@ -32,6 +38,7 @@
     justify-content: flex-end;
     gap: 8px;
     margin-top: 24px;
+    flex-shrink: 0;
 }
 
 .dialog-buttons button {

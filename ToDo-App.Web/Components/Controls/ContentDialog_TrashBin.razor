@@ -9,11 +9,7 @@
         @ChildContent
     </div>
     <div class="dialog-buttons">
-        @if (PrimaryButtonText != null)
-        {
-            <button type="button" class="primary-action" @onclick="OnPrimary">@PrimaryButtonText</button>
-        }
-        <button type="button" @onclick="OnClose">@CloseButtonText</button>
+        @FooterContent
     </div>
 </dialog>
 
@@ -28,6 +24,8 @@
     [Parameter, EditorRequired] public string CloseButtonText { get; set; } = "";
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    
+    [Parameter] public RenderFragment? FooterContent { get; set; }
 
     /// <summary>
     /// Called when the primary button is clicked. Returning false keeps the dialog open, like setting
