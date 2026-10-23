@@ -317,7 +317,8 @@
             Title="@Strings["button/trash_bin"]" 
             CloseButtonText="@Strings["dialog/close"]" 
             Closed="closeDialogs"
-            SingleButtonOnRight="@(trashStep == TrashStep.Restore)">
+            SingleButtonOnRight="@(trashStep == TrashStep.Restore)"
+            Compact="@(trashStep is TrashStep.Delete or TrashStep.Empty)">
             
             <ChildContent>
                 @switch (trashStep)

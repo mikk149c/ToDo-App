@@ -65,3 +65,16 @@
 .dialog-buttons.single-button-right ::deep button:only-child {
     grid-column: 2;
 }
+
+.content-dialog.compact-dialog {
+    height: fit-content;
+    min-height: 0;
+    max-height: calc(100vh - 32px);
+    margin-block: auto;
+}
+
+.content-dialog.compact-dialog .dialog-content {
+    flex: 0 0 auto;
+    min-height: 0;
+    overflow-y: visible;
+}

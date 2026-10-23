@@ -3,7 +3,7 @@
 
 @* The web version of WinUI's ContentDialog: a modal with a title, content, a primary button and a close
    button. It's a native <dialog>, so focus stays inside it and the page behind can't be used. *@
-<dialog @ref="element" class="content-dialog" aria-labelledby="@titleId" @onkeydown="OnKeyDown">
+<dialog @ref="element" class="content-dialog @(Compact ? "compact-dialog" : "")" aria-labelledby="@titleId" @onkeydown="OnKeyDown">
     <h2 id="@titleId" class="dialog-title">@Title</h2>
     <div class="dialog-content">
         @ChildContent
@@ -16,6 +16,8 @@
 @code {
     private readonly string titleId = $"dialog-title-{Guid.NewGuid():N}";
     private ElementReference element;
+    
+    [Parameter] public bool Compact { get; set; }
 
     [Parameter, EditorRequired] public string Title { get; set; } = "";
 
