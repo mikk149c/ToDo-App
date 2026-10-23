@@ -31,6 +31,8 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .dialog-buttons {
@@ -67,14 +69,25 @@
 }
 
 .content-dialog.compact-dialog {
+    width: min(540px, calc(100vw - 32px));
     height: fit-content;
     min-height: 0;
     max-height: calc(100vh - 32px);
-    margin-block: auto;
 }
 
 .content-dialog.compact-dialog .dialog-content {
-    flex: 0 0 auto;
-    min-height: 0;
-    overflow-y: visible;
+    flex: 0 1 auto;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.content-dialog.compact-dialog .dialog-content ::deep p {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    max-width: 100%;
+    min-width: 0;
 }
