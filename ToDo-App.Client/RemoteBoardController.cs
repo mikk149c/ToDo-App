@@ -4,6 +4,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using ToDo_App.Controller;
+using ToDo_App.Interfaces;
 
 namespace ToDo_App.Client;
 
@@ -44,7 +45,7 @@ public sealed class RemoteBoardController : BoardController, IDisposable
 
     /// <param name="serverUrl">The server's address, for example http://localhost:8080/.</param>
     /// <param name="handlerFactory">For tests: makes the HTTP handler to reach the server through.</param>
-    public RemoteBoardController(Uri serverUrl, Func<HttpMessageHandler>? handlerFactory = null)
+    public RemoteBoardController(Uri serverUrl, Func<HttpMessageHandler>? handlerFactory = null) : base(new ClientStorageHandler())
     {
         http = handlerFactory == null ? new HttpClient() : new HttpClient(handlerFactory(), disposeHandler: true);
         http.BaseAddress = serverUrl;

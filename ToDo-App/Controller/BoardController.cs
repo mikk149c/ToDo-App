@@ -15,6 +15,7 @@ namespace ToDo_App.Controller;
 public abstract class BoardController : ITodoBoard
 {
     private ToDoBoard _board = new ToDoBoard();
+    private IStorageHandler _storageHandler;
 
     public event EventHandler? ColumnCreated;
     public event EventHandler? ColumnNameChanged;
@@ -58,6 +59,13 @@ public abstract class BoardController : ITodoBoard
 
     /// <summary>The board itself, for a child to save or send.</summary>
     protected ToDoBoard Board => _board;
+
+    protected IStorageHandler StorageHandler => _storageHandler;
+
+    protected BoardController(IStorageHandler storageHandler)
+    {
+        _storageHandler = storageHandler;
+    }
 
     // --- Reads ---
 

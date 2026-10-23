@@ -14,7 +14,7 @@ public sealed class ServerBoardController : LocalBoardController
     private readonly IChangeBroadcaster? broadcaster;
 
     /// <param name="broadcaster">Where changes are sent, or null when no remote apps can connect (tests).</param>
-    public ServerBoardController(IChangeBroadcaster? broadcaster = null)
+    public ServerBoardController(IChangeBroadcaster? broadcaster = null) : base(new ServerStorageHandler())
     {
         this.broadcaster = broadcaster;
     }
