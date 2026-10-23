@@ -339,10 +339,6 @@
 
                 case TrashStep.Delete when selectedTrashNote() is ToDoNote deleteNote:
                     <p>@Strings.Format("dialog/content_permanent_delete_note", deleteNote.Title)</p>
-                    <div class="trash-actions">
-                        <button type="button" class="primary-action" @onclick="onTrashDeleteConfirmed">@Strings["dialog/delete_permanent"]</button>
-                        <button type="button" @onclick="backToTrashList">@Strings["dialog/cancel"]</button>
-                    </div>
                     break;
 
                     case TrashStep.Empty:
