@@ -313,92 +313,130 @@
     @if (isTrashOpen)
     {
         @* Deleted todos wait here. Each step (list, where to restore, sure to delete) replaces the one before *@
-        <ContentDialog Title="@Strings["button/trash_bin"]" CloseButtonText="@Strings["dialog/close"]" Closed="closeDialogs">
-            @switch (trashStep)
-            {
-                case TrashStep.Restore when selectedTrashNote() is ToDoNote restoreNote:
-                    <p>@Strings.Format("dialog/restore_which_column", restoreNote.Title)</p>
-                    <div class="trash-choices">
-                        @foreach (Guid columnId in Board.GetStatusColumnIds())
-                        {
-                            Guid id = columnId;
-                            <button type="button" @onclick="() => onTrashRestoreConfirmed(id)">@Board.GetStatusColumnName(id)</button>
-                        }
-                    </div>
-                    <div class="trash-actions">
-                        <button type="button" @onclick="backToTrashList">@Strings["dialog/cancel"]</button>
-                    </div>
-                    break;
+        <ContentDialog_TrashBin 
+            Title="@Strings["button/trash_bin"]" 
+            CloseButtonText="@Strings["dialog/close"]" 
+            Closed="closeDialogs"
+            SingleButtonOnRight="@(trashStep == TrashStep.Restore)"
+            Compact="@(trashStep is TrashStep.Delete or TrashStep.Empty)">
+            
+            <ChildContent>
+                @switch (trashStep)
+                {
+                    case TrashStep.Restore when selectedTrashNote() is ToDoNote restoreNote:
+                        <p>@Strings.Format("dialog/restore_which_column", restoreNote.Title)</p>
+                        <div class="trash-choices">
+                            @foreach (Guid columnId in Board.GetStatusColumnIds())
+                            {
+                                Guid id = columnId;
+                                <button type="button" class="trash-column-choice" 
+                                    @onclick="() => onTrashRestoreConfirmed(id)">
+                                    @Board.GetStatusColumnName(id)
+                                </button>
+                            }
+                        </div>
+                        break;
 
                 case TrashStep.Delete when selectedTrashNote() is ToDoNote deleteNote:
                     <p>@Strings.Format("dialog/content_permanent_delete_note", deleteNote.Title)</p>
-                    <div class="trash-actions">
-                        <button type="button" class="primary-action" @onclick="onTrashDeleteConfirmed">@Strings["dialog/delete_permanent"]</button>
-                        <button type="button" @onclick="backToTrashList">@Strings["dialog/cancel"]</button>
-                    </div>
                     break;
 
-                case TrashStep.Empty:
-                    <p>@Strings["dialog/empty_bin_confirm"]</p>
-                    <div class="trash-actions">
-                        <button type="button" class="primary-action" @onclick="onEmptyTrashConfirmed">@Strings["dialog/empty_bin"]</button>
-                        <button type="button" @onclick="backToTrashList">@Strings["dialog/cancel"]</button>
-                    </div>
-                    break;
+                    case TrashStep.Empty:
+                        <p>@Strings["dialog/empty_bin_confirm"]</p>
+                        break;
 
-                default:
-                    List<ToDoNote> trashed = trashNotes();
-                    <div class="trash-list">
-                        @foreach (ToDoNote note in trashed)
-                        {
-                            bool isExpanded = expandedTrashNotes.Contains(note.Id);
-                            <article class="todo-card trash-card" @key="note.Id">
-                                <div class="card-row">
-                                    <button type="button" class="trash-title" aria-expanded="@(isExpanded ? "true" : "false")"
-                                            @onclick="() => toggleTrashNote(note.Id)">
-                                        <span aria-hidden="true">@(isExpanded ? "v" : ">")</span>
-                                        <span class="todo-title">@note.Title</span>
-                                    </button>
-                                    <div class="card-buttons">
-                                        <button type="button" class="icon-button" title="@Strings["dialog/restore_tooltip"]"
-                                                aria-label="@Strings["dialog/restore_tooltip"]" @onclick="() => onTrashRestoreClicked(note)">
-                                            <Icon Name="undo" />
+                    default:
+                        List<ToDoNote> trashed = trashNotes();
+                        <div class="trash-list">
+                            @foreach (ToDoNote note in trashed)
+                            {
+                                bool isExpanded = expandedTrashNotes.Contains(note.Id);
+                                <article class="todo-card trash-card" @key="note.Id">
+                                    <div class="card-row">
+                                        <button type="button" class="trash-title" aria-expanded="@(isExpanded ? "true" : "false")"
+                                                @onclick="() => toggleTrashNote(note.Id)">
+                                            <span aria-hidden="true">@(isExpanded ? "v" : ">")</span>
+                                            <span class="todo-title">@note.Title</span>
                                         </button>
-                                        <button type="button" class="icon-button" title="@Strings["dialog/permanent_delete_note_tooltip"]"
-                                                aria-label="@Strings["dialog/permanent_delete_note_tooltip"]" @onclick="() => onTrashDeleteClicked(note)">
-                                            <Icon Name="delete" />
-                                        </button>
+                                        <div class="card-buttons">
+                                            <button type="button" class="icon-button" title="@Strings["dialog/restore_tooltip"]"
+                                                    aria-label="@Strings["dialog/restore_tooltip"]" @onclick="() => onTrashRestoreClicked(note)">
+                                                <Icon Name="undo" />
+                                            </button>
+                                            <button type="button" class="icon-button" title="@Strings["dialog/permanent_delete_note_tooltip"]"
+                                                    aria-label="@Strings["dialog/permanent_delete_note_tooltip"]" @onclick="() => onTrashDeleteClicked(note)">
+                                                <Icon Name="delete" />
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
 
-                                @if (note.Tags.Count > 0)
-                                {
-                                    <ul class="todo-tags" aria-label="@Strings["todo/property_tags"]">
-                                        @foreach (NoteTag tag in note.Tags)
-                                        {
-                                            <li class="todo-tag" style="background: @AccentPalette.Find(tag.Color).Hex">@tag.Name</li>
-                                        }
-                                    </ul>
-                                }
-
-                                @if (isExpanded)
-                                {
-                                    <p class="todo-description">@note.Content</p>
-                                    @if (note.File != null)
+                                    @if (note.Tags.Count > 0)
                                     {
-                                        @* Not a link: the attachment of a deleted todo can't be opened from here *@
-                                        <span class="attached-file"><Icon Name="attach" /><span>@note.File.Name</span></span>
+                                        <ul class="todo-tags" aria-label="@Strings["todo/property_tags"]">
+                                            @foreach (NoteTag tag in note.Tags)
+                                            {
+                                                <li class="todo-tag" style="background: @AccentPalette.Find(tag.Color).Hex">@tag.Name</li>
+                                            }
+                                        </ul>
                                     }
-                                }
-                            </article>
-                        }
-                    </div>
-                    <div class="trash-actions">
-                        <button type="button" disabled="@(trashed.Count == 0)" @onclick="onEmptyTrashClicked">@Strings["dialog/empty_bin"]</button>
-                    </div>
-                    break;
-            }
-        </ContentDialog>
+
+                                    @if (isExpanded)
+                                    {
+                                        <p class="todo-description">@note.Content</p>
+                                        @if (note.File != null)
+                                        {
+                                            @* Not a link: the attachment of a deleted todo can't be opened from here *@
+                                            <span class="attached-file"><Icon Name="attach" /><span>@note.File.Name</span></span>
+                                        }
+                                    }
+                                </article>
+                            }
+                        </div>
+                        break;
+                }
+            </ChildContent>
+            <FooterContent>
+                @switch (trashStep)
+                {
+                    case TrashStep.List:
+                        <button type="button"
+                                disabled="@(trashNotes().Count == 0)"
+                                @onclick="onEmptyTrashClicked">
+                            @Strings["dialog/empty_bin"]
+                        </button>
+                        <button type="button" @onclick="closeDialogs">
+                            @Strings["dialog/close"]
+                        </button>
+                        break;
+
+                    case TrashStep.Restore:
+                        <button type="button" @onclick="backToTrashList">
+                            @Strings["dialog/cancel"]
+                        </button>
+                        break;
+
+                    case TrashStep.Delete:
+                        <button type="button" class="primary-action"
+                                @onclick="onTrashDeleteConfirmed">
+                            @Strings["dialog/delete_permanent"]
+                        </button>
+                        <button type="button" @onclick="backToTrashList">
+                            @Strings["dialog/cancel"]
+                        </button>
+                        break;
+
+                    case TrashStep.Empty:
+                        <button type="button" class="primary-action"
+                                @onclick="onEmptyTrashConfirmed">
+                            @Strings["dialog/empty_bin"]
+                        </button>
+                        <button type="button" @onclick="backToTrashList">
+                            @Strings["dialog/cancel"]
+                        </button>
+                        break;
+                }
+            </FooterContent>
+        </ContentDialog_TrashBin>
     }
 
     @if (errorDialog is (string errorTitle, string errorMessage))
