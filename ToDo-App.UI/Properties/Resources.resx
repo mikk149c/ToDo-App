@@ -39,8 +39,8 @@
     <data name="button/add_todo" xml:space="preserve">
         <value>Add Note</value>
     </data>
-    <data name="dialog/delete" xml:space="preserve">
-        <value>Delete</value>
+    <data name="dialog/remove" xml:space="preserve">
+        <value>Remove</value>
     </data>
     <data name="dialog/add" xml:space="preserve">
         <value>Add</value>
@@ -99,8 +99,8 @@
     <data name="dialog/title_delete_column_q" xml:space="preserve">
         <value>Delete Column?</value>
     </data>
-    <data name="dialog/title_delete_note_q" xml:space="preserve">
-        <value>Delete Note?</value>
+    <data name="dialog/title_remove_note_q" xml:space="preserve">
+        <value>Remove Note?</value>
     </data>
     <data name="dialog/title_edit_note" xml:space="preserve">
         <value>Edit Note</value>
@@ -117,8 +117,8 @@
     <data name="error/failed_to_remove_attached_file" xml:space="preserve">
         <value>Failed to remove attached file.</value>
     </data>
-    <data name="button/edit_tooltip" xml:space="preserve">
-        <value>Edit</value>
+    <data name="button/edit_note_tooltip" xml:space="preserve">
+        <value>Edit note</value>
     </data>
     <data name="button/attach_file_tooltip" xml:space="preserve">
         <value>Attach file</value>
@@ -147,7 +147,7 @@
     <data name="button/tooltip_accent_color" xml:space="preserve">
         <value>Accent color</value>
     </data>
-    <data name="dialog/content_delete_note" xml:space="preserve">
+    <data name="dialog/content_remove_note" xml:space="preserve">
         <value>Move "{0}" to trash bin?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
@@ -290,5 +290,14 @@
     </data>
     <data name="error/attachment_only_on_pc" xml:space="preserve">
         <value>"{0}" was attached in the Windows app and is saved on that PC, so it can't be opened from the browser.</value>
+    </data>
+    <data name="button/font_tooltip" xml:space="preserve">
+        <value>Font</value>
+    </data>
+    <data name="dialog/delete_permanent" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="button/remove_note_tooltip" xml:space="preserve">
+        <value>Remove note</value>
     </data>
 </root>

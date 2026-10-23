@@ -90,6 +90,7 @@
                                     SystemLabel="@Strings["button/tooltip_system_default"]"
                                     DarkLabel="@Strings["button/tooltip_dark"]"
                                     AccentLabel="@Strings["button/tooltip_accent_color"]" />
+                <FontSelector FontLabel="@Strings["button/font_tooltip"]" />
                 <select class="language-selector" aria-label="@Strings["button/language_tooltip"]"
                         title="@Strings["button/language_tooltip"]" value="@Strings.CurrentLanguage" @onchange="onLanguageSelectionChanged">
                     @foreach (var language in UiStrings.Languages)
@@ -98,7 +99,6 @@
                         <option value="@language.Key">@language.Value</option>
                     }
                 </select>
-                <FontSelector />
             </div>
         </header>
 
@@ -177,8 +177,8 @@
                                     <h3 class="todo-title">@note.Title</h3>
                                     @* Edit, attach and delete sit together in the upper right *@
                                     <div class="card-buttons">
-                                        <button type="button" class="icon-button" title="@Strings["button/edit_tooltip"]"
-                                                aria-label="@Strings["button/edit_tooltip"]" @onclick="() => onEditTodoClicked(note)">
+                                        <button type="button" class="icon-button" title="@Strings["button/edit_note_tooltip"]"
+                                                aria-label="@Strings["button/edit_note_tooltip"]" @onclick="() => onEditTodoClicked(note)">
                                             <Icon Name="edit" />
                                         </button>
                                         @if (note.File == null)
@@ -194,8 +194,8 @@
                                             <button type="button" class="icon-button" disabled
                                                     aria-label="@Strings["button/attach_file_tooltip"]"><Icon Name="attach" /></button>
                                         }
-                                        <button type="button" class="icon-button" title="@Strings["button/delete_tooltip"]"
-                                                aria-label="@Strings["button/delete_tooltip"]" @onclick="() => deleteNoteDialog = note">
+                                        <button type="button" class="icon-button" title="@Strings["button/remove_note_tooltip"]"
+                                                aria-label="@Strings["button/remove_note_tooltip"]" @onclick="() => deleteNoteDialog = note">
                                             <Icon Name="delete" />
                                         </button>
                                     </div>
@@ -265,7 +265,7 @@
 
     @if (deleteColumnId is Guid deleteId)
     {
-        <ContentDialog Title="@Strings["dialog/title_delete_column_q"]" PrimaryButtonText="@Strings["dialog/delete"]"
+        <ContentDialog Title="@Strings["dialog/title_delete_column_q"]" PrimaryButtonText="@Strings["dialog/delete_permanent"]"
                        CloseButtonText="@Strings["dialog/cancel"]" Primary="() => onDeleteColumnConfirmed(deleteId)" Closed="closeDialogs">
             <p>@deleteColumnMessage</p>
             @* Only ask what to do with the ToDos when there are some, and somewhere to move them *@
@@ -304,9 +304,9 @@
 
     @if (deleteNoteDialog is ToDoNote noteToDelete)
     {
-        <ContentDialog Title="@Strings["dialog/title_delete_note_q"]" PrimaryButtonText="@Strings["dialog/delete"]"
+        <ContentDialog Title="@Strings["dialog/title_remove_note_q"]" PrimaryButtonText="@Strings["dialog/remove"]"
                        CloseButtonText="@Strings["dialog/cancel"]" Primary="() => onDeleteTodoConfirmed(noteToDelete)" Closed="closeDialogs">
-            <p>@Strings.Format("dialog/content_delete_note", noteToDelete.Title)</p>
+            <p>@Strings.Format("dialog/content_remove_note", noteToDelete.Title)</p>
         </ContentDialog>
     }
 
@@ -333,7 +333,7 @@
                 case TrashStep.Delete when selectedTrashNote() is ToDoNote deleteNote:
                     <p>@Strings.Format("dialog/content_permanent_delete_note", deleteNote.Title)</p>
                     <div class="trash-actions">
-                        <button type="button" class="primary-action" @onclick="onTrashDeleteConfirmed">@Strings["dialog/delete"]</button>
+                        <button type="button" class="primary-action" @onclick="onTrashDeleteConfirmed">@Strings["dialog/delete_permanent"]</button>
                         <button type="button" @onclick="backToTrashList">@Strings["dialog/cancel"]</button>
                     </div>
                     break;

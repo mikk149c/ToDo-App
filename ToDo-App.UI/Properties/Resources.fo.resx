@@ -53,14 +53,14 @@
     <data name="dialog/title_delete_column_q" xml:space="preserve">
         <value>Strika Teigin?</value>
     </data>
-    <data name="dialog/title_delete_note_q" xml:space="preserve">
-        <value>Strika Uppritið?</value>
+    <data name="dialog/title_remove_note_q" xml:space="preserve">
+        <value>Tak Uppritið Burtur?</value>
     </data>
     <data name="dialog/ok" xml:space="preserve">
         <value>OK</value>
     </data>
-    <data name="dialog/delete" xml:space="preserve">
-        <value>Strika</value>
+    <data name="dialog/remove" xml:space="preserve">
+        <value>Tak burtur</value>
     </data>
     <data name="dialog/delete_the_todos" xml:space="preserve">
         <value>Strika [[uppriti|uppritini]]</value>
@@ -69,10 +69,10 @@
         <value>JSON-fílur</value>
     </data>
     <data name="button/edit_column_title_tooltip" xml:space="preserve">
-        <value>Rætta teigsheiti</value>
+        <value>Rætta teigsheitið</value>
     </data>
-    <data name="button/edit_tooltip" xml:space="preserve">
-        <value>Rætta</value>
+    <data name="button/edit_note_tooltip" xml:space="preserve">
+        <value>Rætta uppritið</value>
     </data>
     <data name="button/tooltip_dark" xml:space="preserve">
         <value>Myrkt</value>
@@ -149,7 +149,7 @@
     <data name="dialog/import_board" xml:space="preserve">
         <value>Flyt talvu inn</value>
     </data>
-    <data name="dialog/content_delete_note" xml:space="preserve">
+    <data name="dialog/content_remove_note" xml:space="preserve">
         <value>Koyr "{0}" í pappírskurvina?</value>
     </data>
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
@@ -261,9 +261,36 @@
         <value>Strika "{0}"? Hetta kann ikki angrast.</value>
     </data>
     <data name="dialog/restore_tooltip" xml:space="preserve">
-        <value>Endurnýggja upprit</value>
+        <value>Endurnýggja uppritið</value>
     </data>
     <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
-        <value>Strika upprit um ævir</value>
+        <value>Strika uppritið um ævir</value>
+    </data>
+    <data name="button/language_tooltip" xml:space="preserve">
+        <value>Mál</value>
+    </data>
+    <data name="button/board_local" xml:space="preserve">
+        <value>Á staðnum</value>
+    </data>
+    <data name="button/board_remote" xml:space="preserve">
+        <value>Ambætari</value>
+    </data>
+    <data name="button/board_source_tooltip" xml:space="preserve">
+        <value>Á staðnum: talvan ið liggur á hesi telduni. Ambætari: talvan ið liggur hjá ambætaranum á {0}</value>
+    </data>
+    <data name="button/font_tooltip" xml:space="preserve">
+        <value>Stavsnið</value>
+    </data>
+    <data name="error/attachment_only_on_pc" xml:space="preserve">
+        <value>"{0}" var fest í Windows-appina og liggur í telduni, tessvegna kan hon ikki áppnast úr kaganum.</value>
+    </data>
+    <data name="error/failed_to_connect" xml:space="preserve">
+        <value>Kundi ikki sambinda við ambætaranum á {0}</value>
+    </data>
+    <data name="dialog/delete_permanent" xml:space="preserve">
+        <value>Strika</value>
+    </data>
+    <data name="button/remove_note_tooltip" xml:space="preserve">
+        <value>Tak uppritið burtur</value>
     </data>
 </root>
