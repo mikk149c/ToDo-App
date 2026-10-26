@@ -1,0 +1,7 @@
+```mermaid
+sequenceDiagram
+    actor user
+    participant v
+
+    user ->> v:
+```
