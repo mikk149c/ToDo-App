@@ -18,7 +18,6 @@ string dataDirectory = Path.GetFullPath(
     builder.Environment.ContentRootPath);
 builder.Services.AddSingleton(new BoardStorageOptions(dataDirectory));
 builder.Services.AddSingleton<BoardHost>();
-builder.Services.AddSingleton<AttachmentStore>();
 
 // Remote desktop apps: changes come in through the API, and every change goes out to every app through the hub
 builder.Services.AddSignalR();
@@ -89,11 +88,11 @@ app.MapGet("/board/export", (BoardHost host) =>
     }
 });
 
-// Opens a todo's attachment. Only files uploaded through the browser are served (see AttachmentStore.IsStored)
-app.MapGet("/attachments/{noteId:guid}", (Guid noteId, BoardHost host, AttachmentStore attachments, HttpContext context) =>
+// Opens a todo's attachment
+app.MapGet("/attachments/{noteId:guid}", (Guid noteId, BoardHost host, HttpContext context) =>
 {
     AttachedFile? file = host.FindNote(noteId)?.File;
-    if (file == null || !attachments.IsStored(file.FullPath))
+    if (file == null || !host.Board.IsFileStored(file.FullPath))
     {
         return Results.NotFound();
     }

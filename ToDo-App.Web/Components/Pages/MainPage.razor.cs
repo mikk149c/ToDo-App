@@ -72,7 +72,6 @@ public partial class MainPage
     private readonly HashSet<Guid> expandedTrashNotes = new HashSet<Guid>();
 
     [Inject] private BoardHost Host { get; set; } = null!;
-    [Inject] private AttachmentStore Attachments { get; set; } = null!;
     [Inject] private UiStrings Strings { get; set; } = null!;
     [Inject] private AppearanceManager Appearance { get; set; } = null!;
     [Inject] private BrowserPreferences Preferences { get; set; } = null!;
@@ -326,9 +325,8 @@ public partial class MainPage
     {
         try
         {
-            await using Stream upload = e.File.OpenReadStream(AttachmentStore.MaxFileSize);
-            string path = await Attachments.SaveAsync(upload, e.File.Name);
-            Board.UpdateNoteFile(note.Id, new AttachedFile(Path.GetFileName(path), path));
+            var fileReference = new BrowserPickedFileReference(e);
+            Board.UpdateNoteFile(note.Id, fileReference);
         }
         catch (Exception exception)
         {

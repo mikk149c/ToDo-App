@@ -137,8 +137,8 @@ public sealed class RemoteBoardController : BoardController, IDisposable
         IReadOnlyDictionary<string, Guid> newTagIds) =>
         send(nameof(UpdateNoteTags), noteId, tagNames, newTagColors, newTagIds);
 
-    public override void UpdateNoteFile(Guid noteId, AttachedFile file) =>
-        send(nameof(UpdateNoteFile), noteId, file);
+    public override void UpdateNoteFile(Guid noteId, IFileReference fileReference) =>
+        send(nameof(UpdateNoteFile), noteId, fileReference);
 
     public override void DeleteNoteFile(Guid noteId) =>
         send(nameof(DeleteNoteFile), noteId);
@@ -247,7 +247,7 @@ public sealed class RemoteBoardController : BoardController, IDisposable
             case nameof(UpdateNoteTags):
                 base.UpdateNoteTags(a.Get<Guid>(0), a.Get<List<string>>(1), a.Get<Dictionary<string, string>?>(2), a.Get<Dictionary<string, Guid>>(3));
                 break;
-            case nameof(UpdateNoteFile): base.UpdateNoteFile(a.Get<Guid>(0), a.Get<AttachedFile>(1)); break;
+            case nameof(UpdateNoteFile): base.UpdateNoteFile(a.Get<Guid>(0), a.Get<IFileReference>(1)); break;
             case nameof(DeleteNoteFile): base.DeleteNoteFile(a.Get<Guid>(0)); break;
             case nameof(UpdateTagName): base.UpdateTagName(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(UpdateTagColor): base.UpdateTagColor(a.Get<Guid>(0), a.Get<string>(1)); break;

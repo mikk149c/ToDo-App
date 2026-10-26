@@ -29,7 +29,7 @@ public sealed class BoardHost
         userJsonPath = Path.Combine(options.DataDirectory, UserJsonFile);
 
         // Every change, from a tab or from the API, goes through the server's controller, which sends it on to remote apps
-        Board = new ServerBoardController(broadcaster);
+        Board = new ServerBoardController(options, broadcaster);
 
         loadInitialBoard();
         // Subscribed after loading, so falling back to the default board doesn't overwrite a board.json

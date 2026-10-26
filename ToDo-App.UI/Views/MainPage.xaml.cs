@@ -1440,8 +1440,8 @@ namespace ToDo_App.UI.Views
                 var file = await picker.PickSingleFileAsync();
                 if (file != null)
                 {
-                    var attachment = new AttachedFile(System.IO.Path.GetFileName(file.Path), file.Path);
-                    changes.Send(board => board.UpdateNoteFile(note.Id, attachment), note.Id);
+                    var fileReference = new LocalFileReference(file.Path);
+                    changes.Send(board => board.UpdateNoteFile(note.Id, fileReference), note.Id);
                 }
                 else
                 {
