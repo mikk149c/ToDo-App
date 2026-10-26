@@ -314,19 +314,33 @@
 
 .attachment {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 4px;
     min-width: 0;
+    max-width: 100%;
+}
+
+.attachment-filename {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .attached-file {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
     background: var(--accent);
     color: var(--on-accent);
     border-color: transparent;
     border-radius: 8px;
     padding: 5px 8px;
-    max-width: 100%;
 }
 
 .attached-file span {
