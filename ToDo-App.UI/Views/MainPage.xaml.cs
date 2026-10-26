@@ -1343,6 +1343,7 @@ namespace ToDo_App.UI.Views
 
         private async void onEditTodoClicked(ToDoNote note)
         {
+            var opened = OpenedNote.Of(note);
             var titleBox = new TextBox
             {
                 Header = Res.ResourceManager.GetString("todo/property_title", _currentCulture),
@@ -1389,14 +1390,12 @@ namespace ToDo_App.UI.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                var noteChanges = new NoteChanges
+                // Only what the user changed, so a change someone else made meanwhile isn't undone
+                var noteChanges = NoteChanges.Since(opened, titleBox.Text, contentBox.Text, tagEditor.TagNames, tagEditor.NewTagColors);
+                if (noteChanges.HasChanges())
                 {
-                    Title = titleBox.Text,
-                    Content = contentBox.Text,
-                    TagNames = tagEditor.TagNames,
-                    NewTagColors = tagEditor.NewTagColors
-                };
-                changes.Send(board => board.UpdateNote(note.Id, noteChanges), note.Id);
+                    changes.Send(board => board.UpdateNote(note.Id, noteChanges), note.Id);
+                }
             }
         }
 

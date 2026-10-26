@@ -128,6 +128,14 @@ public class TagColorTests
     }
 
     [Test]
+    public void UpdateTagWithNothingToChangeThrowsWithoutEvents()
+    {
+        Assert.Throws<ArgumentException>(() => controller.UpdateTag(workId));
+        Assert.Throws<ArgumentException>(() => controller.UpdateTag(Guid.NewGuid()));
+        Assert.That(recorder.Names, Is.Empty);
+    }
+
+    [Test]
     public void SetColorOfUnknownTagThrowsWithoutEvents()
     {
         Assert.Throws<KeyNotFoundException>(() => controller.UpdateTag(Guid.NewGuid(), color: Blue));

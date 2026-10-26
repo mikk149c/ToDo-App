@@ -23,6 +23,7 @@ public partial class MainPage
     {
         public Guid? ColumnId;                // set when adding
         public ToDoNote? Note;                // set when editing
+        public OpenedNote? Opened;            // the note as it was when the dialog opened, when editing
         public string Title = "";
         public string PrimaryButtonText = "";
         public string TitleText = "";
@@ -254,6 +255,7 @@ public partial class MainPage
         noteDialog = new NoteDialogState
         {
             Note = note,
+            Opened = OpenedNote.Of(note),
             Title = Strings["dialog/title_edit_note"],
             PrimaryButtonText = Strings["dialog/save"],
             TitleText = note.Title,
@@ -275,15 +277,14 @@ public partial class MainPage
             return;
         }
 
-        if (noteDialog.Note is ToDoNote note)
+        if (noteDialog is { Note: ToDoNote note, Opened: OpenedNote opened })
         {
-            Board.UpdateNote(note.Id, new NoteChanges
+            // Only what the user changed, so a change made in another tab or app meanwhile isn't undone
+            var changes = NoteChanges.Since(opened, noteDialog.TitleText, noteDialog.ContentText, tagEditor.TagNames, tagEditor.NewTagColors);
+            if (changes.HasChanges())
             {
-                Title = noteDialog.TitleText,
-                Content = noteDialog.ContentText,
-                TagNames = tagEditor.TagNames,
-                NewTagColors = tagEditor.NewTagColors
-            });
+                Board.UpdateNote(note.Id, changes);
+            }
         }
         else if (noteDialog.ColumnId is Guid columnId)
         {

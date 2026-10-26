@@ -186,6 +186,45 @@ public class ControllerBehaviourTests
         Assert.That(recorder.Names, Is.Empty);
     }
 
+    // An edit dialog sends only what the user changed, so a change made meanwhile by someone else isn't undone
+    [Test]
+    public void NoteChangesSinceOpeningKeepsOnlyWhatTheDialogChanged()
+    {
+        var opened = OpenedNote.Of(controller.GetNotesInColumn(plannedId).Single());
+        controller.UpdateNote(noteId, new NoteChanges { Content = "Changed by someone else" });
+
+        NoteChanges changes = NoteChanges.Since(opened, "Renamed", "Køb bananer", Array.Empty<string>(), null);
+        controller.UpdateNote(noteId, changes);
+
+        Assert.That(changes, Is.EqualTo(new NoteChanges { Title = "Renamed" }));
+        var note = controller.GetNotesInColumn(plannedId).Single();
+        Assert.That(note.Title, Is.EqualTo("Renamed"));
+        Assert.That(note.Content, Is.EqualTo("Changed by someone else"));
+    }
+
+    [Test]
+    public void NoteChangesSinceOpeningWithoutEditsHasNoChanges()
+    {
+        controller.UpdateNote(noteId, new NoteChanges { TagNames = new[] { "Work" } });
+        var opened = OpenedNote.Of(controller.GetNotesInColumn(plannedId).Single());
+
+        NoteChanges changes = NoteChanges.Since(opened, "First note", "Køb bananer", new[] { "Work" }, null);
+
+        Assert.That(changes.HasChanges(), Is.False);
+    }
+
+    // Renaming a tag changes it on the note in place, so the opened tag names must be a copy
+    [Test]
+    public void OpenedNoteKeepsTheTagNamesItWasOpenedWith()
+    {
+        controller.UpdateNote(noteId, new NoteChanges { TagNames = new[] { "Work" } });
+        var opened = OpenedNote.Of(controller.GetNotesInColumn(plannedId).Single());
+
+        controller.UpdateTag(controller.GetTags().Single().Id, name: "Job");
+
+        Assert.That(opened.TagNames, Is.EqualTo(new[] { "Work" }));
+    }
+
     [Test]
     public void UpdateNoteWithFileAndRemoveFileThrowsWithoutChanges()
     {

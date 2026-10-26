@@ -211,6 +211,10 @@ public abstract class BoardController : ITodoBoard
     /// <summary>Renames a tag and/or changes its colour. A value left null stays as it is.</summary>
     public virtual void UpdateTag(Guid tagId, string? name = null, string? color = null)
     {
+        if (name == null && color == null)
+        {
+            throw new ArgumentException("Give the tag a new name, a new colour or both.");
+        }
         if (color != null)
         {
             NoteTag.NormalizeColor(color); // an invalid colour throws before the name changes

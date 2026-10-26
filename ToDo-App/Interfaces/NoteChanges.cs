@@ -21,4 +21,33 @@ public sealed record NoteChanges
 
     /// <summary>Removes the note's file. Can't be used together with <see cref="File"/>.</summary>
     public bool RemoveFile { get; init; }
+
+    /// <summary>Whether anything is set, so a dialog closed without changes sends nothing.</summary>
+    public bool HasChanges() =>
+        Title != null || Content != null || TagNames != null || File != null || RemoveFile;
+
+    /// <summary>
+    /// What an edit dialog changed: only the fields that differ from the note as it was when the dialog opened are set.
+    /// So a field someone else changed in the meantime isn't put back to the value the dialog started with.
+    /// </summary>
+    public static NoteChanges Since(OpenedNote opened, string title, string content, IReadOnlyList<string> tagNames,
+        IReadOnlyDictionary<string, string>? newTagColors)
+    {
+        bool tagsChanged = !tagNames.SequenceEqual(opened.TagNames);
+        return new NoteChanges
+        {
+            Title = title == opened.Title ? null : title,
+            Content = content == opened.Content ? null : content,
+            TagNames = tagsChanged ? tagNames : null,
+            NewTagColors = tagsChanged ? newTagColors : null
+        };
+    }
+}
+
+/// <summary>A note's text and tags as they were when an edit dialog opened, for <see cref="NoteChanges.Since"/>.</summary>
+public sealed record OpenedNote(string Title, string Content, IReadOnlyList<string> TagNames)
+{
+    // The tag names are copied, as renaming a tag changes the note's tags in place
+    public static OpenedNote Of(ToDoNote note) =>
+        new OpenedNote(note.Title, note.Content, note.Tags.Select(tag => tag.Name).ToList());
 }

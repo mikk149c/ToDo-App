@@ -254,7 +254,7 @@ public class RemoteBoardControllerTests
             .ToArray();
         using var remote = new RemoteBoardController(new Uri("http://127.0.0.1:9/"));
 
-        Assert.That(methods.Select(method => method.Name).Distinct().Count(), Is.GreaterThan(10));
+        Assert.That(methods.Select(method => method.Name).Distinct().Count(), Is.GreaterThanOrEqualTo(15));
         foreach (IGrouping<string, MethodInfo> change in methods.GroupBy(method => method.Name))
         {
             if (change.Any(method => method.GetParameters().Length == 0))
