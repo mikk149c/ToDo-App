@@ -170,36 +170,37 @@
                             int index = i;
                             ToDoNote note = notes[index];
                             @* Dropping on a card puts the dragged todo in its place *@
-                            <article class="todo-card @(draggedNoteId == note.Id ? "dragging" : null)" @key="note.Id" draggable="true"
-                                     @ondragstart="() => onNoteDragStarting(note)" @ondragend="onDragEnded"
-                                     @ondragover:preventDefault @ondrop="() => onColumnDrop(id, index)" @ondrop:stopPropagation>
-                                <div class="card-row">
-                                    <h3 class="todo-title">@note.Title</h3>
-                                    @* Edit, attach and delete sit together in the upper right *@
-                                    <div class="card-buttons">
-                                        <button type="button" class="icon-button" title="@Strings["button/edit_note_tooltip"]"
-                                                aria-label="@Strings["button/edit_note_tooltip"]" @onclick="() => onEditTodoClicked(note)">
-                                            <Icon Name="edit" />
-                                        </button>
-                                        @if (note.File == null)
-                                        {
-                                            <label class="button icon-button" title="@Strings["button/attach_file_tooltip"]">
-                                                <InputFile class="visually-hidden" aria-label="@Strings["button/attach_file_tooltip"]"
-                                                           OnChange="e => onAttachFileChosen(note, e)" />
-                                                <Icon Name="attach" />
-                                            </label>
-                                        }
-                                        else
-                                        {
-                                            <button type="button" class="icon-button" disabled
-                                                    aria-label="@Strings["button/attach_file_tooltip"]"><Icon Name="attach" /></button>
-                                        }
-                                        <button type="button" class="icon-button" title="@Strings["button/remove_note_tooltip"]"
-                                                aria-label="@Strings["button/remove_note_tooltip"]" @onclick="() => deleteNoteDialog = note">
-                                            <Icon Name="delete" />
-                                        </button>
-                                    </div>
+                            
+                            <article class="todo-card note-card @(draggedNoteId == note.Id ? "dragging" : null)" @key="note.Id" draggable="true"
+                                    @ondragstart="() => onNoteDragStarting(note)" @ondragend="onDragEnded"
+                                    @ondragover:preventDefault @ondrop="() => onColumnDrop(id, index)" @ondrop:stopPropagation>
+
+                                @* Keep the buttons at the top-right; the content can flow beside them *@
+                                <div class="card-buttons">
+                                    <button type="button" class="icon-button" title="@Strings["button/edit_note_tooltip"]"
+                                            aria-label="@Strings["button/edit_note_tooltip"]" @onclick="() => onEditTodoClicked(note)">
+                                        <Icon Name="edit" />
+                                    </button>
+                                    @if (note.File == null)
+                                    {
+                                        <label class="button icon-button" title="@Strings["button/attach_file_tooltip"]">
+                                            <InputFile class="visually-hidden" aria-label="@Strings["button/attach_file_tooltip"]"
+                                                    OnChange="e => onAttachFileChosen(note, e)" />
+                                            <Icon Name="attach" />
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="icon-button" disabled
+                                                aria-label="@Strings["button/attach_file_tooltip"]"><Icon Name="attach" /></button>
+                                    }
+                                    <button type="button" class="icon-button" title="@Strings["button/remove_note_tooltip"]"
+                                            aria-label="@Strings["button/remove_note_tooltip"]" @onclick="() => deleteNoteDialog = note">
+                                        <Icon Name="delete" />
+                                    </button>
                                 </div>
+
+                                <h3 class="todo-title">@note.Title</h3>
 
                                 @if (note.Tags.Count > 0)
                                 {

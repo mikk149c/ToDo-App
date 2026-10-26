@@ -227,6 +227,7 @@
     cursor: grab;
 }
 
+/* Used by the trash-bin layout, where the title and buttons share a row */
 .card-row {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -234,10 +235,19 @@
     gap: 8px;
 }
 
-/* Edit, attach and delete together in the upper right of a card */
+/* Shared button layout */
 .card-buttons {
     display: flex;
     gap: 2px;
+}
+
+/* Active notes use a floating button stack so text can flow around it */
+.note-card { display: block; }
+
+.note-card .card-buttons {
+    float: right;
+    flex-direction: column;
+    margin-left: 8px;
 }
 
 .todo-title {
@@ -245,7 +255,7 @@
     font-size: 14px;
     font-weight: 600;
     overflow-wrap: anywhere;
-    align-self: center;
+    align-self: start;
 }
 
 .todo-description {
