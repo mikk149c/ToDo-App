@@ -234,9 +234,10 @@
     gap: 8px;
 }
 
-/* Edit, attach and delete together in the upper right of a card */
+/* Edit, attach and delete stacked vertically in the upper right of a card */
 .card-buttons {
     display: flex;
+    flex-direction: column;
     gap: 2px;
 }
 
