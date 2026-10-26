@@ -319,6 +319,7 @@
     gap: 4px;
     min-width: 0;
     max-width: 100%;
+    clear: right;
 }
 
 .attachment-filename {
