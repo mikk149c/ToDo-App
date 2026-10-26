@@ -100,12 +100,12 @@ public abstract class BoardController : ITodoBoard
         storeJson.Save(_board);
     }
 
-    // --- Changes ---
+    // --- Changes. Each is a verb and a thing: Create, Update, Delete, or Move, Trash, Restore, Merge, Empty ---
 
-    public virtual void SetStatusColumnName(Guid columnId, string newName)
+    public virtual void UpdateColumn(Guid columnId, string name)
     {
         int columnIndex = _board.GetColumnIndexFromId(columnId);
-        _board.StatusColumns[columnIndex].Title = newName;
+        _board.StatusColumns[columnIndex].Title = name;
         onColumnNameChanged(new ColumnNameChangedEventArgs(columnId, GetStatusColumnName(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
@@ -124,18 +124,8 @@ public abstract class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    public void RemoveColumn(Guid columnId)
-    {
-        RemoveColumn(columnId, (Guid?)null);
-    }
-
-    public void RemoveColumn(Guid columnId, Guid moveNotesToColumnId)
-    {
-        RemoveColumn(columnId, (Guid?)moveNotesToColumnId);
-    }
-
-    /// <summary>Removes a column, deleting its notes, or moving them to <paramref name="moveNotesToColumnId"/> when given.</summary>
-    protected virtual void RemoveColumn(Guid columnId, Guid? moveNotesToColumnId)
+    /// <summary>Deletes a column, moving its notes to the trash, or to <paramref name="moveNotesToColumnId"/> when given.</summary>
+    public virtual void DeleteColumn(Guid columnId, Guid? moveNotesToColumnId = null)
     {
         if (moveNotesToColumnId is Guid targetColumnId)
         {
@@ -152,16 +142,6 @@ public abstract class BoardController : ITodoBoard
         _board.RemoveColumn(columnId);
         onColumnRemoved(new ColumnRemovedEventArgs(columnId));
         onBoardChanged(new BoardChangedEventArgs(_board));
-    }
-
-    public void MoveColumnLeft(Guid columnId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void MoveColumnRight(Guid columnId)
-    {
-        throw new NotImplementedException();
     }
 
     public virtual void MoveColumn(Guid columnId, int targetIndex)
@@ -190,39 +170,55 @@ public abstract class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    public virtual void SetNoteContent(Guid id, string newContent)
+    public virtual void UpdateNoteTitle(Guid noteId, string title)
     {
-        _board.SetNoteContent(id, newContent);
-        notifyNoteChanged(id);
+        _board.SetNoteTitle(noteId, title);
+        notifyNoteChanged(noteId);
     }
 
-    public virtual void SetNoteTitle(Guid id, string newTitle)
+    public virtual void UpdateNoteContent(Guid noteId, string content)
     {
-        _board.SetNoteTitle(id, newTitle);
-        notifyNoteChanged(id);
+        _board.SetNoteContent(noteId, content);
+        notifyNoteChanged(noteId);
     }
 
-    public void SetNoteTags(Guid id, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null)
+    /// <summary>Replaces a note's tags, by name.</summary>
+    /// <param name="newTagColors">The colour for each tag name that isn't a tag on the board yet (tag name to "#RRGGBB").</param>
+    public void UpdateNoteTags(Guid noteId, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null)
     {
         List<string> names = tagNames.ToList();
-        SetNoteTags(id, names, newTagColors, newTagIdsFor(names));
+        UpdateNoteTags(noteId, names, newTagColors, newTagIdsFor(names));
     }
 
     /// <param name="newTagIds">The Id for each tag name that isn't a tag on the board yet (tag name to Id).</param>
-    protected virtual void SetNoteTags(Guid id, IReadOnlyList<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors,
+    protected virtual void UpdateNoteTags(Guid noteId, IReadOnlyList<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors,
         IReadOnlyDictionary<string, Guid> newTagIds)
     {
-        _board.SetNoteTags(id, tagNames, newTagColors, newTagIds);
-        notifyNoteChanged(id);
+        _board.SetNoteTags(noteId, tagNames, newTagColors, newTagIds);
+        notifyNoteChanged(noteId);
     }
 
-    public virtual void RenameTag(Guid tagId, string newName)
+    /// <summary>Attaches a file to a note, replacing the one it has.</summary>
+    public virtual void UpdateNoteFile(Guid noteId, AttachedFile file)
     {
-        _board.RenameTag(tagId, newName);
+        _board.SetNoteFile(noteId, file);
+        notifyNoteChanged(noteId);
+    }
+
+    /// <summary>Removes a note's file.</summary>
+    public virtual void DeleteNoteFile(Guid noteId)
+    {
+        _board.SetNoteFile(noteId, null);
+        notifyNoteChanged(noteId);
+    }
+
+    public virtual void UpdateTagName(Guid tagId, string name)
+    {
+        _board.RenameTag(tagId, name);
         notifyTagChanged(tagId);
     }
 
-    public virtual void SetTagColor(Guid tagId, string color)
+    public virtual void UpdateTagColor(Guid tagId, string color)
     {
         _board.SetTagColor(tagId, color);
         notifyTagChanged(tagId);
@@ -251,64 +247,13 @@ public abstract class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    public void SetNoteFileAttachment(Guid id, string newFilePath)
-    {
-        // The name is read here, on the computer the file is on
-        var fileInfo = new FileInfo(newFilePath);
-        SetNoteFileAttachment(id, new AttachedFile(fileInfo.Name, newFilePath));
-    }
-
-    protected virtual void SetNoteFileAttachment(Guid id, AttachedFile file)
-    {
-        _board.SetNoteFile(id, file);
-        notifyNoteChanged(id);
-    }
-
-    public virtual void RemoveNoteFileAttachment(Guid id)
-    {
-        _board.SetNoteFile(id, null);
-        notifyNoteChanged(id);
-    }
-
-    public virtual void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos)
-    {
-        bool sourceExists = fromColumnIndex >= 0 && fromColumnIndex < _board.StatusColumns.Count
-                                                 && fromPos >= 0 && fromPos < _board.StatusColumns[fromColumnIndex].Notes.Count;
-        if (!sourceExists)
-        {
-            return; // nothing to move, so nothing changes (ToDoBoard.MoveNote ignores it too)
-        }
-
-        Guid noteId = _board.StatusColumns[fromColumnIndex].Notes[fromPos].Id;
-        moveNoteAndNotify(noteId, () => _board.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos));
-    }
-
     public virtual void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex)
     {
         moveNoteAndNotify(noteId, () => _board.MoveNoteToColumn(noteId, targetColumnId, targetIndex));
     }
 
-    public virtual void MoveNoteDown(Guid noteId)
-    {
-        moveNoteAndNotify(noteId, () => _board.MoveNoteDown(noteId));
-    }
-
-    public virtual void MoveNoteUp(Guid noteId)
-    {
-        moveNoteAndNotify(noteId, () => _board.MoveNoteUp(noteId));
-    }
-
-    public virtual void MoveNoteRight(Guid noteId)
-    {
-        moveNoteAndNotify(noteId, () => _board.MoveNoteRight(noteId));
-    }
-
-    public virtual void MoveNoteLeft(Guid noteId)
-    {
-        moveNoteAndNotify(noteId, () => _board.MoveNoteLeft(noteId));
-    }
-
-    public virtual void RemoveNote(Guid noteId)
+    /// <summary>Moves a note to the trash, from where it can be restored.</summary>
+    public virtual void TrashNote(Guid noteId)
     {
         Guid columnId = _board.GetColumnIdFromNoteId(noteId);
         _board.AddNoteToTrashBin(noteId);
@@ -317,7 +262,8 @@ public abstract class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    public virtual void RemoveNoteFromTrashBin(Guid noteId)
+    /// <summary>Deletes a note in the trash for good.</summary>
+    public virtual void DeleteNote(Guid noteId)
     {
         _board.RemoveNoteFromTrashBin(noteId);
     }
@@ -329,7 +275,7 @@ public abstract class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    public virtual void EmptyTrashBin()
+    public virtual void EmptyTrash()
     {
         _board.EmptyTrashBin();
     }

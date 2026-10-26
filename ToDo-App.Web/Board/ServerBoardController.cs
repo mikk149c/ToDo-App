@@ -45,35 +45,30 @@ public sealed class ServerBoardController : LocalBoardController
         var a = new Arguments(change, arguments);
         switch (change)
         {
-            case nameof(SetStatusColumnName): SetStatusColumnName(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateColumn): UpdateColumn(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(CreateColumn): CreateColumn(a.Get<Guid>(0), a.Get<string>(1)); break;
-            case nameof(RemoveColumn): RemoveColumn(a.Get<Guid>(0), a.Get<Guid?>(1)); break;
+            case nameof(DeleteColumn): DeleteColumn(a.Get<Guid>(0), a.Get<Guid?>(1)); break;
             case nameof(MoveColumn): MoveColumn(a.Get<Guid>(0), a.Get<int>(1)); break;
             case nameof(CreateNote):
                 CreateNote(a.Get<Guid>(0), a.Get<Guid>(1), a.Get<string>(2), a.Get<string>(3), a.Get<AttachedFile?>(4),
                     a.Get<List<string>>(5), a.Get<Dictionary<string, string>?>(6), a.Get<Dictionary<string, Guid>>(7));
                 break;
-            case nameof(SetNoteContent): SetNoteContent(a.Get<Guid>(0), a.Get<string>(1)); break;
-            case nameof(SetNoteTitle): SetNoteTitle(a.Get<Guid>(0), a.Get<string>(1)); break;
-            case nameof(SetNoteTags):
-                SetNoteTags(a.Get<Guid>(0), a.Get<List<string>>(1), a.Get<Dictionary<string, string>?>(2), a.Get<Dictionary<string, Guid>>(3));
+            case nameof(UpdateNoteTitle): UpdateNoteTitle(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateNoteContent): UpdateNoteContent(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateNoteTags):
+                UpdateNoteTags(a.Get<Guid>(0), a.Get<List<string>>(1), a.Get<Dictionary<string, string>?>(2), a.Get<Dictionary<string, Guid>>(3));
                 break;
-            case nameof(RenameTag): RenameTag(a.Get<Guid>(0), a.Get<string>(1)); break;
-            case nameof(SetTagColor): SetTagColor(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateNoteFile): UpdateNoteFile(a.Get<Guid>(0), a.Get<AttachedFile>(1)); break;
+            case nameof(DeleteNoteFile): DeleteNoteFile(a.Get<Guid>(0)); break;
+            case nameof(UpdateTagName): UpdateTagName(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateTagColor): UpdateTagColor(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(DeleteTag): DeleteTag(a.Get<Guid>(0)); break;
             case nameof(MergeTags): MergeTags(a.Get<Guid>(0), a.Get<Guid>(1)); break;
-            case nameof(SetNoteFileAttachment): SetNoteFileAttachment(a.Get<Guid>(0), a.Get<AttachedFile>(1)); break;
-            case nameof(RemoveNoteFileAttachment): RemoveNoteFileAttachment(a.Get<Guid>(0)); break;
-            case nameof(MoveNote): MoveNote(a.Get<int>(0), a.Get<int>(1), a.Get<int>(2), a.Get<int>(3)); break;
             case nameof(MoveNoteToColumn): MoveNoteToColumn(a.Get<Guid>(0), a.Get<Guid>(1), a.Get<int>(2)); break;
-            case nameof(MoveNoteDown): MoveNoteDown(a.Get<Guid>(0)); break;
-            case nameof(MoveNoteUp): MoveNoteUp(a.Get<Guid>(0)); break;
-            case nameof(MoveNoteRight): MoveNoteRight(a.Get<Guid>(0)); break;
-            case nameof(MoveNoteLeft): MoveNoteLeft(a.Get<Guid>(0)); break;
-            case nameof(RemoveNote): RemoveNote(a.Get<Guid>(0)); break;
-            case nameof(RemoveNoteFromTrashBin): RemoveNoteFromTrashBin(a.Get<Guid>(0)); break;
+            case nameof(TrashNote): TrashNote(a.Get<Guid>(0)); break;
+            case nameof(DeleteNote): DeleteNote(a.Get<Guid>(0)); break;
             case nameof(RestoreNote): RestoreNote(a.Get<Guid>(0), a.Get<Guid>(1)); break;
-            case nameof(EmptyTrashBin): EmptyTrashBin(); break;
+            case nameof(EmptyTrash): EmptyTrash(); break;
             case nameof(ReplaceBoard): ReplaceBoard(a.Get<ToDoBoard>(0)); break;
             default: throw new KeyNotFoundException($"There's no change called '{change}'.");
         }
@@ -81,14 +76,14 @@ public sealed class ServerBoardController : LocalBoardController
 
     // --- Every change, from a web page or the API: made as on any local board, then sent on ---
 
-    public override void SetStatusColumnName(Guid columnId, string newName) =>
-        applyAndBroadcast(() => base.SetStatusColumnName(columnId, newName), nameof(SetStatusColumnName), columnId, newName);
+    public override void UpdateColumn(Guid columnId, string name) =>
+        applyAndBroadcast(() => base.UpdateColumn(columnId, name), nameof(UpdateColumn), columnId, name);
 
     protected override void CreateColumn(Guid columnId, string name) =>
         applyAndBroadcast(() => base.CreateColumn(columnId, name), nameof(CreateColumn), columnId, name);
 
-    protected override void RemoveColumn(Guid columnId, Guid? moveNotesToColumnId) =>
-        applyAndBroadcast(() => base.RemoveColumn(columnId, moveNotesToColumnId), nameof(RemoveColumn), columnId, moveNotesToColumnId);
+    public override void DeleteColumn(Guid columnId, Guid? moveNotesToColumnId = null) =>
+        applyAndBroadcast(() => base.DeleteColumn(columnId, moveNotesToColumnId), nameof(DeleteColumn), columnId, moveNotesToColumnId);
 
     public override void MoveColumn(Guid columnId, int targetIndex) =>
         applyAndBroadcast(() => base.MoveColumn(columnId, targetIndex), nameof(MoveColumn), columnId, targetIndex);
@@ -98,66 +93,50 @@ public sealed class ServerBoardController : LocalBoardController
         applyAndBroadcast(() => base.CreateNote(columnId, noteId, title, content, file, tagNames, newTagColors, newTagIds),
             nameof(CreateNote), columnId, noteId, title, content, file, tagNames, newTagColors, newTagIds);
 
-    public override void SetNoteContent(Guid id, string newContent) =>
-        applyAndBroadcast(() => base.SetNoteContent(id, newContent), nameof(SetNoteContent), id, newContent);
+    public override void UpdateNoteTitle(Guid noteId, string title) =>
+        applyAndBroadcast(() => base.UpdateNoteTitle(noteId, title), nameof(UpdateNoteTitle), noteId, title);
 
-    public override void SetNoteTitle(Guid id, string newTitle) =>
-        applyAndBroadcast(() => base.SetNoteTitle(id, newTitle), nameof(SetNoteTitle), id, newTitle);
+    public override void UpdateNoteContent(Guid noteId, string content) =>
+        applyAndBroadcast(() => base.UpdateNoteContent(noteId, content), nameof(UpdateNoteContent), noteId, content);
 
-    protected override void SetNoteTags(Guid id, IReadOnlyList<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors,
+    protected override void UpdateNoteTags(Guid noteId, IReadOnlyList<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors,
         IReadOnlyDictionary<string, Guid> newTagIds) =>
-        applyAndBroadcast(() => base.SetNoteTags(id, tagNames, newTagColors, newTagIds),
-            nameof(SetNoteTags), id, tagNames, newTagColors, newTagIds);
+        applyAndBroadcast(() => base.UpdateNoteTags(noteId, tagNames, newTagColors, newTagIds),
+            nameof(UpdateNoteTags), noteId, tagNames, newTagColors, newTagIds);
 
-    public override void RenameTag(Guid tagId, string newName) =>
-        applyAndBroadcast(() => base.RenameTag(tagId, newName), nameof(RenameTag), tagId, newName);
+    public override void UpdateNoteFile(Guid noteId, AttachedFile file) =>
+        applyAndBroadcast(() => base.UpdateNoteFile(noteId, file), nameof(UpdateNoteFile), noteId, file);
 
-    public override void SetTagColor(Guid tagId, string color) =>
-        applyAndBroadcast(() => base.SetTagColor(tagId, color), nameof(SetTagColor), tagId, color);
-
-    public override void DeleteTag(Guid tagId) =>
-        applyAndBroadcast(() => base.DeleteTag(tagId), nameof(DeleteTag), tagId);
-
-    public override void MergeTags(Guid sourceTagId, Guid targetTagId) =>
-        applyAndBroadcast(() => base.MergeTags(sourceTagId, targetTagId), nameof(MergeTags), sourceTagId, targetTagId);
-
-    protected override void SetNoteFileAttachment(Guid id, AttachedFile file) =>
-        applyAndBroadcast(() => base.SetNoteFileAttachment(id, file), nameof(SetNoteFileAttachment), id, file);
-
-    public override void RemoveNoteFileAttachment(Guid id) =>
-        applyAndBroadcast(() => base.RemoveNoteFileAttachment(id), nameof(RemoveNoteFileAttachment), id);
-
-    public override void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos) =>
-        applyAndBroadcast(() => base.MoveNote(fromColumnIndex, fromPos, toColumnIndex, toPos),
-            nameof(MoveNote), fromColumnIndex, fromPos, toColumnIndex, toPos);
+    public override void DeleteNoteFile(Guid noteId) =>
+        applyAndBroadcast(() => base.DeleteNoteFile(noteId), nameof(DeleteNoteFile), noteId);
 
     public override void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex) =>
         applyAndBroadcast(() => base.MoveNoteToColumn(noteId, targetColumnId, targetIndex),
             nameof(MoveNoteToColumn), noteId, targetColumnId, targetIndex);
 
-    public override void MoveNoteDown(Guid noteId) =>
-        applyAndBroadcast(() => base.MoveNoteDown(noteId), nameof(MoveNoteDown), noteId);
-
-    public override void MoveNoteUp(Guid noteId) =>
-        applyAndBroadcast(() => base.MoveNoteUp(noteId), nameof(MoveNoteUp), noteId);
-
-    public override void MoveNoteRight(Guid noteId) =>
-        applyAndBroadcast(() => base.MoveNoteRight(noteId), nameof(MoveNoteRight), noteId);
-
-    public override void MoveNoteLeft(Guid noteId) =>
-        applyAndBroadcast(() => base.MoveNoteLeft(noteId), nameof(MoveNoteLeft), noteId);
-
-    public override void RemoveNote(Guid noteId) =>
-        applyAndBroadcast(() => base.RemoveNote(noteId), nameof(RemoveNote), noteId);
-
-    public override void RemoveNoteFromTrashBin(Guid noteId) =>
-        applyAndBroadcast(() => base.RemoveNoteFromTrashBin(noteId), nameof(RemoveNoteFromTrashBin), noteId);
+    public override void TrashNote(Guid noteId) =>
+        applyAndBroadcast(() => base.TrashNote(noteId), nameof(TrashNote), noteId);
 
     public override void RestoreNote(Guid noteId, Guid columnId) =>
         applyAndBroadcast(() => base.RestoreNote(noteId, columnId), nameof(RestoreNote), noteId, columnId);
 
-    public override void EmptyTrashBin() =>
-        applyAndBroadcast(() => base.EmptyTrashBin(), nameof(EmptyTrashBin));
+    public override void DeleteNote(Guid noteId) =>
+        applyAndBroadcast(() => base.DeleteNote(noteId), nameof(DeleteNote), noteId);
+
+    public override void EmptyTrash() =>
+        applyAndBroadcast(() => base.EmptyTrash(), nameof(EmptyTrash));
+
+    public override void UpdateTagName(Guid tagId, string name) =>
+        applyAndBroadcast(() => base.UpdateTagName(tagId, name), nameof(UpdateTagName), tagId, name);
+
+    public override void UpdateTagColor(Guid tagId, string color) =>
+        applyAndBroadcast(() => base.UpdateTagColor(tagId, color), nameof(UpdateTagColor), tagId, color);
+
+    public override void MergeTags(Guid sourceTagId, Guid targetTagId) =>
+        applyAndBroadcast(() => base.MergeTags(sourceTagId, targetTagId), nameof(MergeTags), sourceTagId, targetTagId);
+
+    public override void DeleteTag(Guid tagId) =>
+        applyAndBroadcast(() => base.DeleteTag(tagId), nameof(DeleteTag), tagId);
 
     protected override void ReplaceBoard(ToDoBoard board) =>
         applyAndBroadcast(() => base.ReplaceBoard(board), nameof(ReplaceBoard), board);

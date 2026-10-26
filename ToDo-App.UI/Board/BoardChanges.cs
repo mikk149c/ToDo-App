@@ -5,7 +5,7 @@ using ToDo_App.Interfaces;
 namespace ToDo_App.UI.Board;
 
 /// <summary>
-/// How the page changes the board: <c>changes.Send(board => board.SetNoteTitle(id, title), id)</c>.
+/// How the page changes the board: <c>changes.Send(board => board.UpdateColumn(id, name), id)</c>.
 /// </summary>
 /// <remarks>
 /// <para>The server's board (Remote) is slow, so a change to it is sent in the background, one at a time and in the

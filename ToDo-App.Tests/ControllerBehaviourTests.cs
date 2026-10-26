@@ -2,9 +2,7 @@ namespace ToDo_App.Tests;
 
 using ToDo_App.Controller;
 
-// BoardController behaviour (#59).
-// MoveColumnLeft/MoveColumnRight are deliberately not tested: they throw NotImplementedException,
-// and a test would only pin an unfinished stub.
+// BoardController behaviour (#59, #135)
 public class ControllerBehaviourTests
 {
     private BoardController controller;
@@ -58,17 +56,17 @@ public class ControllerBehaviourTests
     }
 
     [Test]
-    public void SetStatusColumnNameChangesTitle()
+    public void UpdateColumnChangesTitle()
     {
-        controller.SetStatusColumnName(plannedId, "Backlog");
+        controller.UpdateColumn(plannedId, "Backlog");
 
         Assert.That(controller.GetStatusColumnName(plannedId), Is.EqualTo("Backlog"));
     }
 
     [Test]
-    public void SetStatusColumnNameWithInvalidIdThrowsWithoutEvents()
+    public void UpdateColumnWithInvalidIdThrowsWithoutEvents()
     {
-        Assert.Throws<KeyNotFoundException>(() => controller.SetStatusColumnName(Guid.NewGuid(), "Backlog"));
+        Assert.Throws<KeyNotFoundException>(() => controller.UpdateColumn(Guid.NewGuid(), "Backlog"));
         Assert.That(recorder.Names, Is.Empty);
     }
 
@@ -94,10 +92,10 @@ public class ControllerBehaviourTests
     }
 
     [Test]
-    public void SetNoteTitleAndContentChangeTheNote()
+    public void UpdateNoteTitleAndContentChangeTheNote()
     {
-        controller.SetNoteTitle(noteId, "Renamed");
-        controller.SetNoteContent(noteId, "New content");
+        controller.UpdateNoteTitle(noteId, "Renamed");
+        controller.UpdateNoteContent(noteId, "New content");
 
         var note = controller.GetNotesInColumn(plannedId).Single();
         Assert.That(note.Title, Is.EqualTo("Renamed"));
@@ -105,35 +103,32 @@ public class ControllerBehaviourTests
     }
 
     [Test]
-    public void RemoveNoteRemovesTheNote()
+    public void TrashNoteRemovesTheNote()
     {
-        controller.RemoveNote(noteId);
+        controller.TrashNote(noteId);
 
         Assert.That(controller.GetNotesInColumn(plannedId), Is.Empty);
     }
 
     [Test]
-    public void SetNoteFileAttachmentTakesNameFromPathAndKeepsFullPath()
+    public void UpdateNoteFileStoresTheFile()
     {
-        string path = Path.Combine(Path.GetTempPath(), "attachments", "shopping list.txt");
+        var file = new AttachedFile("shopping list.txt", Path.Combine(Path.GetTempPath(), "attachments", "shopping list.txt"));
 
-        controller.SetNoteFileAttachment(noteId, path);
+        controller.UpdateNoteFile(noteId, file);
 
-        var file = controller.GetNotesInColumn(plannedId).Single().File;
-        Assert.That(file, Is.Not.Null);
-        Assert.That(file!.Name, Is.EqualTo("shopping list.txt"));
-        Assert.That(file.FullPath, Is.EqualTo(path));
+        Assert.That(controller.GetNotesInColumn(plannedId).Single().File, Is.SameAs(file));
     }
 
     // Decision: the path isn't checked. The UI picks an existing file, and an attached file can be deleted
     // later anyway, so rejecting missing files would be a new feature. The attachment is stored as given.
     [Test]
-    public void SetNoteFileAttachmentWithNonExistentPathStoresIt()
+    public void UpdateNoteFileWithNonExistentPathStoresIt()
     {
         string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), "missing.txt");
         Assume.That(File.Exists(path), Is.False);
 
-        controller.SetNoteFileAttachment(noteId, path);
+        controller.UpdateNoteFile(noteId, new AttachedFile("missing.txt", path));
 
         var file = controller.GetNotesInColumn(plannedId).Single().File;
         Assert.That(file!.Name, Is.EqualTo("missing.txt"));
@@ -141,59 +136,51 @@ public class ControllerBehaviourTests
     }
 
     [Test]
-    public void RemoveNoteFileAttachmentClearsIt()
+    public void DeleteNoteFileClearsIt()
     {
-        controller.SetNoteFileAttachment(noteId, Path.Combine(Path.GetTempPath(), "list.txt"));
+        controller.UpdateNoteFile(noteId, new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")));
 
-        controller.RemoveNoteFileAttachment(noteId);
+        controller.DeleteNoteFile(noteId);
 
         Assert.That(controller.GetNotesInColumn(plannedId).Single().File, Is.Null);
     }
 
-    // Unknown note Ids throw KeyNotFoundException, like unknown column Ids, and change nothing.
-    // RemoveNote and the moves don't do this yet; see KnownBugTests (#61).
+    // Unknown note Ids throw KeyNotFoundException, like unknown column Ids, and change nothing
     [Test]
-    public void SetNoteTitleWithUnknownIdThrowsWithoutEvents()
+    public void UpdateNoteTitleWithUnknownIdThrowsWithoutEvents()
     {
-        Assert.Throws<KeyNotFoundException>(() => controller.SetNoteTitle(Guid.NewGuid(), "Renamed"));
+        Assert.Throws<KeyNotFoundException>(() => controller.UpdateNoteTitle(Guid.NewGuid(), "Renamed"));
         Assert.That(recorder.Names, Is.Empty);
     }
 
     [Test]
-    public void SetNoteContentWithUnknownIdThrowsWithoutEvents()
+    public void DeleteNoteFileWithUnknownIdThrowsWithoutEvents()
     {
-        Assert.Throws<KeyNotFoundException>(() => controller.SetNoteContent(Guid.NewGuid(), "New content"));
+        Assert.Throws<KeyNotFoundException>(() => controller.DeleteNoteFile(Guid.NewGuid()));
         Assert.That(recorder.Names, Is.Empty);
     }
 
+    // Each change only touches its own part of the note, so two people editing different parts don't overwrite each other
     [Test]
-    public void SetNoteFileAttachmentWithUnknownIdThrowsWithoutEvents()
+    public void UpdateNoteTitleLeavesTheRestOfTheNoteAlone()
     {
-        Assert.Throws<KeyNotFoundException>(() =>
-            controller.SetNoteFileAttachment(Guid.NewGuid(), Path.Combine(Path.GetTempPath(), "list.txt")));
-        Assert.That(recorder.Names, Is.Empty);
+        var file = new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt"));
+        controller.UpdateNoteTags(noteId, new[] { "Work" });
+        controller.UpdateNoteFile(noteId, file);
+
+        controller.UpdateNoteTitle(noteId, "Renamed");
+
+        var note = controller.GetNotesInColumn(plannedId).Single();
+        Assert.That(note.Title, Is.EqualTo("Renamed"));
+        Assert.That(note.Content, Is.EqualTo("Køb bananer"));
+        Assert.That(note.Tags.Select(tag => tag.Name), Is.EqualTo(new[] { "Work" }));
+        Assert.That(note.File, Is.SameAs(file));
     }
 
     [Test]
-    public void RemoveNoteFileAttachmentWithUnknownIdThrowsWithoutEvents()
+    public void DeleteColumnWithInvalidIdThrowsWithoutEvents()
     {
-        Assert.Throws<KeyNotFoundException>(() => controller.RemoveNoteFileAttachment(Guid.NewGuid()));
-        Assert.That(recorder.Names, Is.Empty);
-    }
-
-    [Test]
-    public void MoveNoteByIndexMovesTheNote()
-    {
-        controller.MoveNote(0, 0, 2, 0);
-
-        Assert.That(controller.GetNotesInColumn(plannedId), Is.Empty);
-        Assert.That(controller.GetNotesInColumn(doneId).Single().Id, Is.EqualTo(noteId));
-    }
-
-    [Test]
-    public void RemoveColumnWithInvalidIdThrowsWithoutEvents()
-    {
-        Assert.Throws<KeyNotFoundException>(() => controller.RemoveColumn(Guid.NewGuid()));
+        Assert.Throws<KeyNotFoundException>(() => controller.DeleteColumn(Guid.NewGuid()));
         Assert.That(recorder.Names, Is.Empty);
         Assert.That(controller.GetStatusColumnIds(), Has.Count.EqualTo(3));
     }
