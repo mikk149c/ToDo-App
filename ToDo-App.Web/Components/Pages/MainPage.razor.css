@@ -238,7 +238,6 @@
 /* Shared button layout */
 .card-buttons {
     display: flex;
-    flex-direction: column;
     gap: 2px;
 }
 
@@ -247,6 +246,7 @@
 
 .note-card .card-buttons {
     float: right;
+    flex-direction: column;
     margin-left: 8px;
     margin-bottom: 4px;
 }
