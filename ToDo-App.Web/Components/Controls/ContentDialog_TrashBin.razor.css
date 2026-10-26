@@ -1,0 +1,82 @@
+.content-dialog {
+    width: min(540px, calc(100vw - 32px));
+    height: min(650px, calc(100vh - 32px));
+    box-sizing: border-box;
+    padding: 24px;
+    border: 1px solid var(--card-stroke);
+    border-radius: 8px;
+    background: var(--flyout-background);
+    color: var(--text-primary);
+    box-shadow: var(--shadow);
+
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.content-dialog::backdrop {
+    background: var(--overlay);
+}
+
+.dialog-title {
+    margin: 0 0 16px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    width: 100%;
+    box-sizing: border-box;
+    padding-bottom: 8px;
+}
+
+.dialog-buttons button {
+    min-width: 96px;
+    width: 100%;
+}
+
+.dialog-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 24px;
+    flex-shrink: 0;
+}
+
+.dialog-buttons .primary-action {
+    padding: 5px 11px;
+    border-radius: 4px;
+}
+
+.dialog-buttons.single-button-right ::deep button:only-child {
+    grid-column: 2;
+}
+
+.content-dialog.compact-dialog {
+    width: min(540px, calc(100vw - 32px));
+    height: fit-content;
+    min-height: 0;
+    max-height: calc(100vh - 32px);
+}
+
+.content-dialog.compact-dialog .dialog-content {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.content-dialog .dialog-content ::deep p {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    max-width: 100%;
+    min-width: 0;
+}

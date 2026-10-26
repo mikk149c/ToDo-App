@@ -279,8 +279,6 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 50vh;
-    overflow-y: auto;
     padding: 2px;
 }
 
@@ -300,10 +298,8 @@
     gap: 8px;
 }
 
-.trash-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
+.trash-choices .trash-column-choice {
+    color: var(--accent-text);
 }
 
 .attachment {

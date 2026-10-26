@@ -527,11 +527,11 @@ namespace ToDo_App.UI.Views
             };
             confirmDeleteFromTrashButton.Click += (sender, e) => {
                 if (selectedTrashNoteId == Guid.Empty) { 
-                    changes.Send(board => board.EmptyTrashBin()); 
+                    changes.Send(board => board.EmptyTrash()); 
                 }
                 else {
                     Guid deletedNoteId = selectedTrashNoteId;
-                    changes.Send(board => board.RemoveNoteFromTrashBin(deletedNoteId));
+                    changes.Send(board => board.DeleteNote(deletedNoteId));
                     selectedTrashNoteId = Guid.Empty;   
                 }
                 RefreshTrashBin(listPanel, confirmationText,trashListView, restorePanel, 
@@ -1226,7 +1226,7 @@ namespace ToDo_App.UI.Views
             if (result == ContentDialogResult.Primary)
             {
                 string newName = nameBox.Text;
-                changes.Send(board => board.SetStatusColumnName(columnId, newName), columnId);
+                changes.Send(board => board.UpdateColumn(columnId, newName), columnId);
             }
         }
 
@@ -1299,11 +1299,11 @@ namespace ToDo_App.UI.Views
             {
                 if (todoActionBox?.SelectedItem is ComboBoxItem { Tag: Guid moveToColumn })
                 {
-                    changes.Send(board => board.RemoveColumn(columnId, moveToColumn), columnId, moveToColumn);
+                    changes.Send(board => board.DeleteColumn(columnId, moveToColumn), columnId, moveToColumn);
                 }
                 else
                 {
-                    changes.Send(board => board.RemoveColumn(columnId), columnId);
+                    changes.Send(board => board.DeleteColumn(columnId), columnId);
                 }
                 recalculateColumnsPanelMinWidth();
             }
@@ -1337,12 +1337,17 @@ namespace ToDo_App.UI.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                changes.Send(board => board.RemoveNote(note.Id), note.Id);
+                changes.Send(board => board.TrashNote(note.Id), note.Id);
             }
         }
 
         private async void onEditTodoClicked(ToDoNote note)
         {
+            // The note as the dialog opens, so saving only changes what the user changed. The tag names are copied,
+            // as renaming a tag changes the note's tags in place
+            string openedTitle = note.Title;
+            string openedContent = note.Content;
+            List<string> openedTagNames = note.Tags.Select(tag => tag.Name).ToList();
             var titleBox = new TextBox
             {
                 Header = Res.ResourceManager.GetString("todo/property_title", _currentCulture),
@@ -1389,16 +1394,33 @@ namespace ToDo_App.UI.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                string title = titleBox.Text;
-                string content = contentBox.Text;
+                // Only what the user changed, so a change someone else made meanwhile isn't undone.
+                // Tags first: they're the only part that can be refused
                 var tagNames = tagEditor.TagNames;
                 var newTagColors = tagEditor.NewTagColors;
-                changes.Send(board =>
+                string title = titleBox.Text;
+                string content = contentBox.Text;
+                bool tagsChanged = !tagNames.SequenceEqual(openedTagNames);
+                bool titleChanged = title != openedTitle;
+                bool contentChanged = content != openedContent;
+                if (tagsChanged || titleChanged || contentChanged)
                 {
-                    board.SetNoteTitle(note.Id, title);
-                    board.SetNoteContent(note.Id, content);
-                    board.SetNoteTags(note.Id, tagNames, newTagColors);
-                }, note.Id);
+                    changes.Send(board =>
+                    {
+                        if (tagsChanged)
+                        {
+                            board.UpdateNoteTags(note.Id, tagNames, newTagColors);
+                        }
+                        if (titleChanged)
+                        {
+                            board.UpdateNoteTitle(note.Id, title);
+                        }
+                        if (contentChanged)
+                        {
+                            board.UpdateNoteContent(note.Id, content);
+                        }
+                    }, note.Id);
+                }
             }
         }
 
@@ -1418,8 +1440,8 @@ namespace ToDo_App.UI.Views
                 var file = await picker.PickSingleFileAsync();
                 if (file != null)
                 {
-                    string path = file.Path;
-                    changes.Send(board => board.SetNoteFileAttachment(note.Id, path), note.Id);
+                    var attachment = new AttachedFile(System.IO.Path.GetFileName(file.Path), file.Path);
+                    changes.Send(board => board.UpdateNoteFile(note.Id, attachment), note.Id);
                 }
                 else
                 {
@@ -1467,7 +1489,7 @@ namespace ToDo_App.UI.Views
         {
             try
             {
-                changes.Send(board => board.RemoveNoteFileAttachment(note.Id), note.Id);
+                changes.Send(board => board.DeleteNoteFile(note.Id), note.Id);
             }
             catch (Exception e)
             {

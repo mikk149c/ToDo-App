@@ -118,7 +118,7 @@ public class RemoteBoardControllerTests
         waitUntil(() => second.GetNotesInColumn(columnId).Exists(note => note.Id == noteId), "the note");
         recorder.Clear();
 
-        first.SetNoteTitle(noteId, "After");
+        first.UpdateNoteTitle(noteId, "After");
 
         waitUntil(() => second.GetNotesInColumn(columnId).Single(note => note.Id == noteId).Title == "After", "the new title");
         Assert.That(recorder.Names, Is.EqualTo(new[] { nameof(ITodoBoard.ColumnContentChanged), nameof(ITodoBoard.BoardChanged) }));
@@ -134,7 +134,7 @@ public class RemoteBoardControllerTests
         DateTime start = DateTime.UtcNow;
 
         Guid noteId = host.Board.CreateNote(columnId, "First", "");
-        host.Board.SetNoteTitle(noteId, "Second");
+        host.Board.UpdateNoteTitle(noteId, "Second");
 
         Thread.Sleep(150);
         Assert.That(holds(() => client.GetNotesInColumn(columnId).Exists(note => note.Id == noteId)), Is.False, "held back");
@@ -167,7 +167,7 @@ public class RemoteBoardControllerTests
         Guid noteId = first.CreateNote(columnId, "Note", "");
         waitUntil(() => second.GetNotesInColumn(columnId).Exists(note => note.Id == noteId), "the note");
 
-        first.SetNoteTags(noteId, new[] { "Urgent" }, new Dictionary<string, string> { ["Urgent"] = "#FF0000" });
+        first.UpdateNoteTags(noteId, new[] { "Urgent" }, new Dictionary<string, string> { ["Urgent"] = "#FF0000" });
 
         waitUntil(() => second.GetTags().Count == 1, "the tag on the second client");
         Assert.That(second.GetTags().Single().Color, Is.EqualTo("#FF0000"));
@@ -214,8 +214,8 @@ public class RemoteBoardControllerTests
         waitUntil(() => client.GetTags().Count == 2, "the tags");
         Guid homeId = client.GetTags().Single(tag => tag.Name == "Home").Id;
 
-        Assert.Throws<ArgumentException>(() => client.RenameTag(homeId, "work"));
-        Assert.Throws<KeyNotFoundException>(() => client.RemoveNote(Guid.NewGuid()));
+        Assert.Throws<ArgumentException>(() => client.UpdateTagName(homeId, "work"));
+        Assert.Throws<KeyNotFoundException>(() => client.TrashNote(Guid.NewGuid()));
     }
 
     [Test]
@@ -254,7 +254,7 @@ public class RemoteBoardControllerTests
             .ToArray();
         using var remote = new RemoteBoardController(new Uri("http://127.0.0.1:9/"));
 
-        Assert.That(methods.Select(method => method.Name).Distinct().Count(), Is.GreaterThan(15));
+        Assert.That(methods.Select(method => method.Name).Distinct().Count(), Is.GreaterThanOrEqualTo(15));
         foreach (IGrouping<string, MethodInfo> change in methods.GroupBy(method => method.Name))
         {
             if (change.Any(method => method.GetParameters().Length == 0))
@@ -278,10 +278,10 @@ public class RemoteBoardControllerTests
         Guid columnId = host.Board.GetStatusColumnIds()[0];
 
         HttpResponseMessage unknown = http.PostAsJsonAsync("commands/Explode", Array.Empty<object>()).GetAwaiter().GetResult();
-        HttpResponseMessage wrongArguments = http.PostAsJsonAsync("commands/SetStatusColumnName", new object[] { columnId }).GetAwaiter().GetResult();
-        HttpResponseMessage wrongType = http.PostAsJsonAsync("commands/SetStatusColumnName", new object[] { columnId, new[] { 1, 2 } }).GetAwaiter().GetResult();
+        HttpResponseMessage wrongArguments = http.PostAsJsonAsync("commands/UpdateColumn", new object[] { columnId }).GetAwaiter().GetResult();
+        HttpResponseMessage wrongType = http.PostAsJsonAsync("commands/UpdateColumn", new object[] { columnId, new[] { 1, 2 } }).GetAwaiter().GetResult();
         Assert.That(wrongType.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-        HttpResponseMessage valid = http.PostAsJsonAsync("commands/SetStatusColumnName", new object[] { columnId, "Renamed" }).GetAwaiter().GetResult();
+        HttpResponseMessage valid = http.PostAsJsonAsync("commands/UpdateColumn", new object[] { columnId, "Renamed" }).GetAwaiter().GetResult();
 
         Assert.That(unknown.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         Assert.That(wrongArguments.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));

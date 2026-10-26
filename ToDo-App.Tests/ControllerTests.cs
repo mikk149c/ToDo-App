@@ -14,7 +14,7 @@ public class ControllerTests
     }
 
     [Test]
-    public void RemoveColumnRemovesColumnAndRaisesEvent()
+    public void DeleteColumnRemovesColumnAndRaisesEvent()
     {
         Guid plannedId = controller.CreateColumn("Planned");
         Guid progressId = controller.CreateColumn("In Progress");
@@ -23,7 +23,7 @@ public class ControllerTests
         Guid? removedId = null;
         controller.ColumnRemoved += (sender, e) => removedId = ((ColumnRemovedEventArgs)e).ColumnId;
 
-        controller.RemoveColumn(plannedId);
+        controller.DeleteColumn(plannedId);
 
         Assert.That(removedId, Is.EqualTo(plannedId));
         Assert.That(controller.GetStatusColumnIds(), Is.EqualTo(new List<Guid> { progressId }));
@@ -31,7 +31,7 @@ public class ControllerTests
     }
 
     [Test]
-    public void RemoveColumnWithMoveKeepsNotesInTargetColumn()
+    public void DeleteColumnWithMoveKeepsNotesInTargetColumn()
     {
         Guid plannedId = controller.CreateColumn("Planned");
         Guid progressId = controller.CreateColumn("In Progress");
@@ -44,7 +44,7 @@ public class ControllerTests
         controller.ColumnContentChanged += (sender, e) => changedColumnId = ((ColumnContentChangedEventArgs)e).ColumnId;
         controller.ColumnRemoved += (sender, e) => removedId = ((ColumnRemovedEventArgs)e).ColumnId;
 
-        controller.RemoveColumn(plannedId, progressId);
+        controller.DeleteColumn(plannedId, progressId);
 
         Assert.That(changedColumnId, Is.EqualTo(progressId));
         Assert.That(removedId, Is.EqualTo(plannedId));
@@ -58,22 +58,22 @@ public class ControllerTests
     }
 
     [Test]
-    public void RemoveColumnWithMoveToSameColumnThrowsException()
+    public void DeleteColumnWithMoveToSameColumnThrowsException()
     {
         Guid plannedId = controller.CreateColumn("Planned");
         controller.CreateNote(plannedId, "First note", "Køb bananer");
 
-        Assert.Throws<ArgumentException>(() => controller.RemoveColumn(plannedId, plannedId));
+        Assert.Throws<ArgumentException>(() => controller.DeleteColumn(plannedId, plannedId));
         Assert.That(controller.GetNotesInColumn(plannedId), Has.Count.EqualTo(1));
     }
 
     [Test]
-    public void RemoveColumnWithMoveToInvalidColumnThrowsException()
+    public void DeleteColumnWithMoveToInvalidColumnThrowsException()
     {
         Guid plannedId = controller.CreateColumn("Planned");
         controller.CreateNote(plannedId, "First note", "Køb bananer");
 
-        Assert.Throws<KeyNotFoundException>(() => controller.RemoveColumn(plannedId, Guid.NewGuid()));
+        Assert.Throws<KeyNotFoundException>(() => controller.DeleteColumn(plannedId, Guid.NewGuid()));
         Assert.That(controller.GetNotesInColumn(plannedId), Has.Count.EqualTo(1));
     }
 }
