@@ -59,34 +59,34 @@ public class TagColorTests
     }
 
     [Test]
-    public void SetTagColorChangesItOnEveryTodoWithTheTag()
+    public void UpdateTagColorChangesItOnEveryTodoWithTheTag()
     {
-        controller.SetTagColor(workId, Blue);
+        controller.UpdateTag(workId, color: Blue);
 
         Assert.That(colorOf(firstNoteId, "Work"), Is.EqualTo(Blue));
         Assert.That(colorOf(secondNoteId, "Work"), Is.EqualTo(Blue));
     }
 
     [Test]
-    public void SetTagColorLeavesOtherTagsAlone()
+    public void UpdateTagColorLeavesOtherTagsAlone()
     {
-        controller.SetTagColor(workId, Blue);
+        controller.UpdateTag(workId, color: Blue);
 
         Assert.That(colorOf(firstNoteId, "Home"), Is.Null);
     }
 
     [Test]
-    public void SetTagColorIsStoredInUpperCaseAndTrimmed()
+    public void UpdateTagColorIsStoredInUpperCaseAndTrimmed()
     {
-        controller.SetTagColor(workId, " #0f6cbd ");
+        controller.UpdateTag(workId, color: " #0f6cbd ");
 
         Assert.That(colorOf(secondNoteId, "Work"), Is.EqualTo(Blue));
     }
 
     [Test]
-    public void SetTagColorKeepsTheTagsIdAndName()
+    public void UpdateTagColorKeepsTheTagsIdAndName()
     {
-        controller.SetTagColor(workId, Blue);
+        controller.UpdateTag(workId, color: Blue);
 
         Assert.That(tagId("Work"), Is.EqualTo(workId));
     }
@@ -96,25 +96,48 @@ public class TagColorTests
     [TestCase("#FFF")]
     [TestCase("#GGGGGG")]
     [TestCase("0F6CBD")]
-    public void SetTagColorRejectsInvalidColoursAndChangesNothing(string invalidColor)
+    public void UpdateTagColorRejectsInvalidColoursAndChangesNothing(string invalidColor)
     {
-        Assert.Throws<ArgumentException>(() => controller.SetTagColor(workId, invalidColor));
+        Assert.Throws<ArgumentException>(() => controller.UpdateTag(workId, color: invalidColor));
 
         Assert.That(colorOf(firstNoteId, "Work"), Is.Null);
         Assert.That(recorder.Names, Is.Empty);
     }
 
     [Test]
-    public void SetColorOfUnknownTagThrowsWithoutEvents()
+    public void UpdateTagChangesNameAndColourTogether()
     {
-        Assert.Throws<KeyNotFoundException>(() => controller.SetTagColor(Guid.NewGuid(), Blue));
+        controller.UpdateTag(workId, name: "Job", color: Blue);
+
+        Assert.That(note(firstNoteId).Tags.Single(tag => tag.Id == workId).Name, Is.EqualTo("Job"));
+        Assert.That(colorOf(firstNoteId, "Job"), Is.EqualTo(Blue));
+        Assert.That(recorder.Names, Is.EqualTo(new[]
+        {
+            nameof(BoardController.TagChanged),
+            nameof(BoardController.BoardChanged)
+        }));
+    }
+
+    [Test]
+    public void UpdateTagWithInvalidColourKeepsTheOldName()
+    {
+        Assert.Throws<ArgumentException>(() => controller.UpdateTag(workId, name: "Job", color: "blue"));
+
+        Assert.That(note(firstNoteId).Tags.Single(tag => tag.Id == workId).Name, Is.EqualTo("Work"));
         Assert.That(recorder.Names, Is.Empty);
     }
 
     [Test]
-    public void SetTagColorRaisesTagChangedThenBoardChanged()
+    public void SetColorOfUnknownTagThrowsWithoutEvents()
     {
-        controller.SetTagColor(workId, Blue);
+        Assert.Throws<KeyNotFoundException>(() => controller.UpdateTag(Guid.NewGuid(), color: Blue));
+        Assert.That(recorder.Names, Is.Empty);
+    }
+
+    [Test]
+    public void UpdateTagColorRaisesTagChangedThenBoardChanged()
+    {
+        controller.UpdateTag(workId, color: Blue);
 
         Assert.That(recorder.Names, Is.EqualTo(new[]
         {
@@ -132,9 +155,9 @@ public class TagColorTests
     [Test]
     public void TagAddedToAnotherTodoTakesItsExistingColour()
     {
-        controller.SetTagColor(workId, Blue);
+        controller.UpdateTag(workId, color: Blue);
 
-        controller.SetNoteTags(thirdNoteId, new[] { "work" });
+        controller.UpdateNote(thirdNoteId, new NoteChanges { TagNames = new[] { "work" } });
 
         Assert.That(colorOf(thirdNoteId, "Work"), Is.EqualTo(Blue));
     }
@@ -142,7 +165,7 @@ public class TagColorTests
     [Test]
     public void TagOnANewTodoTakesItsExistingColour()
     {
-        controller.SetTagColor(workId, Blue);
+        controller.UpdateTag(workId, color: Blue);
 
         Guid newNoteId = controller.CreateNote(plannedId, "New", "", tagNames: new[] { "Work" });
 
@@ -152,10 +175,10 @@ public class TagColorTests
     [Test]
     public void RenamingATagKeepsItsColour()
     {
-        controller.SetTagColor(workId, Blue);
+        controller.UpdateTag(workId, color: Blue);
         recorder.Clear();
 
-        controller.RenameTag(workId, "Job");
+        controller.UpdateTag(workId, name: "Job");
 
         Assert.That(colorOf(secondNoteId, "Job"), Is.EqualTo(Blue));
         Assert.That(recorder.ArgsOf<TagChangedEventArgs>().Single().Color, Is.EqualTo(Blue));
@@ -164,10 +187,10 @@ public class TagColorTests
     [Test]
     public void ColourIsGoneWithTheLastTodoThatHadTheTag()
     {
-        controller.SetTagColor(homeId, Blue);
+        controller.UpdateTag(homeId, color: Blue);
         controller.DeleteTag(homeId);
 
-        controller.SetNoteTags(thirdNoteId, new[] { "Home" });
+        controller.UpdateNote(thirdNoteId, new NoteChanges { TagNames = new[] { "Home" } });
 
         Assert.That(colorOf(thirdNoteId, "Home"), Is.Null);
     }
@@ -186,8 +209,7 @@ public class TagColorTests
     [Test]
     public void NewTagAddedToAnExistingTodoTakesTheChosenColour()
     {
-        controller.SetNoteTags(thirdNoteId, new[] { "Garden" },
-            new Dictionary<string, string> { ["Garden"] = "#c62828" });
+        controller.UpdateNote(thirdNoteId, new NoteChanges { TagNames = new[] { "Garden" }, NewTagColors = new Dictionary<string, string> { ["Garden"] = "#c62828" } });
 
         Assert.That(colorOf(thirdNoteId, "Garden"), Is.EqualTo("#C62828"));
     }
@@ -195,10 +217,9 @@ public class TagColorTests
     [Test]
     public void ChosenColourIsIgnoredForATagThatIsAlreadyOnTheBoard()
     {
-        controller.SetTagColor(workId, Blue);
+        controller.UpdateTag(workId, color: Blue);
 
-        controller.SetNoteTags(thirdNoteId, new[] { "Work" },
-            new Dictionary<string, string> { ["Work"] = "#C62828" });
+        controller.UpdateNote(thirdNoteId, new NoteChanges { TagNames = new[] { "Work" }, NewTagColors = new Dictionary<string, string> { ["Work"] = "#C62828" } });
 
         Assert.That(colorOf(thirdNoteId, "Work"), Is.EqualTo(Blue));
     }
@@ -206,8 +227,7 @@ public class TagColorTests
     [Test]
     public void InvalidChosenColourIsRejectedAndChangesNothing()
     {
-        Assert.Throws<ArgumentException>(() => controller.SetNoteTags(thirdNoteId, new[] { "Garden" },
-            new Dictionary<string, string> { ["Garden"] = "blue" }));
+        Assert.Throws<ArgumentException>(() => controller.UpdateNote(thirdNoteId, new NoteChanges { TagNames = new[] { "Garden" }, NewTagColors = new Dictionary<string, string> { ["Garden"] = "blue" } }));
 
         Assert.That(note(thirdNoteId).Tags, Is.Empty);
         Assert.That(recorder.Names, Is.Empty);
@@ -218,7 +238,7 @@ public class TagColorTests
     [Test]
     public void ColourIsKeptWhenTheBoardIsSavedAndLoaded()
     {
-        controller.SetTagColor(workId, Blue);
+        controller.UpdateTag(workId, color: Blue);
         controller.SaveBoardToJson(jsonPath);
 
         var reloaded = new LocalBoardController();
@@ -263,7 +283,7 @@ public class TagColorTests
     [Test]
     public void LoadingMakesDifferingColoursOfTheSameTagConsistent()
     {
-        controller.SetTagColor(workId, Blue);
+        controller.UpdateTag(workId, color: Blue);
         controller.SaveBoardToJson(jsonPath);
         string json = File.ReadAllText(jsonPath);
         // Make the second copy of the tag differ, as a hand-edited file could

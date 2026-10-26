@@ -1,5 +1,9 @@
 ﻿namespace ToDo_App.Interfaces;
 
+/// <summary>
+/// A board of columns, notes and tags. Every change is a verb and a thing: Create, Update and Delete, or Move, Trash,
+/// Restore, Merge and Empty where those don't fit.
+/// </summary>
 public interface ITodoBoard
 {
     public event EventHandler ColumnCreated;
@@ -9,72 +13,58 @@ public interface ITodoBoard
     public event EventHandler BoardChanged;
     public event EventHandler? ColumnOrderChanged;
     public event EventHandler? TagChanged;
+
+    // --- Reads ---
+
     public List<Guid> GetStatusColumnIds();
 
     public String GetStatusColumnName(Guid columnId);
-    public void SetStatusColumnName(Guid columnId, string newName);
 
     public List<ToDoNote> GetNotesInColumn(Guid columnId);
 
-    public Guid CreateColumn(string name);
-
-    public void RemoveColumn(Guid columnId);
-
-    public void RemoveColumn(Guid columnId, Guid moveNotesToColumnId);
-
-    public void MoveColumnLeft(Guid columnId);
-
-    public void MoveColumnRight(Guid columnId);
-
-    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null, IReadOnlyDictionary<string, string>? newTagColors = null);
-
-    public void EmptyTrashBin();
-
     public List<ToDoNote> GetTrashBinNotes();
-
-    public void SetNoteContent(Guid id, string newContent);
-
-    public void SetNoteTitle(Guid id, string newTitle);
-
-    public void SetNoteTags(Guid id, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null);
 
     public List<NoteTag> GetTags();
 
     public int CountNotesWithTag(Guid tagId);
 
-    public void RenameTag(Guid tagId, string newName);
+    // --- Columns ---
 
-    public void SetTagColor(Guid tagId, string color);
+    public Guid CreateColumn(string name);
+
+    public void UpdateColumn(Guid columnId, string name);
+
+    public void DeleteColumn(Guid columnId, Guid? moveNotesToColumnId = null);
+
+    public void MoveColumn(Guid columnId, int targetIndex);
+
+    // --- Notes ---
+
+    public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null, IReadOnlyDictionary<string, string>? newTagColors = null);
+
+    public void UpdateNote(Guid noteId, NoteChanges changes);
+
+    public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex);
+
+    public void TrashNote(Guid noteId);
+
+    public void RestoreNote(Guid noteId, Guid columnId);
+
+    public void DeleteNote(Guid noteId);
+
+    public void EmptyTrash();
+
+    // --- Tags ---
+
+    public void UpdateTag(Guid tagId, string? name = null, string? color = null);
 
     public void MergeTags(Guid sourceTagId, Guid targetTagId);
 
     public void DeleteTag(Guid tagId);
 
-    public void SetNoteFileAttachment(Guid id, string newFilePath);
-
-    public void RemoveNoteFileAttachment(Guid id);
-
-    public void MoveNoteDown(Guid noteId);
-
-    public void MoveNoteUp(Guid noteId);
-
-    public void MoveNoteRight(Guid noteId);
-
-    public void MoveNoteLeft(Guid noteId);
-
-    public void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos);
-
-    public void RemoveNote(Guid noteId);
-
-    public void RemoveNoteFromTrashBin(Guid noteId);
-
-    public void RestoreNote(Guid noteId, Guid columnId);
+    // --- The whole board ---
 
     public void SaveBoardToJson(string jsonPath);
-    
+
     public void LoadBoardFromJson(string jsonPath);
-
-    public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex);
-
-    public void MoveColumn(Guid columnId, int targetIndex);
 }

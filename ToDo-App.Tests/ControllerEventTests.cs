@@ -53,9 +53,9 @@ public class ControllerEventTests
     }
 
     [Test]
-    public void SetStatusColumnNameRaisesColumnNameChangedThenBoardChanged()
+    public void UpdateColumnRaisesColumnNameChangedThenBoardChanged()
     {
-        controller.SetStatusColumnName(plannedId, "Backlog");
+        controller.UpdateColumn(plannedId, "Backlog");
 
         Assert.That(recorder.Names, Is.EqualTo(new[] { nameof(BoardController.ColumnNameChanged), nameof(BoardController.BoardChanged) }));
         var renamed = recorder.ArgsOf<ColumnNameChangedEventArgs>().Single();
@@ -66,7 +66,7 @@ public class ControllerEventTests
     [Test]
     public void BoardChangedCarriesTheBoard()
     {
-        controller.SetStatusColumnName(plannedId, "Backlog");
+        controller.UpdateColumn(plannedId, "Backlog");
 
         var board = recorder.ArgsOf<BoardChangedEventArgs>().Single().Board;
         Assert.That(board.StatusColumns.Select(column => column.Id), Is.EqualTo(controller.GetStatusColumnIds()));
@@ -81,61 +81,38 @@ public class ControllerEventTests
         assertContentChangedFor(progressId);
     }
 
+    // Saving a note in the dialog is one change, so it's drawn (and saved) once
     [Test]
-    public void SetNoteTitleRaisesContentChangedForItsColumn()
+    public void UpdateNoteRaisesOneContentChangedForItsColumn()
     {
-        controller.SetNoteTitle(secondNoteId, "Renamed");
+        controller.UpdateNote(secondNoteId, new NoteChanges { Title = "Renamed", Content = "New content", TagNames = new[] { "Work" } });
 
         assertContentChangedFor(plannedId);
     }
 
     [Test]
-    public void SetNoteContentRaisesContentChangedForItsColumn()
+    public void TrashNoteRaisesContentChangedForItsColumn()
     {
-        controller.SetNoteContent(secondNoteId, "New content");
+        controller.TrashNote(firstNoteId);
 
         assertContentChangedFor(plannedId);
     }
 
     [Test]
-    public void RemoveNoteRaisesContentChangedForItsColumn()
+    public void UpdateNoteFileRaisesContentChangedForItsColumn()
     {
-        controller.RemoveNote(firstNoteId);
+        controller.UpdateNote(firstNoteId, new NoteChanges { File = new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")) });
 
         assertContentChangedFor(plannedId);
     }
 
     [Test]
-    public void SetNoteFileAttachmentRaisesContentChangedForItsColumn()
+    public void UpdateNoteRemoveFileRaisesContentChangedForItsColumn()
     {
-        controller.SetNoteFileAttachment(firstNoteId, Path.Combine(Path.GetTempPath(), "list.txt"));
-
-        assertContentChangedFor(plannedId);
-    }
-
-    [Test]
-    public void RemoveNoteFileAttachmentRaisesContentChangedForItsColumn()
-    {
-        controller.SetNoteFileAttachment(firstNoteId, Path.Combine(Path.GetTempPath(), "list.txt"));
+        controller.UpdateNote(firstNoteId, new NoteChanges { File = new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")) });
         recorder.Clear();
 
-        controller.RemoveNoteFileAttachment(firstNoteId);
-
-        assertContentChangedFor(plannedId);
-    }
-
-    [Test]
-    public void MoveNoteDownWithinColumnRaisesOneContentChanged()
-    {
-        controller.MoveNoteDown(firstNoteId);
-
-        assertContentChangedFor(plannedId);
-    }
-
-    [Test]
-    public void MoveNoteUpWithinColumnRaisesOneContentChanged()
-    {
-        controller.MoveNoteUp(secondNoteId);
+        controller.UpdateNote(firstNoteId, new NoteChanges { RemoveFile = true });
 
         assertContentChangedFor(plannedId);
     }
@@ -146,25 +123,6 @@ public class ControllerEventTests
         controller.MoveNoteToColumn(firstNoteId, plannedId, 1);
 
         assertContentChangedFor(plannedId);
-    }
-
-    [Test]
-    public void MoveNoteRightRaisesContentChangedForSourceThenTarget()
-    {
-        controller.MoveNoteRight(firstNoteId);
-
-        assertContentChangedFor(plannedId, progressId);
-    }
-
-    [Test]
-    public void MoveNoteLeftRaisesContentChangedForSourceThenTarget()
-    {
-        Guid movedId = controller.CreateNote(progressId, "Third note", "Australia");
-        recorder.Clear();
-
-        controller.MoveNoteLeft(movedId);
-
-        assertContentChangedFor(progressId, plannedId);
     }
 
     [Test]
@@ -186,18 +144,18 @@ public class ControllerEventTests
     }
 
     [Test]
-    public void RemoveColumnRaisesColumnRemovedThenBoardChanged()
+    public void DeleteColumnRaisesColumnRemovedThenBoardChanged()
     {
-        controller.RemoveColumn(progressId);
+        controller.DeleteColumn(progressId);
 
         Assert.That(recorder.Names, Is.EqualTo(new[] { nameof(BoardController.ColumnRemoved), nameof(BoardController.BoardChanged) }));
         Assert.That(recorder.ArgsOf<ColumnRemovedEventArgs>().Single().ColumnId, Is.EqualTo(progressId));
     }
 
     [Test]
-    public void RemoveColumnWithMoveRaisesContentChangedForTargetThenColumnRemoved()
+    public void DeleteColumnWithMoveRaisesContentChangedForTargetThenColumnRemoved()
     {
-        controller.RemoveColumn(plannedId, progressId);
+        controller.DeleteColumn(plannedId, progressId);
 
         Assert.That(recorder.Names, Is.EqualTo(new[]
         {
@@ -221,16 +179,15 @@ public class ControllerEventTests
             Guid columnId = unobserved.CreateColumn("Planned");
             Guid otherColumnId = unobserved.CreateColumn("In Progress");
             Guid noteId = unobserved.CreateNote(columnId, "Note", "Content");
-            unobserved.SetStatusColumnName(columnId, "Backlog");
-            unobserved.SetNoteTitle(noteId, "Renamed");
-            unobserved.SetNoteContent(noteId, "New content");
-            unobserved.SetNoteFileAttachment(noteId, Path.Combine(Path.GetTempPath(), "list.txt"));
-            unobserved.RemoveNoteFileAttachment(noteId);
-            unobserved.MoveNoteRight(noteId);
+            unobserved.UpdateColumn(columnId, "Backlog");
+            unobserved.UpdateNote(noteId, new NoteChanges { Title = "Renamed", Content = "New content" });
+            unobserved.UpdateNote(noteId, new NoteChanges { File = new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")) });
+            unobserved.UpdateNote(noteId, new NoteChanges { RemoveFile = true });
+            unobserved.MoveNoteToColumn(noteId, otherColumnId, 0);
             unobserved.MoveColumn(otherColumnId, 0);
-            unobserved.RemoveColumn(otherColumnId, columnId);
-            unobserved.RemoveNote(noteId);
-            unobserved.RemoveColumn(columnId);
+            unobserved.DeleteColumn(otherColumnId, columnId);
+            unobserved.TrashNote(noteId);
+            unobserved.DeleteColumn(columnId);
         });
     }
 }

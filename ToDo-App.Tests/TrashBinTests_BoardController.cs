@@ -24,7 +24,7 @@ public class BoardControllerTrashBinTests
     }
 
     [Test]
-    public void RemoveColumn_MovesNotesToTrashAndRemovesColumn()
+    public void DeleteColumn_MovesNotesToTrashAndRemovesColumn()
     {
         var secondNoteId = _controller.CreateNote(
             _columnId, "Second note", "Second content");
@@ -35,7 +35,7 @@ public class BoardControllerTrashBinTests
         _controller.ColumnRemoved += (_, _) => removedEvents++;
         _controller.BoardChanged += (_, _) => boardChangedEvents++;
 
-        _controller.RemoveColumn(_columnId);
+        _controller.DeleteColumn(_columnId);
 
         Assert.That(_controller.GetStatusColumnIds(),
             Does.Not.Contain(_columnId));
@@ -49,21 +49,21 @@ public class BoardControllerTrashBinTests
     }
 
     [Test]
-    public void EmptyTrashBin_RemovesAllNotesFromTrash()
+    public void EmptyTrash_RemovesAllNotesFromTrash()
     {
-        _controller.RemoveNote(_noteId);
+        _controller.TrashNote(_noteId);
 
         Assert.That(_controller.GetTrashBinNotes(), Has.Count.EqualTo(1));
 
-        _controller.EmptyTrashBin();
+        _controller.EmptyTrash();
 
         Assert.That(_controller.GetTrashBinNotes(), Is.Empty);
     }
 
     [Test]
-    public void EmptyTrashBin_DoesNothingWhenAlreadyEmpty()
+    public void EmptyTrash_DoesNothingWhenAlreadyEmpty()
     {
-        _controller.EmptyTrashBin();
+        _controller.EmptyTrash();
 
         Assert.That(_controller.GetTrashBinNotes(), Is.Empty);
     }
@@ -71,7 +71,7 @@ public class BoardControllerTrashBinTests
     [Test]
     public void GetTrashBinNotes_ReturnsNotesMovedToTrash()
     {
-        _controller.RemoveNote(_noteId);
+        _controller.TrashNote(_noteId);
 
         var trashNotes = _controller.GetTrashBinNotes();
 
@@ -82,7 +82,7 @@ public class BoardControllerTrashBinTests
     }
 
     [Test]
-    public void RemoveNote_MovesNoteFromColumnToTrash()
+    public void TrashNote_MovesNoteFromColumnToTrash()
     {
         int contentChangedEvents = 0;
         int boardChangedEvents = 0;
@@ -90,7 +90,7 @@ public class BoardControllerTrashBinTests
         _controller.ColumnContentChanged += (_, _) => contentChangedEvents++;
         _controller.BoardChanged += (_, _) => boardChangedEvents++;
 
-        _controller.RemoveNote(_noteId);
+        _controller.TrashNote(_noteId);
 
         Assert.That(_controller.GetNotesInColumn(_columnId), Is.Empty);
         Assert.That(_controller.GetTrashBinNotes(), Has.Count.EqualTo(1));
@@ -101,22 +101,22 @@ public class BoardControllerTrashBinTests
     }
 
     [Test]
-    public void RemoveNoteFromTrashBin_PermanentlyRemovesNote()
+    public void DeleteNote_PermanentlyRemovesNote()
     {
-        _controller.RemoveNote(_noteId);
+        _controller.TrashNote(_noteId);
 
-        _controller.RemoveNoteFromTrashBin(_noteId);
+        _controller.DeleteNote(_noteId);
 
         Assert.That(_controller.GetTrashBinNotes(), Is.Empty);
         Assert.That(_controller.GetNotesInColumn(_columnId), Is.Empty);
     }
 
     [Test]
-    public void RemoveNoteFromTrashBin_DoesNothingForUnknownId()
+    public void DeleteNote_DoesNothingForUnknownId()
     {
-        _controller.RemoveNote(_noteId);
+        _controller.TrashNote(_noteId);
 
-        _controller.RemoveNoteFromTrashBin(Guid.NewGuid());
+        _controller.DeleteNote(Guid.NewGuid());
 
         Assert.That(_controller.GetTrashBinNotes(), Has.Count.EqualTo(1));
         Assert.That(_controller.GetTrashBinNotes()[0].Id, Is.EqualTo(_noteId));
@@ -125,7 +125,7 @@ public class BoardControllerTrashBinTests
     [Test]
     public void RestoreNote_MovesNoteFromTrashToTargetColumn()
     {
-        _controller.RemoveNote(_noteId);
+        _controller.TrashNote(_noteId);
 
         int contentChangedEvents = 0;
         int boardChangedEvents = 0;

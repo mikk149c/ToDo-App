@@ -1,6 +1,7 @@
 namespace ToDo_App.Tests;
 
 using ToDo_App.Controller;
+using ToDo_App.Interfaces;
 
 // Filtering the board by one or more tags (#67, #69)
 public class TagFilterTests
@@ -92,7 +93,7 @@ public class TagFilterTests
     {
         filter.Select(workId);
 
-        controller.RenameTag(workId, "Job");
+        controller.UpdateTag(workId, name: "Job");
 
         Assert.That(filter.Prune(controller.GetTags()), Is.False);
         Assert.That(shownTitles(), Is.EqualTo(new[] { "Work", "Both" }));
@@ -104,7 +105,7 @@ public class TagFilterTests
         filter.Select(workId);
         Guid workNoteId = notes().Single(note => note.Title == "Work").Id;
 
-        controller.SetNoteTags(workNoteId, new[] { "Garden" });
+        controller.UpdateNote(workNoteId, new NoteChanges { TagNames = new[] { "Garden" } });
 
         Assert.That(shownTitles(), Is.EqualTo(new[] { "Both" }));
         Assert.That(notes().Select(note => note.Title), Does.Contain("Work"));

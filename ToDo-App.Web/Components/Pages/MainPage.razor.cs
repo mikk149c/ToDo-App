@@ -190,7 +190,7 @@ public partial class MainPage
 
     private void onEditColumnConfirmed(Guid columnId)
     {
-        Board.SetStatusColumnName(columnId, columnNameInput);
+        Board.UpdateColumn(columnId, columnNameInput);
         closeDialogs();
     }
 
@@ -226,11 +226,11 @@ public partial class MainPage
     {
         if (deleteColumnOptions.Count > 0 && Guid.TryParse(deleteColumnChoice, out Guid moveToColumn))
         {
-            Board.RemoveColumn(columnId, moveToColumn);
+            Board.DeleteColumn(columnId, moveToColumn);
         }
         else
         {
-            Board.RemoveColumn(columnId);
+            Board.DeleteColumn(columnId);
         }
         closeDialogs();
     }
@@ -277,9 +277,13 @@ public partial class MainPage
 
         if (noteDialog.Note is ToDoNote note)
         {
-            Board.SetNoteTitle(note.Id, noteDialog.TitleText);
-            Board.SetNoteContent(note.Id, noteDialog.ContentText);
-            Board.SetNoteTags(note.Id, tagEditor.TagNames, tagEditor.NewTagColors);
+            Board.UpdateNote(note.Id, new NoteChanges
+            {
+                Title = noteDialog.TitleText,
+                Content = noteDialog.ContentText,
+                TagNames = tagEditor.TagNames,
+                NewTagColors = tagEditor.NewTagColors
+            });
         }
         else if (noteDialog.ColumnId is Guid columnId)
         {
@@ -298,7 +302,7 @@ public partial class MainPage
 
     private void onDeleteTodoConfirmed(ToDoNote note)
     {
-        Board.RemoveNote(note.Id);
+        Board.TrashNote(note.Id);
         closeDialogs();
     }
 
@@ -310,7 +314,7 @@ public partial class MainPage
         {
             await using Stream upload = e.File.OpenReadStream(AttachmentStore.MaxFileSize);
             string path = await Attachments.SaveAsync(upload, e.File.Name);
-            Board.SetNoteFileAttachment(note.Id, path);
+            Board.UpdateNote(note.Id, new NoteChanges { File = new AttachedFile(Path.GetFileName(path), path) });
         }
         catch (Exception exception)
         {
@@ -327,7 +331,7 @@ public partial class MainPage
     {
         try
         {
-            Board.RemoveNoteFileAttachment(note.Id);
+            Board.UpdateNote(note.Id, new NoteChanges { RemoveFile = true });
         }
         catch (Exception exception)
         {
@@ -439,13 +443,13 @@ public partial class MainPage
     {
         if (trashNoteId is Guid noteId)
         {
-            changeTrash(() => Board.RemoveNoteFromTrashBin(noteId));
+            changeTrash(() => Board.DeleteNote(noteId));
         }
     }
 
     private void onEmptyTrashConfirmed()
     {
-        changeTrash(Board.EmptyTrashBin);
+        changeTrash(Board.EmptyTrash);
     }
 
     // Another tab may have emptied or restored the same todo, so a refused change is shown instead of crashing

@@ -527,11 +527,11 @@ namespace ToDo_App.UI.Views
             };
             confirmDeleteFromTrashButton.Click += (sender, e) => {
                 if (selectedTrashNoteId == Guid.Empty) { 
-                    changes.Send(board => board.EmptyTrashBin()); 
+                    changes.Send(board => board.EmptyTrash()); 
                 }
                 else {
                     Guid deletedNoteId = selectedTrashNoteId;
-                    changes.Send(board => board.RemoveNoteFromTrashBin(deletedNoteId));
+                    changes.Send(board => board.DeleteNote(deletedNoteId));
                     selectedTrashNoteId = Guid.Empty;   
                 }
                 RefreshTrashBin(listPanel, confirmationText,trashListView, restorePanel, 
@@ -1226,7 +1226,7 @@ namespace ToDo_App.UI.Views
             if (result == ContentDialogResult.Primary)
             {
                 string newName = nameBox.Text;
-                changes.Send(board => board.SetStatusColumnName(columnId, newName), columnId);
+                changes.Send(board => board.UpdateColumn(columnId, newName), columnId);
             }
         }
 
@@ -1299,11 +1299,11 @@ namespace ToDo_App.UI.Views
             {
                 if (todoActionBox?.SelectedItem is ComboBoxItem { Tag: Guid moveToColumn })
                 {
-                    changes.Send(board => board.RemoveColumn(columnId, moveToColumn), columnId, moveToColumn);
+                    changes.Send(board => board.DeleteColumn(columnId, moveToColumn), columnId, moveToColumn);
                 }
                 else
                 {
-                    changes.Send(board => board.RemoveColumn(columnId), columnId);
+                    changes.Send(board => board.DeleteColumn(columnId), columnId);
                 }
                 recalculateColumnsPanelMinWidth();
             }
@@ -1337,7 +1337,7 @@ namespace ToDo_App.UI.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                changes.Send(board => board.RemoveNote(note.Id), note.Id);
+                changes.Send(board => board.TrashNote(note.Id), note.Id);
             }
         }
 
@@ -1389,16 +1389,14 @@ namespace ToDo_App.UI.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                string title = titleBox.Text;
-                string content = contentBox.Text;
-                var tagNames = tagEditor.TagNames;
-                var newTagColors = tagEditor.NewTagColors;
-                changes.Send(board =>
+                var noteChanges = new NoteChanges
                 {
-                    board.SetNoteTitle(note.Id, title);
-                    board.SetNoteContent(note.Id, content);
-                    board.SetNoteTags(note.Id, tagNames, newTagColors);
-                }, note.Id);
+                    Title = titleBox.Text,
+                    Content = contentBox.Text,
+                    TagNames = tagEditor.TagNames,
+                    NewTagColors = tagEditor.NewTagColors
+                };
+                changes.Send(board => board.UpdateNote(note.Id, noteChanges), note.Id);
             }
         }
 
@@ -1418,8 +1416,8 @@ namespace ToDo_App.UI.Views
                 var file = await picker.PickSingleFileAsync();
                 if (file != null)
                 {
-                    string path = file.Path;
-                    changes.Send(board => board.SetNoteFileAttachment(note.Id, path), note.Id);
+                    var attachment = new NoteChanges { File = new AttachedFile(System.IO.Path.GetFileName(file.Path), file.Path) };
+                    changes.Send(board => board.UpdateNote(note.Id, attachment), note.Id);
                 }
                 else
                 {
@@ -1467,7 +1465,7 @@ namespace ToDo_App.UI.Views
         {
             try
             {
-                changes.Send(board => board.RemoveNoteFileAttachment(note.Id), note.Id);
+                changes.Send(board => board.UpdateNote(note.Id, new NoteChanges { RemoveFile = true }), note.Id);
             }
             catch (Exception e)
             {

@@ -31,7 +31,7 @@ public class TagMergeTests
         untaggedNoteId = controller.CreateNote(doneId, "Untagged", "");
         jobId = tagId("Job");
         workId = tagId("Work");
-        controller.SetTagColor(workId, "#0F6CBD");
+        controller.UpdateTag(workId, color: "#0F6CBD");
         recorder = new EventRecorder(controller);
     }
 

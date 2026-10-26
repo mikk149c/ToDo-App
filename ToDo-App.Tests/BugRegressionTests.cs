@@ -24,22 +24,16 @@ public class BugRegressionTests
     }
 
     // Was a NullReferenceException from ToDoBoard.GetColumnIdFromNoteId
-    [TestCase(nameof(BoardController.RemoveNote))]
-    [TestCase(nameof(BoardController.MoveNoteUp))]
-    [TestCase(nameof(BoardController.MoveNoteDown))]
-    [TestCase(nameof(BoardController.MoveNoteLeft))]
-    [TestCase(nameof(BoardController.MoveNoteRight))]
+    [TestCase(nameof(BoardController.TrashNote))]
+    [TestCase(nameof(BoardController.UpdateNote))]
     [TestCase(nameof(BoardController.MoveNoteToColumn))]
     public void UnknownNoteIdThrowsKeyNotFoundExceptionWithoutEvents(string method)
     {
         Guid unknownId = Guid.NewGuid();
         Action operation = method switch
         {
-            nameof(BoardController.RemoveNote) => () => controller.RemoveNote(unknownId),
-            nameof(BoardController.MoveNoteUp) => () => controller.MoveNoteUp(unknownId),
-            nameof(BoardController.MoveNoteDown) => () => controller.MoveNoteDown(unknownId),
-            nameof(BoardController.MoveNoteLeft) => () => controller.MoveNoteLeft(unknownId),
-            nameof(BoardController.MoveNoteRight) => () => controller.MoveNoteRight(unknownId),
+            nameof(BoardController.TrashNote) => () => controller.TrashNote(unknownId),
+            nameof(BoardController.UpdateNote) => () => controller.UpdateNote(unknownId, new NoteChanges { Title = "Renamed" }),
             _ => () => controller.MoveNoteToColumn(unknownId, progressId, 0)
         };
 
@@ -81,32 +75,6 @@ public class BugRegressionTests
         {
             File.Delete(jsonPath);
         }
-    }
-
-    // The board changed without any event
-    [Test]
-    public void MoveNoteByIndexRaisesContentChangedForBothColumnsThenBoardChanged()
-    {
-        controller.MoveNote(0, 0, 1, 0);
-
-        Assert.That(recorder.Names, Is.EqualTo(new[]
-        {
-            nameof(BoardController.ColumnContentChanged),
-            nameof(BoardController.ColumnContentChanged),
-            nameof(BoardController.BoardChanged)
-        }));
-        var changedColumns = recorder.ArgsOf<ColumnContentChangedEventArgs>().Select(e => e.ColumnId);
-        Assert.That(changedColumns, Is.EqualTo(new[] { plannedId, progressId }));
-    }
-
-    [TestCase(-1, 0, TestName = "MoveNoteByIndexFromInvalidColumnRaisesNoEvents")]
-    [TestCase(0, 1, TestName = "MoveNoteByIndexFromEmptyPositionRaisesNoEvents")]
-    public void MoveNoteByIndexWithNothingToMoveRaisesNoEvents(int fromColumnIndex, int fromPos)
-    {
-        controller.MoveNote(fromColumnIndex, fromPos, 1, 0);
-
-        Assert.That(recorder.Names, Is.Empty);
-        Assert.That(controller.GetNotesInColumn(plannedId).Single().Id, Is.EqualTo(noteId));
     }
 
     [Test]

@@ -4,6 +4,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using ToDo_App.Controller;
+using ToDo_App.Interfaces;
 
 namespace ToDo_App.Client;
 
@@ -110,14 +111,14 @@ public sealed class RemoteBoardController : BoardController, IDisposable
 
     // --- Each change goes to the server. It comes back through applyFromServer ---
 
-    public override void SetStatusColumnName(Guid columnId, string newName) =>
-        send(nameof(SetStatusColumnName), columnId, newName);
+    public override void UpdateColumn(Guid columnId, string name) =>
+        send(nameof(UpdateColumn), columnId, name);
 
     protected override void CreateColumn(Guid columnId, string name) =>
         send(nameof(CreateColumn), columnId, name);
 
-    protected override void RemoveColumn(Guid columnId, Guid? moveNotesToColumnId) =>
-        send(nameof(RemoveColumn), columnId, moveNotesToColumnId);
+    public override void DeleteColumn(Guid columnId, Guid? moveNotesToColumnId = null) =>
+        send(nameof(DeleteColumn), columnId, moveNotesToColumnId);
 
     public override void MoveColumn(Guid columnId, int targetIndex) =>
         send(nameof(MoveColumn), columnId, targetIndex);
@@ -126,63 +127,32 @@ public sealed class RemoteBoardController : BoardController, IDisposable
         IReadOnlyList<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors, IReadOnlyDictionary<string, Guid> newTagIds) =>
         send(nameof(CreateNote), columnId, noteId, title, content, file, tagNames, newTagColors, newTagIds);
 
-    public override void SetNoteContent(Guid id, string newContent) =>
-        send(nameof(SetNoteContent), id, newContent);
-
-    public override void SetNoteTitle(Guid id, string newTitle) =>
-        send(nameof(SetNoteTitle), id, newTitle);
-
-    protected override void SetNoteTags(Guid id, IReadOnlyList<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors,
-        IReadOnlyDictionary<string, Guid> newTagIds) =>
-        send(nameof(SetNoteTags), id, tagNames, newTagColors, newTagIds);
-
-    public override void RenameTag(Guid tagId, string newName) =>
-        send(nameof(RenameTag), tagId, newName);
-
-    public override void SetTagColor(Guid tagId, string color) =>
-        send(nameof(SetTagColor), tagId, color);
-
-    public override void DeleteTag(Guid tagId) =>
-        send(nameof(DeleteTag), tagId);
-
-    public override void MergeTags(Guid sourceTagId, Guid targetTagId) =>
-        send(nameof(MergeTags), sourceTagId, targetTagId);
-
-    protected override void SetNoteFileAttachment(Guid id, AttachedFile file) =>
-        send(nameof(SetNoteFileAttachment), id, file);
-
-    public override void RemoveNoteFileAttachment(Guid id) =>
-        send(nameof(RemoveNoteFileAttachment), id);
-
-    public override void MoveNote(int fromColumnIndex, int fromPos, int toColumnIndex, int toPos) =>
-        send(nameof(MoveNote), fromColumnIndex, fromPos, toColumnIndex, toPos);
+    protected override void UpdateNote(Guid noteId, NoteChanges changes, IReadOnlyDictionary<string, Guid> newTagIds) =>
+        send(nameof(UpdateNote), noteId, changes, newTagIds);
 
     public override void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex) =>
         send(nameof(MoveNoteToColumn), noteId, targetColumnId, targetIndex);
 
-    public override void MoveNoteDown(Guid noteId) =>
-        send(nameof(MoveNoteDown), noteId);
-
-    public override void MoveNoteUp(Guid noteId) =>
-        send(nameof(MoveNoteUp), noteId);
-
-    public override void MoveNoteRight(Guid noteId) =>
-        send(nameof(MoveNoteRight), noteId);
-
-    public override void MoveNoteLeft(Guid noteId) =>
-        send(nameof(MoveNoteLeft), noteId);
-
-    public override void RemoveNote(Guid noteId) =>
-        send(nameof(RemoveNote), noteId);
-
-    public override void RemoveNoteFromTrashBin(Guid noteId) =>
-        send(nameof(RemoveNoteFromTrashBin), noteId);
+    public override void TrashNote(Guid noteId) =>
+        send(nameof(TrashNote), noteId);
 
     public override void RestoreNote(Guid noteId, Guid columnId) =>
         send(nameof(RestoreNote), noteId, columnId);
 
-    public override void EmptyTrashBin() =>
-        send(nameof(EmptyTrashBin));
+    public override void DeleteNote(Guid noteId) =>
+        send(nameof(DeleteNote), noteId);
+
+    public override void EmptyTrash() =>
+        send(nameof(EmptyTrash));
+
+    public override void UpdateTag(Guid tagId, string? name = null, string? color = null) =>
+        send(nameof(UpdateTag), tagId, name, color);
+
+    public override void MergeTags(Guid sourceTagId, Guid targetTagId) =>
+        send(nameof(MergeTags), sourceTagId, targetTagId);
+
+    public override void DeleteTag(Guid tagId) =>
+        send(nameof(DeleteTag), tagId);
 
     protected override void ReplaceBoard(ToDoBoard board) =>
         send(nameof(ReplaceBoard), board);
@@ -248,35 +218,23 @@ public sealed class RemoteBoardController : BoardController, IDisposable
         var a = new Arguments(change, arguments);
         switch (change)
         {
-            case nameof(SetStatusColumnName): base.SetStatusColumnName(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateColumn): base.UpdateColumn(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(CreateColumn): base.CreateColumn(a.Get<Guid>(0), a.Get<string>(1)); break;
-            case nameof(RemoveColumn): base.RemoveColumn(a.Get<Guid>(0), a.Get<Guid?>(1)); break;
+            case nameof(DeleteColumn): base.DeleteColumn(a.Get<Guid>(0), a.Get<Guid?>(1)); break;
             case nameof(MoveColumn): base.MoveColumn(a.Get<Guid>(0), a.Get<int>(1)); break;
             case nameof(CreateNote):
                 base.CreateNote(a.Get<Guid>(0), a.Get<Guid>(1), a.Get<string>(2), a.Get<string>(3), a.Get<AttachedFile?>(4),
                     a.Get<List<string>>(5), a.Get<Dictionary<string, string>?>(6), a.Get<Dictionary<string, Guid>>(7));
                 break;
-            case nameof(SetNoteContent): base.SetNoteContent(a.Get<Guid>(0), a.Get<string>(1)); break;
-            case nameof(SetNoteTitle): base.SetNoteTitle(a.Get<Guid>(0), a.Get<string>(1)); break;
-            case nameof(SetNoteTags):
-                base.SetNoteTags(a.Get<Guid>(0), a.Get<List<string>>(1), a.Get<Dictionary<string, string>?>(2), a.Get<Dictionary<string, Guid>>(3));
-                break;
-            case nameof(RenameTag): base.RenameTag(a.Get<Guid>(0), a.Get<string>(1)); break;
-            case nameof(SetTagColor): base.SetTagColor(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateNote): base.UpdateNote(a.Get<Guid>(0), a.Get<NoteChanges>(1), a.Get<Dictionary<string, Guid>>(2)); break;
+            case nameof(UpdateTag): base.UpdateTag(a.Get<Guid>(0), a.Get<string?>(1), a.Get<string?>(2)); break;
             case nameof(DeleteTag): base.DeleteTag(a.Get<Guid>(0)); break;
             case nameof(MergeTags): base.MergeTags(a.Get<Guid>(0), a.Get<Guid>(1)); break;
-            case nameof(SetNoteFileAttachment): base.SetNoteFileAttachment(a.Get<Guid>(0), a.Get<AttachedFile>(1)); break;
-            case nameof(RemoveNoteFileAttachment): base.RemoveNoteFileAttachment(a.Get<Guid>(0)); break;
-            case nameof(MoveNote): base.MoveNote(a.Get<int>(0), a.Get<int>(1), a.Get<int>(2), a.Get<int>(3)); break;
             case nameof(MoveNoteToColumn): base.MoveNoteToColumn(a.Get<Guid>(0), a.Get<Guid>(1), a.Get<int>(2)); break;
-            case nameof(MoveNoteDown): base.MoveNoteDown(a.Get<Guid>(0)); break;
-            case nameof(MoveNoteUp): base.MoveNoteUp(a.Get<Guid>(0)); break;
-            case nameof(MoveNoteRight): base.MoveNoteRight(a.Get<Guid>(0)); break;
-            case nameof(MoveNoteLeft): base.MoveNoteLeft(a.Get<Guid>(0)); break;
-            case nameof(RemoveNote): base.RemoveNote(a.Get<Guid>(0)); break;
-            case nameof(RemoveNoteFromTrashBin): base.RemoveNoteFromTrashBin(a.Get<Guid>(0)); break;
+            case nameof(TrashNote): base.TrashNote(a.Get<Guid>(0)); break;
+            case nameof(DeleteNote): base.DeleteNote(a.Get<Guid>(0)); break;
             case nameof(RestoreNote): base.RestoreNote(a.Get<Guid>(0), a.Get<Guid>(1)); break;
-            case nameof(EmptyTrashBin): base.EmptyTrashBin(); break;
+            case nameof(EmptyTrash): base.EmptyTrash(); break;
             case nameof(ReplaceBoard): base.ReplaceBoard(a.Get<ToDoBoard>(0)); break;
             default: throw new KeyNotFoundException($"There's no change called '{change}'.");
         }
