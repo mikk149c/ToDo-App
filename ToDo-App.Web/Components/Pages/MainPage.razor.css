@@ -227,6 +227,7 @@
     cursor: grab;
 }
 
+/* Used by the trash-bin layout, where the title and buttons share a row */
 .card-row {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -234,22 +235,18 @@
     gap: 8px;
 }
 
-/* Edit, attach and delete stacked vertically in the upper right of a card */
+/* Shared button layout */
 .card-buttons {
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
 
-.note-card {
-    display: block;
-}
+/* Active notes use a floating button stack so text can flow around it */
+.note-card { display: block; }
 
 .note-card .card-buttons {
     float: right;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
     margin-left: 8px;
     margin-bottom: 4px;
 }
