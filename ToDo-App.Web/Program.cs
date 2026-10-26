@@ -88,6 +88,11 @@ app.MapGet("/board/export", (BoardHost host) =>
     }
 });
 
+app.MapPost("/upload-file", (LocalFileReference fileReference) =>
+{
+    // TODO: handle file uploading
+});
+
 // Opens a todo's attachment
 app.MapGet("/attachments/{noteId:guid}", (Guid noteId, BoardHost host, HttpContext context) =>
 {

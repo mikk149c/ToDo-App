@@ -137,8 +137,19 @@ public sealed class RemoteBoardController : BoardController, IDisposable
         IReadOnlyDictionary<string, Guid> newTagIds) =>
         send(nameof(UpdateNoteTags), noteId, tagNames, newTagColors, newTagIds);
 
-    public override void UpdateNoteFile(Guid noteId, IFileReference fileReference) =>
-        send(nameof(UpdateNoteFile), noteId, fileReference);
+    public override async void UpdateNoteFile(Guid noteId, IFileReference fileReference)
+    {
+        try
+        {
+            await using var uploadStream = fileReference.OpenStream();
+            var uploadedFileReference = await _storageHandler.SaveAsync(uploadStream, fileReference.Name);
+            send(nameof(UpdateNoteFile), noteId, uploadedFileReference);
+        }
+        catch (Exception e)
+        {
+            throw; // TODO handle exception
+        }
+    }
 
     public override void DeleteNoteFile(Guid noteId) =>
         send(nameof(DeleteNoteFile), noteId);
