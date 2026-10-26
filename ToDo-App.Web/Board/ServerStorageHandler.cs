@@ -7,11 +7,6 @@ public class ServerStorageHandler(BoardStorageOptions options) : IStorageHandler
     public const long MaxFileSize = 50 * 1024 * 1024;
 
     private readonly string root = Path.GetFullPath(Path.Combine(options.DataDirectory, "attachments"));
-
-    public async Task<AttachedFile?> GetFile(IFileReference fileReference)
-    {
-        return new AttachedFile(fileReference.Name, fileReference.FullPath);
-    }
     
     /// <summary>Saves an uploaded file and returns its full path on the server.</summary>
     public async Task<IFileReference> SaveAsync(Stream stream, string fileName)
