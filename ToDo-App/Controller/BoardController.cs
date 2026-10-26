@@ -170,63 +170,57 @@ public abstract class BoardController : ITodoBoard
         onBoardChanged(new BoardChangedEventArgs(_board));
     }
 
-    /// <summary>Changes the fields of a note that are set in <paramref name="changes"/>, as one change.</summary>
-    public void UpdateNote(Guid noteId, NoteChanges changes)
+    public virtual void UpdateNoteTitle(Guid noteId, string title)
     {
-        IReadOnlyDictionary<string, Guid> newTagIds = changes.TagNames == null
-            ? new Dictionary<string, Guid>()
-            : newTagIdsFor(changes.TagNames);
-        UpdateNote(noteId, changes, newTagIds);
-    }
-
-    /// <param name="newTagIds">The Id for each tag name that isn't a tag on the board yet (tag name to Id).</param>
-    protected virtual void UpdateNote(Guid noteId, NoteChanges changes, IReadOnlyDictionary<string, Guid> newTagIds)
-    {
-        if (changes.File != null && changes.RemoveFile)
-        {
-            throw new ArgumentException("A note can't both get a file and have its file removed.");
-        }
-        _board.GetColumnIdFromNoteId(noteId); // a note that doesn't exist throws before anything changes
-
-        // Tags first: they're the only part that can be invalid, and an invalid tag leaves the note unchanged
-        if (changes.TagNames != null)
-        {
-            _board.SetNoteTags(noteId, changes.TagNames, changes.NewTagColors, newTagIds);
-        }
-        if (changes.Title != null)
-        {
-            _board.SetNoteTitle(noteId, changes.Title);
-        }
-        if (changes.Content != null)
-        {
-            _board.SetNoteContent(noteId, changes.Content);
-        }
-        if (changes.File != null || changes.RemoveFile)
-        {
-            _board.SetNoteFile(noteId, changes.File);
-        }
+        _board.SetNoteTitle(noteId, title);
         notifyNoteChanged(noteId);
     }
 
-    /// <summary>Renames a tag and/or changes its colour. A value left null stays as it is.</summary>
-    public virtual void UpdateTag(Guid tagId, string? name = null, string? color = null)
+    public virtual void UpdateNoteContent(Guid noteId, string content)
     {
-        if (name == null && color == null)
-        {
-            throw new ArgumentException("Give the tag a new name, a new colour or both.");
-        }
-        if (color != null)
-        {
-            NoteTag.NormalizeColor(color); // an invalid colour throws before the name changes
-        }
-        if (name != null)
-        {
-            _board.RenameTag(tagId, name);
-        }
-        if (color != null)
-        {
-            _board.SetTagColor(tagId, color);
-        }
+        _board.SetNoteContent(noteId, content);
+        notifyNoteChanged(noteId);
+    }
+
+    /// <summary>Replaces a note's tags, by name.</summary>
+    /// <param name="newTagColors">The colour for each tag name that isn't a tag on the board yet (tag name to "#RRGGBB").</param>
+    public void UpdateNoteTags(Guid noteId, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null)
+    {
+        List<string> names = tagNames.ToList();
+        UpdateNoteTags(noteId, names, newTagColors, newTagIdsFor(names));
+    }
+
+    /// <param name="newTagIds">The Id for each tag name that isn't a tag on the board yet (tag name to Id).</param>
+    protected virtual void UpdateNoteTags(Guid noteId, IReadOnlyList<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors,
+        IReadOnlyDictionary<string, Guid> newTagIds)
+    {
+        _board.SetNoteTags(noteId, tagNames, newTagColors, newTagIds);
+        notifyNoteChanged(noteId);
+    }
+
+    /// <summary>Attaches a file to a note, replacing the one it has.</summary>
+    public virtual void UpdateNoteFile(Guid noteId, AttachedFile file)
+    {
+        _board.SetNoteFile(noteId, file);
+        notifyNoteChanged(noteId);
+    }
+
+    /// <summary>Removes a note's file.</summary>
+    public virtual void DeleteNoteFile(Guid noteId)
+    {
+        _board.SetNoteFile(noteId, null);
+        notifyNoteChanged(noteId);
+    }
+
+    public virtual void UpdateTagName(Guid tagId, string name)
+    {
+        _board.RenameTag(tagId, name);
+        notifyTagChanged(tagId);
+    }
+
+    public virtual void UpdateTagColor(Guid tagId, string color)
+    {
+        _board.SetTagColor(tagId, color);
         notifyTagChanged(tagId);
     }
 

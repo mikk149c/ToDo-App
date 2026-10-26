@@ -118,7 +118,7 @@ public class RemoteBoardControllerTests
         waitUntil(() => second.GetNotesInColumn(columnId).Exists(note => note.Id == noteId), "the note");
         recorder.Clear();
 
-        first.UpdateNote(noteId, new NoteChanges { Title = "After" });
+        first.UpdateNoteTitle(noteId, "After");
 
         waitUntil(() => second.GetNotesInColumn(columnId).Single(note => note.Id == noteId).Title == "After", "the new title");
         Assert.That(recorder.Names, Is.EqualTo(new[] { nameof(ITodoBoard.ColumnContentChanged), nameof(ITodoBoard.BoardChanged) }));
@@ -134,7 +134,7 @@ public class RemoteBoardControllerTests
         DateTime start = DateTime.UtcNow;
 
         Guid noteId = host.Board.CreateNote(columnId, "First", "");
-        host.Board.UpdateNote(noteId, new NoteChanges { Title = "Second" });
+        host.Board.UpdateNoteTitle(noteId, "Second");
 
         Thread.Sleep(150);
         Assert.That(holds(() => client.GetNotesInColumn(columnId).Exists(note => note.Id == noteId)), Is.False, "held back");
@@ -167,7 +167,7 @@ public class RemoteBoardControllerTests
         Guid noteId = first.CreateNote(columnId, "Note", "");
         waitUntil(() => second.GetNotesInColumn(columnId).Exists(note => note.Id == noteId), "the note");
 
-        first.UpdateNote(noteId, new NoteChanges { TagNames = new[] { "Urgent" }, NewTagColors = new Dictionary<string, string> { ["Urgent"] = "#FF0000" } });
+        first.UpdateNoteTags(noteId, new[] { "Urgent" }, new Dictionary<string, string> { ["Urgent"] = "#FF0000" });
 
         waitUntil(() => second.GetTags().Count == 1, "the tag on the second client");
         Assert.That(second.GetTags().Single().Color, Is.EqualTo("#FF0000"));
@@ -214,7 +214,7 @@ public class RemoteBoardControllerTests
         waitUntil(() => client.GetTags().Count == 2, "the tags");
         Guid homeId = client.GetTags().Single(tag => tag.Name == "Home").Id;
 
-        Assert.Throws<ArgumentException>(() => client.UpdateTag(homeId, name: "work"));
+        Assert.Throws<ArgumentException>(() => client.UpdateTagName(homeId, "work"));
         Assert.Throws<KeyNotFoundException>(() => client.TrashNote(Guid.NewGuid()));
     }
 

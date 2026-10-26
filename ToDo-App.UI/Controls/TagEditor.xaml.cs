@@ -262,7 +262,7 @@ namespace ToDo_App.UI.Controls
             if (flyoutEntry.Id is Guid tagId)
             {
                 // On the board: renames it on every todo straight away
-                changes?.Send(board => board.UpdateTag(tagId, name: name), tagId);
+                changes?.Send(board => board.UpdateTagName(tagId, name), tagId);
                 flyoutEntry.Name = name;
             }
             else
@@ -290,7 +290,7 @@ namespace ToDo_App.UI.Controls
             {
                 // On the board: changes the colour on every todo straight away
                 string color = option.Hex;
-                changes?.Send(board => board.UpdateTag(tagId, color: color), tagId);
+                changes?.Send(board => board.UpdateTagColor(tagId, color), tagId);
             }
             // Otherwise it's only in this dialog, and the colour is given to the tag when the todo is saved
             flyoutEntry.Color = option.Hex;

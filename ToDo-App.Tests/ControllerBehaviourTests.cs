@@ -1,7 +1,6 @@
 namespace ToDo_App.Tests;
 
 using ToDo_App.Controller;
-using ToDo_App.Interfaces;
 
 // BoardController behaviour (#59, #135)
 public class ControllerBehaviourTests
@@ -95,7 +94,8 @@ public class ControllerBehaviourTests
     [Test]
     public void UpdateNoteTitleAndContentChangeTheNote()
     {
-        controller.UpdateNote(noteId, new NoteChanges { Title = "Renamed", Content = "New content" });
+        controller.UpdateNoteTitle(noteId, "Renamed");
+        controller.UpdateNoteContent(noteId, "New content");
 
         var note = controller.GetNotesInColumn(plannedId).Single();
         Assert.That(note.Title, Is.EqualTo("Renamed"));
@@ -115,7 +115,7 @@ public class ControllerBehaviourTests
     {
         var file = new AttachedFile("shopping list.txt", Path.Combine(Path.GetTempPath(), "attachments", "shopping list.txt"));
 
-        controller.UpdateNote(noteId, new NoteChanges { File = file });
+        controller.UpdateNoteFile(noteId, file);
 
         Assert.That(controller.GetNotesInColumn(plannedId).Single().File, Is.SameAs(file));
     }
@@ -128,7 +128,7 @@ public class ControllerBehaviourTests
         string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), "missing.txt");
         Assume.That(File.Exists(path), Is.False);
 
-        controller.UpdateNote(noteId, new NoteChanges { File = new AttachedFile("missing.txt", path) });
+        controller.UpdateNoteFile(noteId, new AttachedFile("missing.txt", path));
 
         var file = controller.GetNotesInColumn(plannedId).Single().File;
         Assert.That(file!.Name, Is.EqualTo("missing.txt"));
@@ -136,103 +136,45 @@ public class ControllerBehaviourTests
     }
 
     [Test]
-    public void UpdateNoteRemoveFileClearsIt()
+    public void DeleteNoteFileClearsIt()
     {
-        controller.UpdateNote(noteId, new NoteChanges { File = new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")) });
+        controller.UpdateNoteFile(noteId, new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")));
 
-        controller.UpdateNote(noteId, new NoteChanges { RemoveFile = true });
+        controller.DeleteNoteFile(noteId);
 
         Assert.That(controller.GetNotesInColumn(plannedId).Single().File, Is.Null);
     }
 
     // Unknown note Ids throw KeyNotFoundException, like unknown column Ids, and change nothing
     [Test]
-    public void UpdateNoteWithUnknownIdThrowsWithoutEvents()
+    public void UpdateNoteTitleWithUnknownIdThrowsWithoutEvents()
     {
-        Assert.Throws<KeyNotFoundException>(() => controller.UpdateNote(Guid.NewGuid(), new NoteChanges { Title = "Renamed" }));
+        Assert.Throws<KeyNotFoundException>(() => controller.UpdateNoteTitle(Guid.NewGuid(), "Renamed"));
         Assert.That(recorder.Names, Is.Empty);
     }
 
     [Test]
-    public void UpdateNoteRemoveFileWithUnknownIdThrowsWithoutEvents()
+    public void DeleteNoteFileWithUnknownIdThrowsWithoutEvents()
     {
-        Assert.Throws<KeyNotFoundException>(() => controller.UpdateNote(Guid.NewGuid(), new NoteChanges { RemoveFile = true }));
+        Assert.Throws<KeyNotFoundException>(() => controller.DeleteNoteFile(Guid.NewGuid()));
         Assert.That(recorder.Names, Is.Empty);
     }
 
-    // Only the fields that are set change, so two people editing different parts of a note don't overwrite each other
+    // Each change only touches its own part of the note, so two people editing different parts don't overwrite each other
     [Test]
-    public void UpdateNoteLeavesFieldsThatAreNotSetAlone()
+    public void UpdateNoteTitleLeavesTheRestOfTheNoteAlone()
     {
         var file = new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt"));
-        controller.UpdateNote(noteId, new NoteChanges { TagNames = new[] { "Work" }, File = file });
+        controller.UpdateNoteTags(noteId, new[] { "Work" });
+        controller.UpdateNoteFile(noteId, file);
 
-        controller.UpdateNote(noteId, new NoteChanges { Title = "Renamed" });
+        controller.UpdateNoteTitle(noteId, "Renamed");
 
         var note = controller.GetNotesInColumn(plannedId).Single();
         Assert.That(note.Title, Is.EqualTo("Renamed"));
         Assert.That(note.Content, Is.EqualTo("Køb bananer"));
         Assert.That(note.Tags.Select(tag => tag.Name), Is.EqualTo(new[] { "Work" }));
         Assert.That(note.File, Is.SameAs(file));
-    }
-
-    [Test]
-    public void UpdateNoteWithAnInvalidTagChangesNothing()
-    {
-        Assert.Throws<ArgumentException>(() =>
-            controller.UpdateNote(noteId, new NoteChanges { Title = "Renamed", TagNames = new[] { "   " } }));
-
-        Assert.That(controller.GetNotesInColumn(plannedId).Single().Title, Is.EqualTo("First note"));
-        Assert.That(recorder.Names, Is.Empty);
-    }
-
-    // An edit dialog sends only what the user changed, so a change made meanwhile by someone else isn't undone
-    [Test]
-    public void NoteChangesSinceOpeningKeepsOnlyWhatTheDialogChanged()
-    {
-        var opened = OpenedNote.Of(controller.GetNotesInColumn(plannedId).Single());
-        controller.UpdateNote(noteId, new NoteChanges { Content = "Changed by someone else" });
-
-        NoteChanges changes = NoteChanges.Since(opened, "Renamed", "Køb bananer", Array.Empty<string>(), null);
-        controller.UpdateNote(noteId, changes);
-
-        Assert.That(changes, Is.EqualTo(new NoteChanges { Title = "Renamed" }));
-        var note = controller.GetNotesInColumn(plannedId).Single();
-        Assert.That(note.Title, Is.EqualTo("Renamed"));
-        Assert.That(note.Content, Is.EqualTo("Changed by someone else"));
-    }
-
-    [Test]
-    public void NoteChangesSinceOpeningWithoutEditsHasNoChanges()
-    {
-        controller.UpdateNote(noteId, new NoteChanges { TagNames = new[] { "Work" } });
-        var opened = OpenedNote.Of(controller.GetNotesInColumn(plannedId).Single());
-
-        NoteChanges changes = NoteChanges.Since(opened, "First note", "Køb bananer", new[] { "Work" }, null);
-
-        Assert.That(changes.HasChanges(), Is.False);
-    }
-
-    // Renaming a tag changes it on the note in place, so the opened tag names must be a copy
-    [Test]
-    public void OpenedNoteKeepsTheTagNamesItWasOpenedWith()
-    {
-        controller.UpdateNote(noteId, new NoteChanges { TagNames = new[] { "Work" } });
-        var opened = OpenedNote.Of(controller.GetNotesInColumn(plannedId).Single());
-
-        controller.UpdateTag(controller.GetTags().Single().Id, name: "Job");
-
-        Assert.That(opened.TagNames, Is.EqualTo(new[] { "Work" }));
-    }
-
-    [Test]
-    public void UpdateNoteWithFileAndRemoveFileThrowsWithoutChanges()
-    {
-        Assert.Throws<ArgumentException>(() =>
-            controller.UpdateNote(noteId, new NoteChanges { File = new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")), RemoveFile = true }));
-
-        Assert.That(controller.GetNotesInColumn(plannedId).Single().File, Is.Null);
-        Assert.That(recorder.Names, Is.Empty);
     }
 
     [Test]

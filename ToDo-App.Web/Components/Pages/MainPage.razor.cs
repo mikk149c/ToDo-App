@@ -23,7 +23,9 @@ public partial class MainPage
     {
         public Guid? ColumnId;                // set when adding
         public ToDoNote? Note;                // set when editing
-        public OpenedNote? Opened;            // the note as it was when the dialog opened, when editing
+        public string OpenedTitle = "";       // the note as the dialog opened, when editing,
+        public string OpenedContent = "";     // so saving only changes what the user changed
+        public List<string> OpenedTagNames = new List<string>();
         public string Title = "";
         public string PrimaryButtonText = "";
         public string TitleText = "";
@@ -255,7 +257,10 @@ public partial class MainPage
         noteDialog = new NoteDialogState
         {
             Note = note,
-            Opened = OpenedNote.Of(note),
+            OpenedTitle = note.Title,
+            OpenedContent = note.Content,
+            // Copied, as renaming a tag changes the note's tags in place
+            OpenedTagNames = note.Tags.Select(tag => tag.Name).ToList(),
             Title = Strings["dialog/title_edit_note"],
             PrimaryButtonText = Strings["dialog/save"],
             TitleText = note.Title,
@@ -277,13 +282,21 @@ public partial class MainPage
             return;
         }
 
-        if (noteDialog is { Note: ToDoNote note, Opened: OpenedNote opened })
+        if (noteDialog.Note is ToDoNote note)
         {
-            // Only what the user changed, so a change made in another tab or app meanwhile isn't undone
-            var changes = NoteChanges.Since(opened, noteDialog.TitleText, noteDialog.ContentText, tagEditor.TagNames, tagEditor.NewTagColors);
-            if (changes.HasChanges())
+            // Only what the user changed, so a change made in another tab or app meanwhile isn't undone.
+            // Tags first: they're the only part that can be refused
+            if (!tagEditor.TagNames.SequenceEqual(noteDialog.OpenedTagNames))
             {
-                Board.UpdateNote(note.Id, changes);
+                Board.UpdateNoteTags(note.Id, tagEditor.TagNames, tagEditor.NewTagColors);
+            }
+            if (noteDialog.TitleText != noteDialog.OpenedTitle)
+            {
+                Board.UpdateNoteTitle(note.Id, noteDialog.TitleText);
+            }
+            if (noteDialog.ContentText != noteDialog.OpenedContent)
+            {
+                Board.UpdateNoteContent(note.Id, noteDialog.ContentText);
             }
         }
         else if (noteDialog.ColumnId is Guid columnId)
@@ -315,7 +328,7 @@ public partial class MainPage
         {
             await using Stream upload = e.File.OpenReadStream(AttachmentStore.MaxFileSize);
             string path = await Attachments.SaveAsync(upload, e.File.Name);
-            Board.UpdateNote(note.Id, new NoteChanges { File = new AttachedFile(Path.GetFileName(path), path) });
+            Board.UpdateNoteFile(note.Id, new AttachedFile(Path.GetFileName(path), path));
         }
         catch (Exception exception)
         {
@@ -332,7 +345,7 @@ public partial class MainPage
     {
         try
         {
-            Board.UpdateNote(note.Id, new NoteChanges { RemoveFile = true });
+            Board.DeleteNoteFile(note.Id);
         }
         catch (Exception exception)
         {

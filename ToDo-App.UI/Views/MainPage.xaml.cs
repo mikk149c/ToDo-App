@@ -1343,7 +1343,11 @@ namespace ToDo_App.UI.Views
 
         private async void onEditTodoClicked(ToDoNote note)
         {
-            var opened = OpenedNote.Of(note);
+            // The note as the dialog opens, so saving only changes what the user changed. The tag names are copied,
+            // as renaming a tag changes the note's tags in place
+            string openedTitle = note.Title;
+            string openedContent = note.Content;
+            List<string> openedTagNames = note.Tags.Select(tag => tag.Name).ToList();
             var titleBox = new TextBox
             {
                 Header = Res.ResourceManager.GetString("todo/property_title", _currentCulture),
@@ -1390,11 +1394,32 @@ namespace ToDo_App.UI.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                // Only what the user changed, so a change someone else made meanwhile isn't undone
-                var noteChanges = NoteChanges.Since(opened, titleBox.Text, contentBox.Text, tagEditor.TagNames, tagEditor.NewTagColors);
-                if (noteChanges.HasChanges())
+                // Only what the user changed, so a change someone else made meanwhile isn't undone.
+                // Tags first: they're the only part that can be refused
+                var tagNames = tagEditor.TagNames;
+                var newTagColors = tagEditor.NewTagColors;
+                string title = titleBox.Text;
+                string content = contentBox.Text;
+                bool tagsChanged = !tagNames.SequenceEqual(openedTagNames);
+                bool titleChanged = title != openedTitle;
+                bool contentChanged = content != openedContent;
+                if (tagsChanged || titleChanged || contentChanged)
                 {
-                    changes.Send(board => board.UpdateNote(note.Id, noteChanges), note.Id);
+                    changes.Send(board =>
+                    {
+                        if (tagsChanged)
+                        {
+                            board.UpdateNoteTags(note.Id, tagNames, newTagColors);
+                        }
+                        if (titleChanged)
+                        {
+                            board.UpdateNoteTitle(note.Id, title);
+                        }
+                        if (contentChanged)
+                        {
+                            board.UpdateNoteContent(note.Id, content);
+                        }
+                    }, note.Id);
                 }
             }
         }
@@ -1415,8 +1440,8 @@ namespace ToDo_App.UI.Views
                 var file = await picker.PickSingleFileAsync();
                 if (file != null)
                 {
-                    var attachment = new NoteChanges { File = new AttachedFile(System.IO.Path.GetFileName(file.Path), file.Path) };
-                    changes.Send(board => board.UpdateNote(note.Id, attachment), note.Id);
+                    var attachment = new AttachedFile(System.IO.Path.GetFileName(file.Path), file.Path);
+                    changes.Send(board => board.UpdateNoteFile(note.Id, attachment), note.Id);
                 }
                 else
                 {
@@ -1464,7 +1489,7 @@ namespace ToDo_App.UI.Views
         {
             try
             {
-                changes.Send(board => board.UpdateNote(note.Id, new NoteChanges { RemoveFile = true }), note.Id);
+                changes.Send(board => board.DeleteNoteFile(note.Id), note.Id);
             }
             catch (Exception e)
             {

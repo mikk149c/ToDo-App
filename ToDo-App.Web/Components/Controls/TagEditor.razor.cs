@@ -261,7 +261,7 @@ public partial class TagEditor
         if (flyoutEntry.Id is Guid tagId)
         {
             // On the board: renames it on every todo straight away
-            Board.UpdateTag(tagId, name: name);
+            Board.UpdateTagName(tagId, name);
             flyoutEntry.Name = name;
         }
         else
@@ -286,7 +286,7 @@ public partial class TagEditor
         if (flyoutEntry.Id is Guid tagId)
         {
             // On the board: changes the colour on every todo straight away
-            Board.UpdateTag(tagId, color: option.Hex);
+            Board.UpdateTagColor(tagId, option.Hex);
         }
         // Otherwise it's only in this dialog, and the colour is given to the tag when the todo is saved
         flyoutEntry.Color = option.Hex;

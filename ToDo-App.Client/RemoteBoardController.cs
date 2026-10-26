@@ -4,7 +4,6 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using ToDo_App.Controller;
-using ToDo_App.Interfaces;
 
 namespace ToDo_App.Client;
 
@@ -127,8 +126,21 @@ public sealed class RemoteBoardController : BoardController, IDisposable
         IReadOnlyList<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors, IReadOnlyDictionary<string, Guid> newTagIds) =>
         send(nameof(CreateNote), columnId, noteId, title, content, file, tagNames, newTagColors, newTagIds);
 
-    protected override void UpdateNote(Guid noteId, NoteChanges changes, IReadOnlyDictionary<string, Guid> newTagIds) =>
-        send(nameof(UpdateNote), noteId, changes, newTagIds);
+    public override void UpdateNoteTitle(Guid noteId, string title) =>
+        send(nameof(UpdateNoteTitle), noteId, title);
+
+    public override void UpdateNoteContent(Guid noteId, string content) =>
+        send(nameof(UpdateNoteContent), noteId, content);
+
+    protected override void UpdateNoteTags(Guid noteId, IReadOnlyList<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors,
+        IReadOnlyDictionary<string, Guid> newTagIds) =>
+        send(nameof(UpdateNoteTags), noteId, tagNames, newTagColors, newTagIds);
+
+    public override void UpdateNoteFile(Guid noteId, AttachedFile file) =>
+        send(nameof(UpdateNoteFile), noteId, file);
+
+    public override void DeleteNoteFile(Guid noteId) =>
+        send(nameof(DeleteNoteFile), noteId);
 
     public override void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex) =>
         send(nameof(MoveNoteToColumn), noteId, targetColumnId, targetIndex);
@@ -145,8 +157,11 @@ public sealed class RemoteBoardController : BoardController, IDisposable
     public override void EmptyTrash() =>
         send(nameof(EmptyTrash));
 
-    public override void UpdateTag(Guid tagId, string? name = null, string? color = null) =>
-        send(nameof(UpdateTag), tagId, name, color);
+    public override void UpdateTagName(Guid tagId, string name) =>
+        send(nameof(UpdateTagName), tagId, name);
+
+    public override void UpdateTagColor(Guid tagId, string color) =>
+        send(nameof(UpdateTagColor), tagId, color);
 
     public override void MergeTags(Guid sourceTagId, Guid targetTagId) =>
         send(nameof(MergeTags), sourceTagId, targetTagId);
@@ -226,8 +241,15 @@ public sealed class RemoteBoardController : BoardController, IDisposable
                 base.CreateNote(a.Get<Guid>(0), a.Get<Guid>(1), a.Get<string>(2), a.Get<string>(3), a.Get<AttachedFile?>(4),
                     a.Get<List<string>>(5), a.Get<Dictionary<string, string>?>(6), a.Get<Dictionary<string, Guid>>(7));
                 break;
-            case nameof(UpdateNote): base.UpdateNote(a.Get<Guid>(0), a.Get<NoteChanges>(1), a.Get<Dictionary<string, Guid>>(2)); break;
-            case nameof(UpdateTag): base.UpdateTag(a.Get<Guid>(0), a.Get<string?>(1), a.Get<string?>(2)); break;
+            case nameof(UpdateNoteTitle): base.UpdateNoteTitle(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateNoteContent): base.UpdateNoteContent(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateNoteTags):
+                base.UpdateNoteTags(a.Get<Guid>(0), a.Get<List<string>>(1), a.Get<Dictionary<string, string>?>(2), a.Get<Dictionary<string, Guid>>(3));
+                break;
+            case nameof(UpdateNoteFile): base.UpdateNoteFile(a.Get<Guid>(0), a.Get<AttachedFile>(1)); break;
+            case nameof(DeleteNoteFile): base.DeleteNoteFile(a.Get<Guid>(0)); break;
+            case nameof(UpdateTagName): base.UpdateTagName(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateTagColor): base.UpdateTagColor(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(DeleteTag): base.DeleteTag(a.Get<Guid>(0)); break;
             case nameof(MergeTags): base.MergeTags(a.Get<Guid>(0), a.Get<Guid>(1)); break;
             case nameof(MoveNoteToColumn): base.MoveNoteToColumn(a.Get<Guid>(0), a.Get<Guid>(1), a.Get<int>(2)); break;

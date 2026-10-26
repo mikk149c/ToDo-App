@@ -25,7 +25,7 @@ public class BugRegressionTests
 
     // Was a NullReferenceException from ToDoBoard.GetColumnIdFromNoteId
     [TestCase(nameof(BoardController.TrashNote))]
-    [TestCase(nameof(BoardController.UpdateNote))]
+    [TestCase(nameof(BoardController.UpdateNoteTitle))]
     [TestCase(nameof(BoardController.MoveNoteToColumn))]
     public void UnknownNoteIdThrowsKeyNotFoundExceptionWithoutEvents(string method)
     {
@@ -33,7 +33,7 @@ public class BugRegressionTests
         Action operation = method switch
         {
             nameof(BoardController.TrashNote) => () => controller.TrashNote(unknownId),
-            nameof(BoardController.UpdateNote) => () => controller.UpdateNote(unknownId, new NoteChanges { Title = "Renamed" }),
+            nameof(BoardController.UpdateNoteTitle) => () => controller.UpdateNoteTitle(unknownId, "Renamed"),
             _ => () => controller.MoveNoteToColumn(unknownId, progressId, 0)
         };
 

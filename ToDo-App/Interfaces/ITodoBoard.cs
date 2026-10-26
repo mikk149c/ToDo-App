@@ -42,7 +42,15 @@ public interface ITodoBoard
 
     public Guid CreateNote(Guid columnId, string title, string content, AttachedFile? file = null, IEnumerable<string>? tagNames = null, IReadOnlyDictionary<string, string>? newTagColors = null);
 
-    public void UpdateNote(Guid noteId, NoteChanges changes);
+    public void UpdateNoteTitle(Guid noteId, string title);
+
+    public void UpdateNoteContent(Guid noteId, string content);
+
+    public void UpdateNoteTags(Guid noteId, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null);
+
+    public void UpdateNoteFile(Guid noteId, AttachedFile file);
+
+    public void DeleteNoteFile(Guid noteId);
 
     public void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex);
 
@@ -56,7 +64,9 @@ public interface ITodoBoard
 
     // --- Tags ---
 
-    public void UpdateTag(Guid tagId, string? name = null, string? color = null);
+    public void UpdateTagName(Guid tagId, string name);
+
+    public void UpdateTagColor(Guid tagId, string color);
 
     public void MergeTags(Guid sourceTagId, Guid targetTagId);
 

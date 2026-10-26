@@ -45,7 +45,7 @@ public class TagRenameDeleteTests
     [Test]
     public void UpdateTagNameChangesItOnEveryTodo()
     {
-        controller.UpdateTag(wrokId, name: "Work");
+        controller.UpdateTagName(wrokId, "Work");
 
         Assert.That(tagNames(firstNoteId), Is.EqualTo(new[] { "Work", "Job" }));
         Assert.That(tagNames(secondNoteId), Is.EqualTo(new[] { "Work" }));
@@ -55,7 +55,7 @@ public class TagRenameDeleteTests
     [Test]
     public void UpdateTagNameKeepsItsId()
     {
-        controller.UpdateTag(wrokId, name: "Work");
+        controller.UpdateTagName(wrokId, "Work");
 
         Assert.That(tagId("Work"), Is.EqualTo(wrokId));
     }
@@ -63,7 +63,7 @@ public class TagRenameDeleteTests
     [Test]
     public void UpdateTagNameTrimsTheName()
     {
-        controller.UpdateTag(wrokId, name: "  Work ");
+        controller.UpdateTagName(wrokId, "  Work ");
 
         Assert.That(tagNames(secondNoteId), Is.EqualTo(new[] { "Work" }));
     }
@@ -71,7 +71,7 @@ public class TagRenameDeleteTests
     [Test]
     public void RenameToAnotherTagsNameIsBlockedAndChangesNothing()
     {
-        Assert.Throws<ArgumentException>(() => controller.UpdateTag(jobId, name: "wrok"));
+        Assert.Throws<ArgumentException>(() => controller.UpdateTagName(jobId, "wrok"));
 
         Assert.That(tagNames(firstNoteId), Is.EqualTo(new[] { "Wrok", "Job" }));
         Assert.That(recorder.Names, Is.Empty);
@@ -80,7 +80,7 @@ public class TagRenameDeleteTests
     [Test]
     public void ChangingOnlyTheCaseIsAllowed()
     {
-        controller.UpdateTag(wrokId, name: "WROK");
+        controller.UpdateTagName(wrokId, "WROK");
 
         Assert.That(tagNames(secondNoteId), Is.EqualTo(new[] { "WROK" }));
     }
@@ -90,7 +90,7 @@ public class TagRenameDeleteTests
     [TestCase("ThirteenChars")]
     public void RenameToInvalidNameIsBlockedAndChangesNothing(string invalidName)
     {
-        Assert.Throws<ArgumentException>(() => controller.UpdateTag(wrokId, name: invalidName));
+        Assert.Throws<ArgumentException>(() => controller.UpdateTagName(wrokId, invalidName));
 
         Assert.That(tagNames(secondNoteId), Is.EqualTo(new[] { "Wrok" }));
         Assert.That(recorder.Names, Is.Empty);
@@ -99,14 +99,14 @@ public class TagRenameDeleteTests
     [Test]
     public void RenameUnknownTagThrowsWithoutEvents()
     {
-        Assert.Throws<KeyNotFoundException>(() => controller.UpdateTag(Guid.NewGuid(), name: "Work"));
+        Assert.Throws<KeyNotFoundException>(() => controller.UpdateTagName(Guid.NewGuid(), "Work"));
         Assert.That(recorder.Names, Is.Empty);
     }
 
     [Test]
     public void RenameRaisesTagChangedThenBoardChanged()
     {
-        controller.UpdateTag(wrokId, name: "Work");
+        controller.UpdateTagName(wrokId, "Work");
 
         Assert.That(recorder.Names, Is.EqualTo(new[]
         {
@@ -191,7 +191,7 @@ public class TagRenameDeletePersistenceTests
         Guid columnId = original.CreateColumn("Planned");
         original.CreateNote(columnId, "First", "", tagNames: new[] { "Wrok", "Old" });
         original.CreateNote(columnId, "Second", "", tagNames: new[] { "Wrok" });
-        original.UpdateTag(original.GetTags().Single(tag => tag.Name == "Wrok").Id, name: "Work");
+        original.UpdateTagName(original.GetTags().Single(tag => tag.Name == "Wrok").Id, "Work");
         original.DeleteTag(original.GetTags().Single(tag => tag.Name == "Old").Id);
         original.SaveBoardToJson(jsonPath);
 

@@ -1,6 +1,5 @@
 using System.Text.Json;
 using ToDo_App.Controller;
-using ToDo_App.Interfaces;
 
 namespace ToDo_App.Web.Board;
 
@@ -54,8 +53,15 @@ public sealed class ServerBoardController : LocalBoardController
                 CreateNote(a.Get<Guid>(0), a.Get<Guid>(1), a.Get<string>(2), a.Get<string>(3), a.Get<AttachedFile?>(4),
                     a.Get<List<string>>(5), a.Get<Dictionary<string, string>?>(6), a.Get<Dictionary<string, Guid>>(7));
                 break;
-            case nameof(UpdateNote): UpdateNote(a.Get<Guid>(0), a.Get<NoteChanges>(1), a.Get<Dictionary<string, Guid>>(2)); break;
-            case nameof(UpdateTag): UpdateTag(a.Get<Guid>(0), a.Get<string?>(1), a.Get<string?>(2)); break;
+            case nameof(UpdateNoteTitle): UpdateNoteTitle(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateNoteContent): UpdateNoteContent(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateNoteTags):
+                UpdateNoteTags(a.Get<Guid>(0), a.Get<List<string>>(1), a.Get<Dictionary<string, string>?>(2), a.Get<Dictionary<string, Guid>>(3));
+                break;
+            case nameof(UpdateNoteFile): UpdateNoteFile(a.Get<Guid>(0), a.Get<AttachedFile>(1)); break;
+            case nameof(DeleteNoteFile): DeleteNoteFile(a.Get<Guid>(0)); break;
+            case nameof(UpdateTagName): UpdateTagName(a.Get<Guid>(0), a.Get<string>(1)); break;
+            case nameof(UpdateTagColor): UpdateTagColor(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(DeleteTag): DeleteTag(a.Get<Guid>(0)); break;
             case nameof(MergeTags): MergeTags(a.Get<Guid>(0), a.Get<Guid>(1)); break;
             case nameof(MoveNoteToColumn): MoveNoteToColumn(a.Get<Guid>(0), a.Get<Guid>(1), a.Get<int>(2)); break;
@@ -87,8 +93,22 @@ public sealed class ServerBoardController : LocalBoardController
         applyAndBroadcast(() => base.CreateNote(columnId, noteId, title, content, file, tagNames, newTagColors, newTagIds),
             nameof(CreateNote), columnId, noteId, title, content, file, tagNames, newTagColors, newTagIds);
 
-    protected override void UpdateNote(Guid noteId, NoteChanges changes, IReadOnlyDictionary<string, Guid> newTagIds) =>
-        applyAndBroadcast(() => base.UpdateNote(noteId, changes, newTagIds), nameof(UpdateNote), noteId, changes, newTagIds);
+    public override void UpdateNoteTitle(Guid noteId, string title) =>
+        applyAndBroadcast(() => base.UpdateNoteTitle(noteId, title), nameof(UpdateNoteTitle), noteId, title);
+
+    public override void UpdateNoteContent(Guid noteId, string content) =>
+        applyAndBroadcast(() => base.UpdateNoteContent(noteId, content), nameof(UpdateNoteContent), noteId, content);
+
+    protected override void UpdateNoteTags(Guid noteId, IReadOnlyList<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors,
+        IReadOnlyDictionary<string, Guid> newTagIds) =>
+        applyAndBroadcast(() => base.UpdateNoteTags(noteId, tagNames, newTagColors, newTagIds),
+            nameof(UpdateNoteTags), noteId, tagNames, newTagColors, newTagIds);
+
+    public override void UpdateNoteFile(Guid noteId, AttachedFile file) =>
+        applyAndBroadcast(() => base.UpdateNoteFile(noteId, file), nameof(UpdateNoteFile), noteId, file);
+
+    public override void DeleteNoteFile(Guid noteId) =>
+        applyAndBroadcast(() => base.DeleteNoteFile(noteId), nameof(DeleteNoteFile), noteId);
 
     public override void MoveNoteToColumn(Guid noteId, Guid targetColumnId, int targetIndex) =>
         applyAndBroadcast(() => base.MoveNoteToColumn(noteId, targetColumnId, targetIndex),
@@ -106,8 +126,11 @@ public sealed class ServerBoardController : LocalBoardController
     public override void EmptyTrash() =>
         applyAndBroadcast(() => base.EmptyTrash(), nameof(EmptyTrash));
 
-    public override void UpdateTag(Guid tagId, string? name = null, string? color = null) =>
-        applyAndBroadcast(() => base.UpdateTag(tagId, name, color), nameof(UpdateTag), tagId, name, color);
+    public override void UpdateTagName(Guid tagId, string name) =>
+        applyAndBroadcast(() => base.UpdateTagName(tagId, name), nameof(UpdateTagName), tagId, name);
+
+    public override void UpdateTagColor(Guid tagId, string color) =>
+        applyAndBroadcast(() => base.UpdateTagColor(tagId, color), nameof(UpdateTagColor), tagId, color);
 
     public override void MergeTags(Guid sourceTagId, Guid targetTagId) =>
         applyAndBroadcast(() => base.MergeTags(sourceTagId, targetTagId), nameof(MergeTags), sourceTagId, targetTagId);

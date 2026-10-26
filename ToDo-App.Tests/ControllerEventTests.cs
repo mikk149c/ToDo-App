@@ -81,11 +81,18 @@ public class ControllerEventTests
         assertContentChangedFor(progressId);
     }
 
-    // Saving a note in the dialog is one change, so it's drawn (and saved) once
     [Test]
-    public void UpdateNoteRaisesOneContentChangedForItsColumn()
+    public void UpdateNoteTitleRaisesContentChangedForItsColumn()
     {
-        controller.UpdateNote(secondNoteId, new NoteChanges { Title = "Renamed", Content = "New content", TagNames = new[] { "Work" } });
+        controller.UpdateNoteTitle(secondNoteId, "Renamed");
+
+        assertContentChangedFor(plannedId);
+    }
+
+    [Test]
+    public void UpdateNoteContentRaisesContentChangedForItsColumn()
+    {
+        controller.UpdateNoteContent(secondNoteId, "New content");
 
         assertContentChangedFor(plannedId);
     }
@@ -101,7 +108,7 @@ public class ControllerEventTests
     [Test]
     public void UpdateNoteFileRaisesContentChangedForItsColumn()
     {
-        controller.UpdateNote(firstNoteId, new NoteChanges { File = new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")) });
+        controller.UpdateNoteFile(firstNoteId, new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")));
 
         assertContentChangedFor(plannedId);
     }
@@ -109,10 +116,10 @@ public class ControllerEventTests
     [Test]
     public void UpdateNoteRemoveFileRaisesContentChangedForItsColumn()
     {
-        controller.UpdateNote(firstNoteId, new NoteChanges { File = new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")) });
+        controller.UpdateNoteFile(firstNoteId, new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")));
         recorder.Clear();
 
-        controller.UpdateNote(firstNoteId, new NoteChanges { RemoveFile = true });
+        controller.DeleteNoteFile(firstNoteId);
 
         assertContentChangedFor(plannedId);
     }
@@ -180,9 +187,10 @@ public class ControllerEventTests
             Guid otherColumnId = unobserved.CreateColumn("In Progress");
             Guid noteId = unobserved.CreateNote(columnId, "Note", "Content");
             unobserved.UpdateColumn(columnId, "Backlog");
-            unobserved.UpdateNote(noteId, new NoteChanges { Title = "Renamed", Content = "New content" });
-            unobserved.UpdateNote(noteId, new NoteChanges { File = new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")) });
-            unobserved.UpdateNote(noteId, new NoteChanges { RemoveFile = true });
+            unobserved.UpdateNoteTitle(noteId, "Renamed");
+            unobserved.UpdateNoteContent(noteId, "New content");
+            unobserved.UpdateNoteFile(noteId, new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")));
+            unobserved.DeleteNoteFile(noteId);
             unobserved.MoveNoteToColumn(noteId, otherColumnId, 0);
             unobserved.MoveColumn(otherColumnId, 0);
             unobserved.DeleteColumn(otherColumnId, columnId);
