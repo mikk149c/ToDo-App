@@ -390,8 +390,27 @@
                                         <p class="todo-description">@note.Content</p>
                                         @if (note.File != null)
                                         {
-                                            @* Not a link: the attachment of a deleted todo can't be opened from here *@
-                                            <span class="attached-file"><Icon Name="attach" /><span>@note.File.Name</span></span>
+                                            <div class="attachment">
+                                                @if (Attachments.IsStored(note.File.FullPath))
+                                                {
+                                                    <a class="button attached-file"
+                                                    href="@($"attachments/{note.Id}")"
+                                                    target="_blank"
+                                                    rel="noopener"
+                                                    title="@note.File.Name">
+                                                        <Icon Name="attach" />
+                                                        <span class="attachment-filename">@note.File.Name</span>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    @* Legacy Windows attachment: display only in the web app *@
+                                                    <span class="attached-file" title="@note.File.Name">
+                                                        <Icon Name="attach" />
+                                                        <span class="attachment-filename">@note.File.Name</span>
+                                                    </span>
+                                                }
+                                            </div>
                                         }
                                     }
                                 </article>
