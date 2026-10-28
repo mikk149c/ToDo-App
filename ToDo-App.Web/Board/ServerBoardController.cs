@@ -15,7 +15,7 @@ public sealed class ServerBoardController : LocalBoardController
     private readonly IChangeBroadcaster? broadcaster;
 
     /// <param name="broadcaster">Where changes are sent, or null when no remote apps can connect (tests).</param>
-    public ServerBoardController(BoardStorageOptions options, IChangeBroadcaster? broadcaster = null) : base(new ServerStorageHandler(options))
+    public ServerBoardController(BoardStorageOptions options, IStorageHandler storageHandler, IChangeBroadcaster? broadcaster = null) : base(storageHandler)
     {
         this.broadcaster = broadcaster;
     }
@@ -59,7 +59,7 @@ public sealed class ServerBoardController : LocalBoardController
             case nameof(UpdateNoteTags):
                 UpdateNoteTags(a.Get<Guid>(0), a.Get<List<string>>(1), a.Get<Dictionary<string, string>?>(2), a.Get<Dictionary<string, Guid>>(3));
                 break;
-            case nameof(UpdateNoteFile): UpdateNoteFile(a.Get<Guid>(0), a.Get<IFileReference>(1)); break;
+            case nameof(UpdateNoteFile): UpdateNoteFile(a.Get<Guid>(0), a.Get<FileReference>(1)); break;
             case nameof(DeleteNoteFile): DeleteNoteFile(a.Get<Guid>(0)); break;
             case nameof(UpdateTagName): UpdateTagName(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(UpdateTagColor): UpdateTagColor(a.Get<Guid>(0), a.Get<string>(1)); break;
@@ -105,19 +105,8 @@ public sealed class ServerBoardController : LocalBoardController
         applyAndBroadcast(() => base.UpdateNoteTags(noteId, tagNames, newTagColors, newTagIds),
             nameof(UpdateNoteTags), noteId, tagNames, newTagColors, newTagIds);
 
-    public override async void UpdateNoteFile(Guid noteId, IFileReference fileReference)
-    {
-        try
-        {
-            await using var uploadStream = fileReference.OpenStream();
-            var uploadedFileReference = await _storageHandler.SaveAsync(uploadStream, fileReference.Name);
-            applyAndBroadcast(() => base.UpdateNoteFile(noteId, uploadedFileReference), nameof(UpdateNoteFile), noteId, uploadedFileReference);
-        }
-        catch (Exception e)
-        {
-            throw; // TODO handle exception
-        }
-    }
+    public override async void UpdateNoteFile(Guid noteId, FileReference fileReference) =>
+        applyAndBroadcast(() => base.UpdateNoteFile(noteId, fileReference), nameof(UpdateNoteFile), noteId, fileReference);
 
     public override void DeleteNoteFile(Guid noteId) =>
         applyAndBroadcast(() => base.DeleteNoteFile(noteId), nameof(DeleteNoteFile), noteId);

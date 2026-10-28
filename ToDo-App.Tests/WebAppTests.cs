@@ -104,7 +104,7 @@ public class WebAppTests
         var store = new ServerStorageHandler(new BoardStorageOptions(dataDirectory));
 
         var fileReference = await store.SaveAsync(new MemoryStream("hello"u8.ToArray()), "notes.txt");
-        var path = fileReference.FullPath;
+        var path = fileReference.fullPath;
 
         Assert.That(Path.GetFileName(path), Is.EqualTo("notes.txt"));
         Assert.That(File.ReadAllText(path), Is.EqualTo("hello"));
@@ -117,7 +117,7 @@ public class WebAppTests
         var store = new ServerStorageHandler(new BoardStorageOptions(dataDirectory));
 
         var fileReference = await store.SaveAsync(new MemoryStream("x"u8.ToArray()), @"..\..\board.json");
-        var path = fileReference.FullPath;
+        var path = fileReference.fullPath;
 
         Assert.That(store.IsStored(path), Is.True);
         Assert.That(File.Exists(boardPath), Is.False);

@@ -1,31 +1,50 @@
-﻿using ToDo_App.Interfaces;
+﻿using System.Text.Json;
+using ToDo_App.Interfaces;
 
 namespace ToDo_App.Client;
 
 public class ClientStorageHandler : IStorageHandler
 {
-    private static readonly HttpClient HttpClient = new();
+    private const string ServerUrlVariable = "TODO_SERVER_URL";
+    private const string DefaultServerUrl = "http://localhost:8080/";
+
+    private readonly HttpClient _httpClient;
     private const string UploadPath = "upload-file";
-
-    public async Task<IFileReference> SaveAsync(Stream stream, string fileName)
+    
+    private readonly JsonSerializerOptions serializerOptions = new() { IncludeFields = true };
+    
+    public ClientStorageHandler()
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, UploadPath);
+        _httpClient = new HttpClient();
+        _httpClient.BaseAddress = new Uri(Environment.GetEnvironmentVariable(ServerUrlVariable) ?? DefaultServerUrl);
+    }
 
-        var formData = new MultipartFormDataContent();
-        formData.Add(new StreamContent(stream), "file", fileName);
-        request.Content = formData;
-        
-        Console.WriteLine($"Uploading {fileName} ...");
-        var response = await HttpClient.SendAsync(request);
+    public async Task<FileReference> SaveAsync(Stream stream, string fileName)
+    {
+        using (_httpClient)
+        {
+            using (var formData = new MultipartFormDataContent())
+            {
+                formData.Add(new StringContent(fileName), "name");
+                formData.Add(new StreamContent(stream), "file", fileName);
 
-        if (response.IsSuccessStatusCode)
-        {
-            // TODO: return proper reference
-            return new LocalFileReference("");
-        }
-        else
-        {
-            throw new Exception(response.ToString());
+                var request = new HttpRequestMessage(HttpMethod.Post, UploadPath)
+                {
+                    Content = formData
+                };
+                var response = await _httpClient.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var reference = JsonSerializer.Deserialize<FileReference>(json, serializerOptions);
+                    return reference;
+                }
+                else
+                {
+                    throw new Exception(response.ToString());
+                }
+            }
         }
     }
 

@@ -325,7 +325,13 @@ public partial class MainPage
     {
         try
         {
-            var fileReference = new BrowserPickedFileReference(e);
+            var fileReference = new FileReference
+            {
+                type = FileReference.FileReferenceType.BrowserPicked,
+                name = e.File.Name,
+                fullPath = "",
+                stream = e.File.OpenReadStream(ServerStorageHandler.MaxFileSize)
+            };
             Board.UpdateNoteFile(note.Id, fileReference);
         }
         catch (Exception exception)

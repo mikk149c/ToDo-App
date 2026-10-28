@@ -230,7 +230,7 @@ public class NoteOperationTests
     [Test]
     public void SetNoteFileChangesOnlyTargetNote()
     {
-        var file = new AttachedFile("list.txt", Path.Combine("docs", "list.txt"));
+        var file = new AttachedFile(Guid.NewGuid(), "list.txt", Path.Combine("docs", "list.txt"));
 
         board.SetNoteFile(second.Id, file);
 
@@ -241,7 +241,7 @@ public class NoteOperationTests
     [Test]
     public void SetNoteFileWithNullClearsFile()
     {
-        board.SetNoteFile(second.Id, new AttachedFile("list.txt", Path.Combine("docs", "list.txt")));
+        board.SetNoteFile(second.Id, new AttachedFile(Guid.NewGuid(), "list.txt", Path.Combine("docs", "list.txt")));
 
         board.SetNoteFile(second.Id, null);
 

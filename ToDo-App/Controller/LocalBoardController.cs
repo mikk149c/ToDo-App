@@ -12,7 +12,7 @@ public class LocalBoardController(IStorageHandler? storageHandler = null) : Boar
 
 public class LocalStorageHandler() : IStorageHandler
 {
-    public Task<IFileReference> SaveAsync(Stream stream, string fileName)
+    public Task<FileReference> SaveAsync(Stream stream, string fileName)
     {
         throw new NotImplementedException();
     }

@@ -207,9 +207,9 @@ public abstract class BoardController : ITodoBoard
     }
 
     /// <summary>Attaches a file to a note, replacing the one it has.</summary>
-    public virtual void UpdateNoteFile(Guid noteId, IFileReference fileReference)
+    public virtual void UpdateNoteFile(Guid noteId, FileReference fileReference)
     {
-        _board.SetNoteFile(noteId, new AttachedFile(fileReference.Name, fileReference.FullPath));
+        _board.SetNoteFile(noteId, new AttachedFile(fileReference.guid, fileReference.name, fileReference.fullPath));
         notifyNoteChanged(noteId);
     }
 

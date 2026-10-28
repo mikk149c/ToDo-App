@@ -48,7 +48,7 @@ public interface ITodoBoard
 
     public void UpdateNoteTags(Guid noteId, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null);
 
-    public void UpdateNoteFile(Guid noteId, IFileReference fileReference);
+    public void UpdateNoteFile(Guid noteId, FileReference fileReference);
 
     public void DeleteNoteFile(Guid noteId);
 

@@ -9,23 +9,33 @@ public class ServerStorageHandler(BoardStorageOptions options) : IStorageHandler
     private readonly string root = Path.GetFullPath(Path.Combine(options.DataDirectory, "attachments"));
     
     /// <summary>Saves an uploaded file and returns its full path on the server.</summary>
-    public async Task<IFileReference> SaveAsync(Stream stream, string fileName)
+    public async Task<FileReference> SaveAsync(Stream stream, string fileName)
     {
+        var fileGuid = Guid.NewGuid();
+        
         // Only the name is kept, so a name like "..\board.json" can't write outside the folder
         string safeName = Path.GetFileName(fileName);
         if (string.IsNullOrWhiteSpace(safeName))
         {
             safeName = "attachment";
         }
-
-        string folder = Path.Combine(root, Guid.NewGuid().ToString());
+        
+        string folder = Path.Combine(root, fileGuid.ToString());
         Directory.CreateDirectory(folder);
         string path = Path.Combine(folder, safeName);
 
         await using FileStream file = File.Create(path);
         await stream.CopyToAsync(file);
+
+        var uploadedFileReference = new FileReference
+        {
+            type = FileReference.FileReferenceType.Uploaded,
+            guid = fileGuid,
+            name = fileName,
+            fullPath = path
+        };
         
-        return new UploadedFileReference(fileName, path);
+        return uploadedFileReference;
     }
 
     /// <summary>

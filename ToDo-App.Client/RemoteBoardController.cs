@@ -137,12 +137,12 @@ public sealed class RemoteBoardController : BoardController, IDisposable
         IReadOnlyDictionary<string, Guid> newTagIds) =>
         send(nameof(UpdateNoteTags), noteId, tagNames, newTagColors, newTagIds);
 
-    public override async void UpdateNoteFile(Guid noteId, IFileReference fileReference)
+    public override async void UpdateNoteFile(Guid noteId, FileReference fileReference)
     {
         try
         {
-            await using var uploadStream = fileReference.OpenStream();
-            var uploadedFileReference = await _storageHandler.SaveAsync(uploadStream, fileReference.Name);
+            await using var uploadStream = fileReference.stream ??= new FileInfo(fileReference.fullPath).OpenRead();
+            var uploadedFileReference = await _storageHandler.SaveAsync(uploadStream, fileReference.name);
             send(nameof(UpdateNoteFile), noteId, uploadedFileReference);
         }
         catch (Exception e)
@@ -258,7 +258,7 @@ public sealed class RemoteBoardController : BoardController, IDisposable
             case nameof(UpdateNoteTags):
                 base.UpdateNoteTags(a.Get<Guid>(0), a.Get<List<string>>(1), a.Get<Dictionary<string, string>?>(2), a.Get<Dictionary<string, Guid>>(3));
                 break;
-            case nameof(UpdateNoteFile): base.UpdateNoteFile(a.Get<Guid>(0), a.Get<IFileReference>(1)); break;
+            case nameof(UpdateNoteFile): base.UpdateNoteFile(a.Get<Guid>(0), a.Get<FileReference>(1)); break;
             case nameof(DeleteNoteFile): base.DeleteNoteFile(a.Get<Guid>(0)); break;
             case nameof(UpdateTagName): base.UpdateTagName(a.Get<Guid>(0), a.Get<string>(1)); break;
             case nameof(UpdateTagColor): base.UpdateTagColor(a.Get<Guid>(0), a.Get<string>(1)); break;

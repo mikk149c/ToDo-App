@@ -80,7 +80,7 @@ public class ControllerBehaviourTests
     [Test]
     public void CreateNoteStoresTitleContentAndFile()
     {
-        var file = new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt"));
+        var file = new AttachedFile(Guid.NewGuid(), "list.txt", Path.Combine(Path.GetTempPath(), "list.txt"));
 
         Guid createdId = controller.CreateNote(progressId, "Shopping", "Køb bananer", file);
 
@@ -113,12 +113,15 @@ public class ControllerBehaviourTests
     [Test]
     public void UpdateNoteFileStoresTheFile()
     {
-        var fileReference = new LocalFileReference(Path.Combine(Path.GetTempPath(), "attachments", "shopping list.txt"));
+        var fileReference = new FileReference
+        {
+            fullPath = Path.Combine(Path.GetTempPath(), "attachments", "shopping list.txt")
+        };
 
         controller.UpdateNoteFile(noteId, fileReference);
 
-        Assert.That(controller.GetNotesInColumn(plannedId).Single().File.Name, Is.SameAs(fileReference.Name));
-        Assert.That(controller.GetNotesInColumn(plannedId).Single().File.FullPath, Is.SameAs(fileReference.FullPath));
+        Assert.That(controller.GetNotesInColumn(plannedId).Single().File.Name, Is.SameAs(fileReference.name));
+        Assert.That(controller.GetNotesInColumn(plannedId).Single().File.FullPath, Is.SameAs(fileReference.fullPath));
     }
 
     // Decision: the path isn't checked. The UI picks an existing file, and an attached file can be deleted
@@ -126,10 +129,15 @@ public class ControllerBehaviourTests
     [Test]
     public void UpdateNoteFileWithNonExistentPathStoresIt()
     {
-        string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), "missing.txt");
+        string name = "missing.txt";
+        string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), name);
         Assume.That(File.Exists(path), Is.False);
 
-        controller.UpdateNoteFile(noteId, new LocalFileReference(path));
+        controller.UpdateNoteFile(noteId, new FileReference
+        {
+            name = name,
+            fullPath = path
+        });
 
         var file = controller.GetNotesInColumn(plannedId).Single().File;
         Assert.That(file!.Name, Is.EqualTo("missing.txt"));
@@ -139,7 +147,12 @@ public class ControllerBehaviourTests
     [Test]
     public void DeleteNoteFileClearsIt()
     {
-        controller.UpdateNoteFile(noteId, new LocalFileReference(Path.Combine(Path.GetTempPath(), "list.txt")));
+        controller.UpdateNoteFile(noteId,
+            new FileReference
+            {
+                fullPath = Path.Combine(Path.GetTempPath(), "list.txt")
+            }
+        );
 
         controller.DeleteNoteFile(noteId);
 
@@ -165,7 +178,10 @@ public class ControllerBehaviourTests
     [Test]
     public void UpdateNoteTitleLeavesTheRestOfTheNoteAlone()
     {
-        var fileReference = new LocalFileReference(Path.Combine(Path.GetTempPath(), "list.txt"));
+        var fileReference = new FileReference
+        {
+            fullPath = Path.Combine(Path.GetTempPath(), "list.txt")
+        };
         controller.UpdateNoteTags(noteId, new[] { "Work" });
         controller.UpdateNoteFile(noteId, fileReference);
 
@@ -175,8 +191,8 @@ public class ControllerBehaviourTests
         Assert.That(note.Title, Is.EqualTo("Renamed"));
         Assert.That(note.Content, Is.EqualTo("Køb bananer"));
         Assert.That(note.Tags.Select(tag => tag.Name), Is.EqualTo(new[] { "Work" }));
-        Assert.That(note.File.Name, Is.SameAs(fileReference.Name));
-        Assert.That(note.File.FullPath, Is.SameAs(fileReference.FullPath));
+        Assert.That(note.File.Name, Is.SameAs(fileReference.name));
+        Assert.That(note.File.FullPath, Is.SameAs(fileReference.fullPath));
     }
 
     [Test]

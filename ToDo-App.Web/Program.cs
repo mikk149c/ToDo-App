@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Net.Http.Headers;
 using ToDo_App;
@@ -88,10 +89,24 @@ app.MapGet("/board/export", (BoardHost host) =>
     }
 });
 
-app.MapPost("/upload-file", (LocalFileReference fileReference) =>
+app.MapPost("/upload-file", async ([FromForm] string name, [FromForm] IFormFile file) =>
 {
-    // TODO: handle file uploading
-});
+    app.Logger.LogInformation("Preparing to receive file data...");
+    var tempFile = Path.GetTempFileName();
+    app.Logger.LogInformation($"Created temporary file: {tempFile}");
+    await using (var saveTempStream = File.OpenWrite(tempFile))
+    {
+        await file.CopyToAsync(saveTempStream);
+    }
+    app.Logger.LogInformation("File data has been uploaded.");
+    var storageHandler = app.Services.GetService<BoardHost>().StorageHandler;
+    await using (var readTempStream = File.OpenRead(tempFile))
+    {
+        var savedFile = await storageHandler.SaveAsync(readTempStream, name);
+        app.Logger.LogInformation($"Saved uploaded file: {savedFile.fullPath}");
+        return Results.Json(savedFile);
+    }
+}).DisableAntiforgery();
 
 // Opens a todo's attachment
 app.MapGet("/attachments/{noteId:guid}", (Guid noteId, BoardHost host, HttpContext context) =>
