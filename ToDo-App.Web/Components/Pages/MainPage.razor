@@ -391,7 +391,7 @@
                                         @if (note.File != null)
                                         {
                                             <div class="attachment">
-                                                @if (Attachments.IsStored(note.File.FullPath))
+                                                @if (Board.IsFileStored(note.File.FullPath))
                                                 {
                                                     <a class="button attached-file"
                                                     href="@($"attachments/{note.Id}")"
