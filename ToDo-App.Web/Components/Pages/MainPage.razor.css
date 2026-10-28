@@ -227,6 +227,7 @@
     cursor: grab;
 }
 
+/* Used by the trash-bin layout, where the title and buttons share a row */
 .card-row {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -234,10 +235,19 @@
     gap: 8px;
 }
 
-/* Edit, attach and delete together in the upper right of a card */
+/* Shared button layout */
 .card-buttons {
     display: flex;
     gap: 2px;
+}
+
+/* Active notes use a floating button stack so text can flow around it */
+.note-card { display: block; }
+
+.note-card .card-buttons {
+    float: right;
+    flex-direction: column;
+    margin-left: 8px;
 }
 
 .todo-title {
@@ -245,7 +255,7 @@
     font-size: 14px;
     font-weight: 600;
     overflow-wrap: anywhere;
-    align-self: center;
+    align-self: start;
 }
 
 .todo-description {
@@ -304,19 +314,39 @@
 
 .attachment {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 4px;
     min-width: 0;
+    max-width: 100%;
+    clear: right;
+}
+
+.attachment-filename {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .attached-file {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
     background: var(--accent);
     color: var(--on-accent);
     border-color: transparent;
     border-radius: 8px;
     padding: 5px 8px;
-    max-width: 100%;
+}
+
+.attached-file:hover {
+    background-color: color-mix(in srgb, var(--accent) 88%, white);
+    color: var(--on-accent);
 }
 
 .attached-file span {

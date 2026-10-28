@@ -170,36 +170,37 @@
                             int index = i;
                             ToDoNote note = notes[index];
                             @* Dropping on a card puts the dragged todo in its place *@
-                            <article class="todo-card @(draggedNoteId == note.Id ? "dragging" : null)" @key="note.Id" draggable="true"
-                                     @ondragstart="() => onNoteDragStarting(note)" @ondragend="onDragEnded"
-                                     @ondragover:preventDefault @ondrop="() => onColumnDrop(id, index)" @ondrop:stopPropagation>
-                                <div class="card-row">
-                                    <h3 class="todo-title">@note.Title</h3>
-                                    @* Edit, attach and delete sit together in the upper right *@
-                                    <div class="card-buttons">
-                                        <button type="button" class="icon-button" title="@Strings["button/edit_note_tooltip"]"
-                                                aria-label="@Strings["button/edit_note_tooltip"]" @onclick="() => onEditTodoClicked(note)">
-                                            <Icon Name="edit" />
-                                        </button>
-                                        @if (note.File == null)
-                                        {
-                                            <label class="button icon-button" title="@Strings["button/attach_file_tooltip"]">
-                                                <InputFile class="visually-hidden" aria-label="@Strings["button/attach_file_tooltip"]"
-                                                           OnChange="e => onAttachFileChosen(note, e)" />
-                                                <Icon Name="attach" />
-                                            </label>
-                                        }
-                                        else
-                                        {
-                                            <button type="button" class="icon-button" disabled
-                                                    aria-label="@Strings["button/attach_file_tooltip"]"><Icon Name="attach" /></button>
-                                        }
-                                        <button type="button" class="icon-button" title="@Strings["button/remove_note_tooltip"]"
-                                                aria-label="@Strings["button/remove_note_tooltip"]" @onclick="() => deleteNoteDialog = note">
-                                            <Icon Name="delete" />
-                                        </button>
-                                    </div>
+                            
+                            <article class="todo-card note-card @(draggedNoteId == note.Id ? "dragging" : null)" @key="note.Id" draggable="true"
+                                    @ondragstart="() => onNoteDragStarting(note)" @ondragend="onDragEnded"
+                                    @ondragover:preventDefault @ondrop="() => onColumnDrop(id, index)" @ondrop:stopPropagation>
+
+                                @* Keep the buttons at the top-right; the content can flow beside them *@
+                                <div class="card-buttons">
+                                    <button type="button" class="icon-button" title="@Strings["button/edit_note_tooltip"]"
+                                            aria-label="@Strings["button/edit_note_tooltip"]" @onclick="() => onEditTodoClicked(note)">
+                                        <Icon Name="edit" />
+                                    </button>
+                                    @if (note.File == null)
+                                    {
+                                        <label class="button icon-button" title="@Strings["button/attach_file_tooltip"]">
+                                            <InputFile class="visually-hidden" aria-label="@Strings["button/attach_file_tooltip"]"
+                                                    OnChange="e => onAttachFileChosen(note, e)" />
+                                            <Icon Name="attach" />
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="icon-button" disabled
+                                                aria-label="@Strings["button/attach_file_tooltip"]"><Icon Name="attach" /></button>
+                                    }
+                                    <button type="button" class="icon-button" title="@Strings["button/remove_note_tooltip"]"
+                                            aria-label="@Strings["button/remove_note_tooltip"]" @onclick="() => deleteNoteDialog = note">
+                                        <Icon Name="delete" />
+                                    </button>
                                 </div>
+
+                                <h3 class="todo-title">@note.Title</h3>
 
                                 @if (note.Tags.Count > 0)
                                 {
@@ -218,15 +219,19 @@
                                     <div class="attachment">
                                         @if (Board.IsFileStored(note.File.FullPath))
                                         {
-                                            <a class="button attached-file" href="@($"attachments/{note.Id}")" target="_blank" rel="noopener">
-                                                <Icon Name="attach" /><span>@note.File.Name</span>
+                                            <a class="button attached-file" href="@($"attachments/{note.Id}")"
+                                            target="_blank" rel="noopener" title="@note.File.Name">
+                                                <Icon Name="attach" />
+                                                <span class="attachment-filename">@note.File.Name</span>
                                             </a>
                                         }
                                         else
                                         {
                                             @* Attached in the Windows app: the path is on a PC, not on this server *@
-                                            <button type="button" class="attached-file" @onclick="() => onAttachmentOnPcClicked(note)">
-                                                <Icon Name="attach" /><span>@note.File.Name</span>
+                                            <button type="button" class="attached-file" title="@note.File.Name"
+                                            @onclick="() => onAttachmentOnPcClicked(note)">
+                                                <Icon Name="attach" />
+                                                <span class="attachment-filename">@note.File.Name</span>
                                             </button>
                                         }
                                         <button type="button" class="icon-button" title="@Strings["button/remove_attached_file_tooltip"]"
@@ -385,8 +390,27 @@
                                         <p class="todo-description">@note.Content</p>
                                         @if (note.File != null)
                                         {
-                                            @* Not a link: the attachment of a deleted todo can't be opened from here *@
-                                            <span class="attached-file"><Icon Name="attach" /><span>@note.File.Name</span></span>
+                                            <div class="attachment">
+                                                @if (Attachments.IsStored(note.File.FullPath))
+                                                {
+                                                    <a class="button attached-file"
+                                                    href="@($"attachments/{note.Id}")"
+                                                    target="_blank"
+                                                    rel="noopener"
+                                                    title="@note.File.Name">
+                                                        <Icon Name="attach" />
+                                                        <span class="attachment-filename">@note.File.Name</span>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    @* Legacy Windows attachment: display only in the web app *@
+                                                    <span class="attached-file" title="@note.File.Name">
+                                                        <Icon Name="attach" />
+                                                        <span class="attachment-filename">@note.File.Name</span>
+                                                    </span>
+                                                }
+                                            </div>
                                         }
                                     }
                                 </article>
