@@ -219,15 +219,19 @@
                                     <div class="attachment">
                                         @if (Attachments.IsStored(note.File.FullPath))
                                         {
-                                            <a class="button attached-file" href="@($"attachments/{note.Id}")" target="_blank" rel="noopener">
-                                                <Icon Name="attach" /><span>@note.File.Name</span>
+                                            <a class="button attached-file" href="@($"attachments/{note.Id}")"
+                                            target="_blank" rel="noopener" title="@note.File.Name">
+                                                <Icon Name="attach" />
+                                                <span class="attachment-filename">@note.File.Name</span>
                                             </a>
                                         }
                                         else
                                         {
                                             @* Attached in the Windows app: the path is on a PC, not on this server *@
-                                            <button type="button" class="attached-file" @onclick="() => onAttachmentOnPcClicked(note)">
-                                                <Icon Name="attach" /><span>@note.File.Name</span>
+                                            <button type="button" class="attached-file" title="@note.File.Name"
+                                            @onclick="() => onAttachmentOnPcClicked(note)">
+                                                <Icon Name="attach" />
+                                                <span class="attachment-filename">@note.File.Name</span>
                                             </button>
                                         }
                                         <button type="button" class="icon-button" title="@Strings["button/remove_attached_file_tooltip"]"
@@ -386,8 +390,27 @@
                                         <p class="todo-description">@note.Content</p>
                                         @if (note.File != null)
                                         {
-                                            @* Not a link: the attachment of a deleted todo can't be opened from here *@
-                                            <span class="attached-file"><Icon Name="attach" /><span>@note.File.Name</span></span>
+                                            <div class="attachment">
+                                                @if (Attachments.IsStored(note.File.FullPath))
+                                                {
+                                                    <a class="button attached-file"
+                                                    href="@($"attachments/{note.Id}")"
+                                                    target="_blank"
+                                                    rel="noopener"
+                                                    title="@note.File.Name">
+                                                        <Icon Name="attach" />
+                                                        <span class="attachment-filename">@note.File.Name</span>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    @* Legacy Windows attachment: display only in the web app *@
+                                                    <span class="attached-file" title="@note.File.Name">
+                                                        <Icon Name="attach" />
+                                                        <span class="attachment-filename">@note.File.Name</span>
+                                                    </span>
+                                                }
+                                            </div>
                                         }
                                     }
                                 </article>
