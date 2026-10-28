@@ -5,7 +5,6 @@ public class FileReference
     public enum FileReferenceType
     {
         Local,
-        BrowserPicked,
         Uploaded
     }
 

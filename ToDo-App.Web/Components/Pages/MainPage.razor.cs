@@ -325,14 +325,8 @@ public partial class MainPage
     {
         try
         {
-            var fileReference = new FileReference
-            {
-                type = FileReference.FileReferenceType.BrowserPicked,
-                name = e.File.Name,
-                fullPath = "",
-                stream = e.File.OpenReadStream(ServerStorageHandler.MaxFileSize)
-            };
-            Board.UpdateNoteFile(note.Id, fileReference);
+            var uploadedFileReference = await Host.StorageHandler.SaveAsync(e.File.OpenReadStream(ServerStorageHandler.MaxFileSize), e.File.Name);
+            Board.UpdateNoteFile(note.Id, uploadedFileReference);
         }
         catch (Exception exception)
         {
