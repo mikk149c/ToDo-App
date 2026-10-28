@@ -16,7 +16,7 @@ public class TagTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         plannedId = controller.CreateColumn("Planned");
         progressId = controller.CreateColumn("In Progress");
         firstNoteId = controller.CreateNote(plannedId, "First note", "Køb bananer");
@@ -73,37 +73,37 @@ public class TagTests
     // --- Adding and removing ---
 
     [Test]
-    public void SetNoteTagsAddsTagsInOrder()
+    public void UpdateNoteTagsAddsTagsInOrder()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "Work", "Urgent" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Work", "Urgent" });
 
         Assert.That(tagNames(firstNoteId), Is.EqualTo(new[] { "Work", "Urgent" }));
     }
 
     [Test]
-    public void SetNoteTagsTrimsNames()
+    public void UpdateNoteTagsTrimsNames()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "  Home " });
+        controller.UpdateNoteTags(firstNoteId, new[] { "  Home " });
 
         Assert.That(tagNames(firstNoteId), Is.EqualTo(new[] { "Home" }));
     }
 
     [Test]
-    public void SetNoteTagsHasNoLimitOnNumberOfTags()
+    public void UpdateNoteTagsHasNoLimitOnNumberOfTags()
     {
         var names = Enumerable.Range(1, 50).Select(i => $"Tag {i}").ToList();
 
-        controller.SetNoteTags(firstNoteId, names);
+        controller.UpdateNoteTags(firstNoteId, names);
 
         Assert.That(tagNames(firstNoteId), Is.EqualTo(names));
     }
 
     [Test]
-    public void SetNoteTagsWithEmptyListRemovesAllTags()
+    public void UpdateNoteTagsWithEmptyListRemovesAllTags()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "Work" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Work" });
 
-        controller.SetNoteTags(firstNoteId, Array.Empty<string>());
+        controller.UpdateNoteTags(firstNoteId, Array.Empty<string>());
 
         Assert.That(note(firstNoteId).Tags, Is.Empty);
     }
@@ -111,10 +111,10 @@ public class TagTests
     [Test]
     public void RemovingTagFromOneNoteKeepsItOnOthers()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "Urgent" });
-        controller.SetNoteTags(secondNoteId, new[] { "Urgent" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Urgent" });
+        controller.UpdateNoteTags(secondNoteId, new[] { "Urgent" });
 
-        controller.SetNoteTags(firstNoteId, Array.Empty<string>());
+        controller.UpdateNoteTags(firstNoteId, Array.Empty<string>());
 
         Assert.That(tagNames(secondNoteId), Is.EqualTo(new[] { "Urgent" }));
     }
@@ -122,7 +122,7 @@ public class TagTests
     [Test]
     public void SameTagTwiceOnANoteIsKeptOnce()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "Work", "WORK", "work " });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Work", "WORK", "work " });
 
         Assert.That(tagNames(firstNoteId), Is.EqualTo(new[] { "Work" }));
     }
@@ -132,19 +132,19 @@ public class TagTests
     [TestCase("ThirteenChars")]
     public void InvalidTagNameThrowsAndLeavesTagsAndEventsUnchanged(string invalidName)
     {
-        controller.SetNoteTags(firstNoteId, new[] { "Work" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Work" });
         recorder.Clear();
 
-        Assert.Throws<ArgumentException>(() => controller.SetNoteTags(firstNoteId, new[] { "Home", invalidName }));
+        Assert.Throws<ArgumentException>(() => controller.UpdateNoteTags(firstNoteId, new[] { "Home", invalidName }));
 
         Assert.That(tagNames(firstNoteId), Is.EqualTo(new[] { "Work" }));
         Assert.That(recorder.Names, Is.Empty);
     }
 
     [Test]
-    public void SetNoteTagsWithUnknownNoteThrowsWithoutEvents()
+    public void UpdateNoteTagsWithUnknownNoteThrowsWithoutEvents()
     {
-        Assert.Throws<KeyNotFoundException>(() => controller.SetNoteTags(Guid.NewGuid(), new[] { "Work" }));
+        Assert.Throws<KeyNotFoundException>(() => controller.UpdateNoteTags(Guid.NewGuid(), new[] { "Work" }));
         Assert.That(recorder.Names, Is.Empty);
     }
 
@@ -153,9 +153,9 @@ public class TagTests
     [Test]
     public void AddingExistingTagNameReusesItsIdAndSpelling()
     {
-        controller.SetNoteTags(secondNoteId, new[] { "Work" });
+        controller.UpdateNoteTags(secondNoteId, new[] { "Work" });
 
-        controller.SetNoteTags(firstNoteId, new[] { "work" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "work" });
 
         NoteTag reused = note(firstNoteId).Tags.Single();
         NoteTag original = note(secondNoteId).Tags.Single();
@@ -166,10 +166,10 @@ public class TagTests
     [Test]
     public void SettingSameTagsAgainKeepsTagIds()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "Work" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Work" });
         Guid tagId = note(firstNoteId).Tags.Single().Id;
 
-        controller.SetNoteTags(firstNoteId, new[] { "Work", "Home" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Work", "Home" });
 
         Assert.That(note(firstNoteId).Tags[0].Id, Is.EqualTo(tagId));
     }
@@ -177,8 +177,8 @@ public class TagTests
     [Test]
     public void NotesShareTagIdButNotTheTagObject()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "Work" });
-        controller.SetNoteTags(secondNoteId, new[] { "Work" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Work" });
+        controller.UpdateNoteTags(secondNoteId, new[] { "Work" });
 
         // Each note stores its own copy, the same way they are stored in board.json
         Assert.That(note(firstNoteId).Tags.Single(), Is.Not.SameAs(note(secondNoteId).Tags.Single()));
@@ -187,8 +187,8 @@ public class TagTests
     [Test]
     public void GetTagsListsEachTagOnceSortedByName()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "work", "Home" });
-        controller.SetNoteTags(secondNoteId, new[] { "Work", "Bug" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "work", "Home" });
+        controller.UpdateNoteTags(secondNoteId, new[] { "Work", "Bug" });
 
         Assert.That(controller.GetTags().Select(tag => tag.Name), Is.EqualTo(new[] { "Bug", "Home", "work" }));
     }
@@ -196,10 +196,10 @@ public class TagTests
     [Test]
     public void TagDisappearsWhenItsLastNoteIsDeleted()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "Garden", "Work" });
-        controller.SetNoteTags(secondNoteId, new[] { "Work" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Garden", "Work" });
+        controller.UpdateNoteTags(secondNoteId, new[] { "Work" });
 
-        controller.RemoveNote(firstNoteId);
+        controller.TrashNote(firstNoteId);
 
         Assert.That(controller.GetTags().Select(tag => tag.Name), Is.EqualTo(new[] { "Work" }));
     }
@@ -207,9 +207,9 @@ public class TagTests
     [Test]
     public void TagDisappearsWhenRemovedFromItsLastNote()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "Garden" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Garden" });
 
-        controller.SetNoteTags(firstNoteId, Array.Empty<string>());
+        controller.UpdateNoteTags(firstNoteId, Array.Empty<string>());
 
         Assert.That(controller.GetTags(), Is.Empty);
     }
@@ -217,11 +217,11 @@ public class TagTests
     [Test]
     public void TagCreatedAgainAfterItDisappearedIsANewTag()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "Garden" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Garden" });
         Guid oldId = note(firstNoteId).Tags.Single().Id;
-        controller.SetNoteTags(firstNoteId, Array.Empty<string>());
+        controller.UpdateNoteTags(firstNoteId, Array.Empty<string>());
 
-        controller.SetNoteTags(secondNoteId, new[] { "Garden" });
+        controller.UpdateNoteTags(secondNoteId, new[] { "Garden" });
 
         Assert.That(note(secondNoteId).Tags.Single().Id, Is.Not.EqualTo(oldId));
     }
@@ -229,7 +229,7 @@ public class TagTests
     [Test]
     public void TagsAreKeptWhenNoteMoves()
     {
-        controller.SetNoteTags(firstNoteId, new[] { "Work" });
+        controller.UpdateNoteTags(firstNoteId, new[] { "Work" });
         Guid tagId = note(firstNoteId).Tags.Single().Id;
 
         controller.MoveNoteToColumn(firstNoteId, progressId, 0);
@@ -242,7 +242,7 @@ public class TagTests
     [Test]
     public void CreateNoteWithTagsStoresThem()
     {
-        controller.SetNoteTags(secondNoteId, new[] { "Work" });
+        controller.UpdateNoteTags(secondNoteId, new[] { "Work" });
 
         Guid noteId = controller.CreateNote(plannedId, "New", "Content", tagNames: new[] { "work", "Home" });
 
@@ -263,9 +263,9 @@ public class TagTests
     // --- Events ---
 
     [Test]
-    public void SetNoteTagsRaisesContentChangedForItsColumnThenBoardChanged()
+    public void UpdateNoteTagsRaisesContentChangedForItsColumnThenBoardChanged()
     {
-        controller.SetNoteTags(secondNoteId, new[] { "Work" });
+        controller.UpdateNoteTags(secondNoteId, new[] { "Work" });
 
         Assert.That(recorder.Names, Is.EqualTo(new[]
         {
@@ -304,13 +304,13 @@ public class TagPersistenceTests
     [Test]
     public void RoundTripKeepsTagIdsAndNames()
     {
-        var original = new BoardController();
+        var original = new LocalBoardController();
         Guid columnId = original.CreateColumn("Planned");
         Guid firstId = original.CreateNote(columnId, "First", "", tagNames: new[] { "Work", "Home" });
         Guid secondId = original.CreateNote(columnId, "Second", "", tagNames: new[] { "Work" });
         original.SaveBoardToJson(jsonPath);
 
-        var loaded = new BoardController();
+        var loaded = new LocalBoardController();
         loaded.LoadBoardFromJson(jsonPath);
 
         List<ToDoNote> originalNotes = allNotes(original);
@@ -340,7 +340,7 @@ public class TagPersistenceTests
               ]
             }
             """);
-        var controller = new BoardController();
+        var controller = new LocalBoardController();
 
         controller.LoadBoardFromJson(jsonPath);
 
@@ -357,7 +357,7 @@ public class TagPersistenceTests
             { "StatusColumns": [ { "Id": "11111111-1111-1111-1111-111111111111", "Title": "Planned",
               "Notes": [ { "Id": "22222222-2222-2222-2222-222222222222", "Title": "Note", "Content": "", "Tags": null } ] } ] }
             """);
-        var controller = new BoardController();
+        var controller = new LocalBoardController();
 
         controller.LoadBoardFromJson(jsonPath);
 
@@ -375,7 +375,7 @@ public class TagPersistenceTests
               { "Id": "44444444-4444-4444-4444-444444444444", "Title": "Second", "Content": "",
                 "Tags": [ { "Id": "33333333-3333-3333-3333-333333333333", "Name": "Job" } ] } ] } ] }
             """);
-        var controller = new BoardController();
+        var controller = new LocalBoardController();
 
         controller.LoadBoardFromJson(jsonPath);
 
@@ -392,7 +392,7 @@ public class TagPersistenceTests
                 "Tags": [ { "Id": "33333333-3333-3333-3333-333333333333", "Name": "Work" },
                           { "Id": "33333333-3333-3333-3333-333333333333", "Name": "Work" } ] } ] } ] }
             """);
-        var controller = new BoardController();
+        var controller = new LocalBoardController();
 
         controller.LoadBoardFromJson(jsonPath);
 

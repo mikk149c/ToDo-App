@@ -21,7 +21,7 @@ public class TagMergeTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         plannedId = controller.CreateColumn("Planned");
         progressId = controller.CreateColumn("In Progress");
         doneId = controller.CreateColumn("Done");
@@ -31,7 +31,7 @@ public class TagMergeTests
         untaggedNoteId = controller.CreateNote(doneId, "Untagged", "");
         jobId = tagId("Job");
         workId = tagId("Work");
-        controller.SetTagColor(workId, "#0F6CBD");
+        controller.UpdateTagColor(workId, "#0F6CBD");
         recorder = new EventRecorder(controller);
     }
 
@@ -100,7 +100,7 @@ public class TagMergeTests
             controller.MergeTags(jobId, workId);
             controller.SaveBoardToJson(jsonPath);
 
-            var reloaded = new BoardController();
+            var reloaded = new LocalBoardController();
             reloaded.LoadBoardFromJson(jsonPath);
 
             Assert.That(reloaded.GetTags().Select(tag => tag.Name), Is.EqualTo(new[] { "Urgent", "Work" }));

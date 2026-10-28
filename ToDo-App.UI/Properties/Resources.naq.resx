@@ -24,16 +24,16 @@
         <value>Yem faylti</value>
     </data>
     <data name="button/delete_column_tooltip" xml:space="preserve">
-        <value>'Aku likit</value>
+        <value>Ska'a likit</value>
     </data>
     <data name="button/delete_tooltip" xml:space="preserve">
-        <value>'Aku</value>
+        <value>Ska'a</value>
     </data>
     <data name="button/edit_column_title_tooltip" xml:space="preserve">
         <value>Leykatem tstxot likä</value>
     </data>
-    <data name="button/edit_tooltip" xml:space="preserve">
-        <value>Leykatem</value>
+    <data name="button/edit_note_tooltip" xml:space="preserve">
+        <value>Leykatem sätserit</value>
     </data>
     <data name="button/export" xml:space="preserve">
         <value>Sweyn</value>
@@ -65,7 +65,7 @@
     <data name="dialog/ok" xml:space="preserve">
         <value>Tam</value>
     </data>
-    <data name="dialog/delete" xml:space="preserve">
+    <data name="dialog/remove" xml:space="preserve">
         <value>'Aku</value>
     </data>
     <data name="dialog/delete_the_todos" xml:space="preserve">
@@ -93,9 +93,9 @@
         <value>Sung Mipa Sätserit</value>
     </data>
     <data name="dialog/title_delete_column_q" xml:space="preserve">
-        <value>'Aku Likit Srak?</value>
+        <value>Ska'a Likit Srak?</value>
     </data>
-    <data name="dialog/title_delete_note_q" xml:space="preserve">
+    <data name="dialog/title_remove_note_q" xml:space="preserve">
         <value>'Aku Sätserit Srak?</value>
     </data>
     <data name="dialog/title_edit_column" xml:space="preserve">
@@ -150,7 +150,7 @@
         <value>Fpak</value>
     </data>
     <data name="dialog/content_delete_column" xml:space="preserve">
-        <value>'Aku likit alu {0} srak? Zene livu am'ake.</value>
+        <value>Ska'a likit alu {0} srak? Zene livu am'ake.</value>
     </data>
     <data name="dialog/content_delete_column_consequence" xml:space="preserve">
         <value>[[S|Mes|Pxes|{0}a s]]ätseriri sweylu txo pehem si?</value>
@@ -158,7 +158,7 @@
     <data name="dialog/content_delete_column_no_space" xml:space="preserve">
         <value>'Aku likit alu {0} sì [[|me|pxe|{1}a ]]sätserit a tok tsat srak? Zene livu am'ake.</value>
     </data>
-    <data name="dialog/content_delete_note" xml:space="preserve">
+    <data name="dialog/content_remove_note" xml:space="preserve">
         <value>Munge sätserit alu {0} ne sngeltseng srak?</value>
     </data>
     <data name="language/navi" xml:space="preserve">
@@ -249,7 +249,7 @@
         <value>Tstu si</value>
     </data>
     <data name="dialog/content_permanent_delete_note" xml:space="preserve">
-        <value>'Aku sätserit alu {0} srak? Zene livu am'ake.</value>
+        <value>Ska'a sätserit alu {0} srak? Zene livu am'ake.</value>
     </data>
     <data name="dialog/empty_bin" xml:space="preserve">
         <value>Mek sleyku sngeltsengit</value>
@@ -265,5 +265,32 @@
     </data>
     <data name="dialog/permanent_delete_note_tooltip" xml:space="preserve">
         <value>Ska'a sätserit</value>
+    </data>
+    <data name="button/language_tooltip" xml:space="preserve">
+        <value>Lì'fya</value>
+    </data>
+    <data name="button/font_tooltip" xml:space="preserve">
+        <value>Pamrelä 'ur</value>
+    </data>
+    <data name="button/board_remote" xml:space="preserve">
+        <value>Wep</value>
+    </data>
+    <data name="button/board_local" xml:space="preserve">
+        <value>Fìtseng</value>
+    </data>
+    <data name="button/board_source_tooltip" xml:space="preserve">
+        <value>Fìtseng: sähena a tok fìeltut lefngap. Wep: sähena a tok tsengti alu {0}</value>
+    </data>
+    <data name="error/attachment_only_on_pc" xml:space="preserve">
+        <value>Yamem faylti alu {0} fa Windowsä sä'o ulte tok tsal eltut lefngap, alunta ke tsun tsaru piak sivi fa wepä sä'o.</value>
+    </data>
+    <data name="error/failed_to_connect" xml:space="preserve">
+        <value>Ke tsolun tsaheyl sivi hu eltu lefngap a tok tsengti alu {0}</value>
+    </data>
+    <data name="dialog/delete_permanent" xml:space="preserve">
+        <value>Ska'a</value>
+    </data>
+    <data name="button/remove_note_tooltip" xml:space="preserve">
+        <value>'Aku sätserit</value>
     </data>
 </root>

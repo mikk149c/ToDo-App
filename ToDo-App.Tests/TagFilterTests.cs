@@ -14,7 +14,7 @@ public class TagFilterTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         columnId = controller.CreateColumn("Planned");
         controller.CreateNote(columnId, "Work", "", tagNames: new[] { "Work" });
         controller.CreateNote(columnId, "Home", "", tagNames: new[] { "Home" });
@@ -92,7 +92,7 @@ public class TagFilterTests
     {
         filter.Select(workId);
 
-        controller.RenameTag(workId, "Job");
+        controller.UpdateTagName(workId, "Job");
 
         Assert.That(filter.Prune(controller.GetTags()), Is.False);
         Assert.That(shownTitles(), Is.EqualTo(new[] { "Work", "Both" }));
@@ -104,7 +104,7 @@ public class TagFilterTests
         filter.Select(workId);
         Guid workNoteId = notes().Single(note => note.Title == "Work").Id;
 
-        controller.SetNoteTags(workNoteId, new[] { "Garden" });
+        controller.UpdateNoteTags(workNoteId, new[] { "Garden" });
 
         Assert.That(shownTitles(), Is.EqualTo(new[] { "Both" }));
         Assert.That(notes().Select(note => note.Title), Does.Contain("Work"));

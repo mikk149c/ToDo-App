@@ -198,13 +198,13 @@ public class JsonTests
     [Test]
     public void ControllerSaveThenLoadRestoresBoard()
     {
-        var original = new BoardController();
+        var original = new LocalBoardController();
         Guid plannedId = original.CreateColumn("Planned");
         Guid progressId = original.CreateColumn("In Progress");
         Guid noteId = original.CreateNote(progressId, "Vacation", "Australia");
         original.SaveBoardToJson(jsonPath);
 
-        var loaded = new BoardController();
+        var loaded = new LocalBoardController();
         loaded.LoadBoardFromJson(jsonPath);
 
         Assert.That(loaded.GetStatusColumnIds(), Is.EqualTo(new[] { plannedId, progressId }));
@@ -217,7 +217,7 @@ public class JsonTests
     {
         var savedBoard = createBoard();
         storeJson.Save(savedBoard);
-        var controller = new BoardController();
+        var controller = new LocalBoardController();
         Guid oldColumnId = controller.CreateColumn("Old column");
         var recorder = new EventRecorder(controller);
 

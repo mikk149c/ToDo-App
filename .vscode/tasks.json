@@ -39,6 +39,49 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "build-web",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}/ToDo-App.Web/ToDo-App.Web.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "run-web",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "watch",
+                "--project",
+                "${workspaceFolder}/ToDo-App.Web/ToDo-App.Web.csproj"
+            ],
+            "isBackground": true,
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "server: docker compose up",
+            "detail": "Builds and starts the web app and board server on http://localhost:8080",
+            "type": "process",
+            "command": "docker",
+            "args": ["compose", "up", "--build", "--detach"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": []
+        },
+        {
+            "label": "server: docker compose down",
+            "detail": "Stops the server. The board is kept in the todo-data volume",
+            "type": "process",
+            "command": "docker",
+            "args": ["compose", "down"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": []
+        },
+        {
             "label": "build-unpackaged",
             "type": "process",
             "command": "dotnet",

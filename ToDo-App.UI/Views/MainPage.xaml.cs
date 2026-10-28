@@ -2,9 +2,11 @@ using System.Diagnostics;
 using Microsoft.UI.Xaml.Automation;
 using System.Globalization;
 using Microsoft.Windows.Storage.Pickers;
+using ToDo_App.Client;
 using ToDo_App.Controller;
 using ToDo_App.Interfaces;
 using ToDo_App.UI.Appearance;
+using ToDo_App.UI.Board;
 using ToDo_App.UI.Controls;
 using Windows.ApplicationModel.DataTransfer;
 using Res = ToDo_App.UI.Resources;
@@ -18,11 +20,23 @@ namespace ToDo_App.UI.Views
     {
         private const string DefaultJsonPath = "Assets/default_board.json";
         private const string UserJsonPath = "board.json";
+
+        // The server the Remote toggle connects to. Set TODO_SERVER_URL to use another one
+        private const string ServerUrlVariable = "TODO_SERVER_URL";
+        private const string DefaultServerUrl = "http://localhost:8080/";
         private Guid selectedTrashNoteId = Guid.Empty;
         private const double ScrollSpeed = 60;
         private const double ScrollTickSpeed = 10;
 
-        ITodoBoard boardController = new BoardController();
+        // Local by default. The Remote toggle replaces it with a RemoteBoardController (see useBoard)
+        ITodoBoard boardController = new LocalBoardController();
+        // Every change to the board goes through this, so one on the server's board is grayed out until it's back
+        readonly BoardChanges changes;
+        bool isSwitchingBoard;
+
+        // The server board while Remote is on, and the test delay for changes from it (developer builds only)
+        RemoteBoardController? remoteBoard;
+        TimeSpan serverDelay = TimeSpan.Zero;
 
         List<Guid> columns = new List<Guid>();
         // Which todos are shown. Only affects the view, never the board
@@ -41,13 +55,7 @@ namespace ToDo_App.UI.Views
         {
             InitializeComponent();
 
-            boardController.ColumnCreated += onColumnCreated;
-            boardController.ColumnNameChanged += onColumnNameChanged;
-            boardController.ColumnRemoved += onColumnRemoved;
-            boardController.ColumnContentChanged += onColumnContentChanged;
-            boardController.BoardChanged += onBoardChanged;
-            boardController.ColumnOrderChanged += onColumnOrderChanged;
-            boardController.TagChanged += onTagChanged;
+            subscribeTo(boardController);
             BoardScrollViewer.DragOver += onBoardDragOver;
             BoardScrollViewer.AllowDrop = true;
             this.Content.AllowDrop = true;
@@ -62,6 +70,14 @@ namespace ToDo_App.UI.Views
             FontSelector.OnFontSelected += onFontChanged;
 
             this.Loaded += onPageInitialized;
+
+            changes = new BoardChanges(() => boardController, DispatcherQueue);
+            changes.Failed += onChangeFailed;
+
+#if DEBUG
+            // Only when run as a developer (a Debug build): slow down changes from the server to test how that looks
+            ServerDelayBox.Visibility = Visibility.Visible;
+#endif
         }
 
         private void onPageInitialized(object? sender, RoutedEventArgs eventArgs)
@@ -110,6 +126,124 @@ namespace ToDo_App.UI.Views
                     var result = await dialog.ShowAsync();
                 }
             }
+        }
+
+        // --- Local or remote board ---
+
+        // Local (the default) keeps the board in a file on this PC, Remote uses the board on the server
+        private async void onRemoteToggled(object sender, RoutedEventArgs e)
+        {
+            // Setting IsOn below raises Toggled again
+            if (isSwitchingBoard)
+            {
+                return;
+            }
+
+            isSwitchingBoard = true;
+            RemoteToggle.IsEnabled = false;
+
+            if (RemoteToggle.IsOn)
+            {
+                var remote = new RemoteBoardController(serverUrl()) { IncomingDelay = serverDelay };
+                remoteBoard = remote;
+                useBoard(remote);
+                try
+                {
+                    // The server's columns arrive through ColumnCreated, like loading a file
+                    await remote.ConnectAsync();
+                }
+                catch (Exception exception)
+                {
+                    // The server can't be reached: back to the board on this PC
+                    RemoteToggle.IsOn = false;
+                    useLocalBoard();
+                    var dialog = new ContentDialog()
+                    {
+                        XamlRoot = this.Content.XamlRoot,
+                        Title = String.Format(Res.ResourceManager.GetString("error/failed_to_connect", _currentCulture) ?? "", serverUrl()),
+                        Content = exception.Message,
+                        CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
+                    };
+                    await dialog.ShowAsync();
+                }
+            }
+            else
+            {
+                useLocalBoard();
+            }
+
+            RemoteToggle.IsEnabled = true;
+            isSwitchingBoard = false;
+        }
+
+        private void useLocalBoard()
+        {
+            remoteBoard = null;
+            useBoard(new LocalBoardController());
+            loadInitialBoard();
+        }
+
+        // Swaps in another controller. The page is cleared, so the new controller's columns can fill it
+        private void useBoard(ITodoBoard board)
+        {
+            unsubscribeFrom(boardController);
+            (boardController as IDisposable)?.Dispose();
+            ColumnsPanel.Children.Clear();
+            ColumnsPanel.ColumnDefinitions.Clear();
+            columns.Clear();
+            recalculateColumnsPanelMinWidth();
+
+            boardController = board;
+            subscribeTo(boardController);
+        }
+
+        private void subscribeTo(ITodoBoard board)
+        {
+            board.ColumnCreated += onColumnCreated;
+            board.ColumnNameChanged += onColumnNameChanged;
+            board.ColumnRemoved += onColumnRemoved;
+            board.ColumnContentChanged += onColumnContentChanged;
+            board.BoardChanged += onBoardChanged;
+            board.ColumnOrderChanged += onColumnOrderChanged;
+            board.TagChanged += onTagChanged;
+        }
+
+        private void unsubscribeFrom(ITodoBoard board)
+        {
+            board.ColumnCreated -= onColumnCreated;
+            board.ColumnNameChanged -= onColumnNameChanged;
+            board.ColumnRemoved -= onColumnRemoved;
+            board.ColumnContentChanged -= onColumnContentChanged;
+            board.BoardChanged -= onBoardChanged;
+            board.ColumnOrderChanged -= onColumnOrderChanged;
+            board.TagChanged -= onTagChanged;
+
+            // What was on its way to the old board isn't shown as pending on the new one
+            Pending.Clear();
+            ChangeFailedBar.IsOpen = false;
+        }
+
+        // A change the server refused. Nothing changed on the board
+        private void onChangeFailed(object? sender, Exception error)
+        {
+            ChangeFailedBar.Title = Res.ResourceManager.GetString("error/change_not_saved", _currentCulture);
+            ChangeFailedBar.Message = error.Message;
+            ChangeFailedBar.IsOpen = true;
+        }
+
+        private void onServerDelayChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            // An empty box means no delay
+            serverDelay = TimeSpan.FromMilliseconds(double.IsNaN(sender.Value) ? 0 : Math.Max(0, sender.Value));
+            if (remoteBoard != null)
+            {
+                remoteBoard.IncomingDelay = serverDelay;
+            }
+        }
+
+        private static Uri serverUrl()
+        {
+            return new Uri(Environment.GetEnvironmentVariable(ServerUrlVariable) ?? DefaultServerUrl);
         }
 
         private void populateStatusColumn(Guid column)
@@ -236,7 +370,8 @@ namespace ToDo_App.UI.Views
 
                         destinationButton.Click += (columnSender, columnE) => {
                             if (selectedTrashNoteId == Guid.Empty) { return; }
-                            boardController.RestoreNote( selectedTrashNoteId, columnId);
+                            Guid restoredNoteId = selectedTrashNoteId;
+                            changes.Send(board => board.RestoreNote(restoredNoteId, columnId), columnId);
                             selectedTrashNoteId = Guid.Empty;
 
                             RefreshTrashBin(listPanel, confirmationText, trashListView, restorePanel,
@@ -385,17 +520,18 @@ namespace ToDo_App.UI.Views
             };
 
             Button confirmDeleteFromTrashButton = new Button {
-                Content = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
+                Content = Res.ResourceManager.GetString("dialog/delete_permanent", _currentCulture),
                 Height = 40,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Style = (Style)Application.Current.Resources["PrimaryAction"]
             };
             confirmDeleteFromTrashButton.Click += (sender, e) => {
                 if (selectedTrashNoteId == Guid.Empty) { 
-                    boardController.EmptyTrashBin(); 
+                    changes.Send(board => board.EmptyTrash()); 
                 }
                 else {
-                    boardController.RemoveNoteFromTrashBin(selectedTrashNoteId);
+                    Guid deletedNoteId = selectedTrashNoteId;
+                    changes.Send(board => board.DeleteNote(deletedNoteId));
                     selectedTrashNoteId = Guid.Empty;   
                 }
                 RefreshTrashBin(listPanel, confirmationText,trashListView, restorePanel, 
@@ -545,6 +681,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove([args.ColumnId, .. args.Notes.Select(note => note.Id)]);
 
             // A loaded board may not have the filtered tags, and the new column is drawn with the filter
             if (tagFilter.Prune(boardController.GetTags()))
@@ -562,6 +699,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove([args.ColumnId]);
             
             rebuildColumn(args.ColumnId, args.NewName);
         }
@@ -579,6 +717,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove([args.ColumnId]);
 
             removeColumn(args.ColumnId);
             columns.Remove(args.ColumnId);
@@ -599,6 +738,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove([args.ColumnId, .. args.NewNotes.Select(note => note.Id)]);
             
             // The filter turns off tags that are gone, which can show todos in every column
             if (tagFilter.Prune(boardController.GetTags()))
@@ -617,6 +757,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove([args.TagId]);
 
             // Redraw every column with a card that shows the tag
             foreach (Guid columnId in columns)
@@ -638,6 +779,7 @@ namespace ToDo_App.UI.Views
             {
                 throw new ArgumentException("Wrong EventArgs type");
             }
+            Pending.Remove(args.ColumnIds);
 
             columns = new List<Guid>(args.ColumnIds);
 
@@ -661,6 +803,12 @@ namespace ToDo_App.UI.Views
             if (eventArgs is not BoardChangedEventArgs args)
             {
                 throw new ArgumentException("Wrong EventArgs type");
+            }
+
+            // The server saves a remote board. board.json is only for the board on this PC
+            if (boardController is RemoteBoardController)
+            {
+                return;
             }
 
             try
@@ -794,6 +942,7 @@ namespace ToDo_App.UI.Views
             columnGrid.Children.Add(scrollViewer);
 
             column.Child = columnGrid;
+            Pending.SetIds(column, columnId);
 
             return column;
         }
@@ -933,7 +1082,7 @@ namespace ToDo_App.UI.Views
                 {
                     dropIndex--;
                 }
-                boardController.MoveNoteToColumn(noteId, columnId, dropIndex);
+                changes.Send(board => board.MoveNoteToColumn(noteId, columnId, dropIndex), noteId);
             }
             else if (e.DataView.Properties.TryGetValue("columnId", out object? columnValue) && columnValue is Guid draggedColumnId)
             {
@@ -961,7 +1110,7 @@ namespace ToDo_App.UI.Views
                     dropIndex--;
                 }
 
-                boardController.MoveColumn(draggedColumnId, dropIndex);
+                changes.Send(board => board.MoveColumn(draggedColumnId, dropIndex), draggedColumnId);
             }
         }
 
@@ -1025,7 +1174,7 @@ namespace ToDo_App.UI.Views
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled
             };
 
-            var tagEditor = new TagEditor(boardController, Array.Empty<NoteTag>(), tagEditorStrings());
+            var tagEditor = new TagEditor(boardController, changes, Array.Empty<NoteTag>(), tagEditorStrings());
 
             var dialog = new ThemedContentDialog
             {
@@ -1047,12 +1196,11 @@ namespace ToDo_App.UI.Views
             ContentDialogResult result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary) {
                 // Leaving a field empty keeps the placeholder text, as it did when the fields were prefilled
-                boardController.CreateNote(
-                    columnId,
-                    string.IsNullOrWhiteSpace(titleBox.Text) ? defaultTitle : titleBox.Text,
-                    string.IsNullOrWhiteSpace(contentBox.Text) ? defaultContent : contentBox.Text,
-                    tagNames: tagEditor.TagNames,
-                    newTagColors: tagEditor.NewTagColors);
+                string title = string.IsNullOrWhiteSpace(titleBox.Text) ? defaultTitle : titleBox.Text;
+                string content = string.IsNullOrWhiteSpace(contentBox.Text) ? defaultContent : contentBox.Text;
+                var tagNames = tagEditor.TagNames;
+                var newTagColors = tagEditor.NewTagColors;
+                changes.Send(board => board.CreateNote(columnId, title, content, tagNames: tagNames, newTagColors: newTagColors), columnId);
             }
         }
 
@@ -1077,7 +1225,8 @@ namespace ToDo_App.UI.Views
             ContentDialogResult result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                boardController.SetStatusColumnName(columnId, nameBox.Text);
+                string newName = nameBox.Text;
+                changes.Send(board => board.UpdateColumn(columnId, newName), columnId);
             }
         }
 
@@ -1138,7 +1287,7 @@ namespace ToDo_App.UI.Views
             {
                 Title = Res.ResourceManager.GetString("dialog/title_delete_column_q", _currentCulture),
                 Content = content,
-                PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete_permanent", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
                 DefaultButton = ContentDialogButton.Primary,
                 RequestedTheme = this.ActualTheme,
@@ -1150,11 +1299,11 @@ namespace ToDo_App.UI.Views
             {
                 if (todoActionBox?.SelectedItem is ComboBoxItem { Tag: Guid moveToColumn })
                 {
-                    boardController.RemoveColumn(columnId, moveToColumn);
+                    changes.Send(board => board.DeleteColumn(columnId, moveToColumn), columnId, moveToColumn);
                 }
                 else
                 {
-                    boardController.RemoveColumn(columnId);
+                    changes.Send(board => board.DeleteColumn(columnId), columnId);
                 }
                 recalculateColumnsPanelMinWidth();
             }
@@ -1176,10 +1325,10 @@ namespace ToDo_App.UI.Views
             var dialog = new ThemedContentDialog
             {
                 XamlRoot = this.XamlRoot,
-                Title = Res.ResourceManager.GetString("dialog/title_delete_note_q", _currentCulture),
-                PrimaryButtonText = Res.ResourceManager.GetString("dialog/delete", _currentCulture),
+                Title = Res.ResourceManager.GetString("dialog/title_remove_note_q", _currentCulture),
+                PrimaryButtonText = Res.ResourceManager.GetString("dialog/remove", _currentCulture),
                 CloseButtonText = Res.ResourceManager.GetString("dialog/cancel", _currentCulture),
-                Content = String.Format(Res.ResourceManager.GetString("dialog/content_delete_note", _currentCulture), note.Title),
+                Content = String.Format(Res.ResourceManager.GetString("dialog/content_remove_note", _currentCulture), note.Title),
                 DefaultButton = ContentDialogButton.Primary,
                 RequestedTheme = this.ActualTheme
             };
@@ -1188,12 +1337,17 @@ namespace ToDo_App.UI.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                boardController.RemoveNote(note.Id);
+                changes.Send(board => board.TrashNote(note.Id), note.Id);
             }
         }
 
         private async void onEditTodoClicked(ToDoNote note)
         {
+            // The note as the dialog opens, so saving only changes what the user changed. The tag names are copied,
+            // as renaming a tag changes the note's tags in place
+            string openedTitle = note.Title;
+            string openedContent = note.Content;
+            List<string> openedTagNames = note.Tags.Select(tag => tag.Name).ToList();
             var titleBox = new TextBox
             {
                 Header = Res.ResourceManager.GetString("todo/property_title", _currentCulture),
@@ -1217,7 +1371,7 @@ namespace ToDo_App.UI.Views
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled
             };
             
-            var tagEditor = new TagEditor(boardController, note.Tags, tagEditorStrings());
+            var tagEditor = new TagEditor(boardController, changes, note.Tags, tagEditorStrings());
 
             var dialog = new ThemedContentDialog
             {
@@ -1240,9 +1394,33 @@ namespace ToDo_App.UI.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                boardController.SetNoteTitle(note.Id, titleBox.Text);
-                boardController.SetNoteContent(note.Id, contentBox.Text);
-                boardController.SetNoteTags(note.Id, tagEditor.TagNames, tagEditor.NewTagColors);
+                // Only what the user changed, so a change someone else made meanwhile isn't undone.
+                // Tags first: they're the only part that can be refused
+                var tagNames = tagEditor.TagNames;
+                var newTagColors = tagEditor.NewTagColors;
+                string title = titleBox.Text;
+                string content = contentBox.Text;
+                bool tagsChanged = !tagNames.SequenceEqual(openedTagNames);
+                bool titleChanged = title != openedTitle;
+                bool contentChanged = content != openedContent;
+                if (tagsChanged || titleChanged || contentChanged)
+                {
+                    changes.Send(board =>
+                    {
+                        if (tagsChanged)
+                        {
+                            board.UpdateNoteTags(note.Id, tagNames, newTagColors);
+                        }
+                        if (titleChanged)
+                        {
+                            board.UpdateNoteTitle(note.Id, title);
+                        }
+                        if (contentChanged)
+                        {
+                            board.UpdateNoteContent(note.Id, content);
+                        }
+                    }, note.Id);
+                }
             }
         }
 
@@ -1262,7 +1440,8 @@ namespace ToDo_App.UI.Views
                 var file = await picker.PickSingleFileAsync();
                 if (file != null)
                 {
-                    boardController.SetNoteFileAttachment(note.Id, file.Path);
+                    var attachment = new AttachedFile(System.IO.Path.GetFileName(file.Path), file.Path);
+                    changes.Send(board => board.UpdateNoteFile(note.Id, attachment), note.Id);
                 }
                 else
                 {
@@ -1310,7 +1489,7 @@ namespace ToDo_App.UI.Views
         {
             try
             {
-                boardController.RemoveNoteFileAttachment(note.Id);
+                changes.Send(board => board.DeleteNoteFile(note.Id), note.Id);
             }
             catch (Exception e)
             {
@@ -1352,7 +1531,7 @@ namespace ToDo_App.UI.Views
             noteTextPanel.Children.Add(descriptionText);
             
             var editButton = new Button { Content = new SymbolIcon(Symbol.Edit) };
-            ToolTipService.SetToolTip(editButton, Res.ResourceManager.GetString("button/edit_tooltip", _currentCulture));
+            ToolTipService.SetToolTip(editButton, Res.ResourceManager.GetString("button/edit_note_tooltip", _currentCulture));
             editButton.Click += (s, e) => onEditTodoClicked(note);
         
             var attachButton = new Button { Content = new SymbolIcon(Symbol.Attach) };
@@ -1360,7 +1539,7 @@ namespace ToDo_App.UI.Views
             attachButton.Click += (s, e) => onAttachFileClicked(note, attachButton);
         
             var deleteButton = new Button { Content = new SymbolIcon(Symbol.Delete) };
-            ToolTipService.SetToolTip(deleteButton, Res.ResourceManager.GetString("button/delete_tooltip", _currentCulture));
+            ToolTipService.SetToolTip(deleteButton, Res.ResourceManager.GetString("button/remove_note_tooltip", _currentCulture));
             deleteButton.Click += (s, e) => onDeleteTodoClicked(note);
 
             var noteActionButtons = new StackPanel
@@ -1432,6 +1611,8 @@ namespace ToDo_App.UI.Views
             };
             card.DragStarting += (s, e) => onNote_DragStarting(note, e);
             card.DropCompleted += (s, e) => stopAutoScroll();
+            // Grayed out while a change to the todo, or to one of its tags, is on its way
+            Pending.SetIds(card, [note.Id, .. note.Tags.Select(tag => tag.Id)]);
             return card;
         }
 
@@ -1678,7 +1859,7 @@ namespace ToDo_App.UI.Views
             {
                 string columnName = columnNameBox.Text;
 
-                Guid newColumn = boardController.CreateColumn(columnName);
+                changes.Send(board => board.CreateColumn(columnName));
             }
         }
 
@@ -1727,6 +1908,10 @@ namespace ToDo_App.UI.Views
             AddColumnButtonTextBlock.Text = Res.ResourceManager.GetString("button/add_column", _currentCulture);
             ImportButtonTextBlock.Text = Res.ResourceManager.GetString("button/import", _currentCulture);
             ExportButtonTextBlock.Text = Res.ResourceManager.GetString("button/export", _currentCulture);
+            RemoteToggle.OffContent = Res.ResourceManager.GetString("button/board_local", _currentCulture);
+            RemoteToggle.OnContent = Res.ResourceManager.GetString("button/board_remote", _currentCulture);
+            ToolTipService.SetToolTip(RemoteToggle, String.Format(
+                Res.ResourceManager.GetString("button/board_source_tooltip", _currentCulture) ?? "", serverUrl()));
             TrashBinButtonTextBlock.Text = Res.ResourceManager.GetString("button/trash_bin", _currentCulture);
             
             // Refresh toolbar components
@@ -1737,6 +1922,8 @@ namespace ToDo_App.UI.Views
                 Res.ResourceManager.GetString("button/tooltip_dark", _currentCulture),
                 Res.ResourceManager.GetString("button/tooltip_accent_color", _currentCulture)
                 );
+            FontSelector.SetLocalizedStrings(Res.ResourceManager.GetString("button/font_tooltip", _currentCulture));
+            LanguageSelector.SetLocalizedStrings(Res.ResourceManager.GetString("button/language_tooltip", _currentCulture));
             
             // Refresh dynamic UI elements for each column
             foreach (var guid in columns)

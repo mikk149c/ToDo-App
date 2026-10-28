@@ -7,6 +7,7 @@ public class Localizer
         {"en-US", "English"},
         {"da-DK", "Dansk"},
         {"de", "Deutsch"},
+        {"eo", "Esperanto"},
         {"fo", "Føroyskt"},
         {"kln", "tlhIngan Hol (Klingon)"},
         {"naq", "Lì'fya leNa'vi"}
@@ -17,6 +18,7 @@ public class Localizer
         {"en-US", [x => x == 1]},
         {"da-DK", [x => x == 1]},
         {"de",    [x => x == 1]},
+        {"eo",    [x => x == 1]},
         {"fo",    [x => x == 1]},
         {"kln",   [x => x == 1]},
         {"naq",   [x => x == 1, x => x == 2, x => x == 3]}

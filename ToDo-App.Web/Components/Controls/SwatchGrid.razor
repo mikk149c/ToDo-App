@@ -1,0 +1,47 @@
+@* The accent palette as a 3x3 grid of swatches, used for the accent colour and for tag colours.
+   A radio group: Tab reaches the selected swatch and the arrow keys move between them. *@
+<div class="swatch-grid" style="grid-template-columns: repeat(@AccentPalette.Columns, 32px)">
+    @for (int i = 0; i < AccentPalette.All.Count; i++)
+    {
+        int index = i;
+        AccentColorOption option = AccentPalette.All[index];
+        bool isSelected = ReferenceEquals(option, selectedOption);
+        <button type="button" role="radio" class="swatch" aria-checked="@(isSelected ? "true" : "false")"
+                aria-label="@option.Name" title="@option.Name" tabindex="@(isSelected ? 0 : -1)"
+                style="background: @option.Hex" @ref="swatches[index]"
+                @onclick="() => SelectedChanged.InvokeAsync(option)"
+                @onkeydown="e => OnKeyDown(e, index)"></button>
+    }
+</div>
+
+@code {
+    private readonly ElementReference[] swatches = new ElementReference[AccentPalette.All.Count];
+    private AccentColorOption selectedOption = AccentPalette.Default;
+
+    /// <summary>The selected colour as "#RRGGBB". Null or unknown selects the default colour.</summary>
+    [Parameter] public string? Selected { get; set; }
+
+    [Parameter] public EventCallback<AccentColorOption> SelectedChanged { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        selectedOption = AccentPalette.Find(Selected);
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e, int index)
+    {
+        int columns = AccentPalette.Columns;
+        int target = e.Key switch
+        {
+            "ArrowRight" => index + 1,
+            "ArrowLeft" => index - 1,
+            "ArrowDown" => index + columns,
+            "ArrowUp" => index - columns,
+            _ => -1
+        };
+        if (target >= 0 && target < swatches.Length)
+        {
+            await swatches[target].FocusAsync();
+        }
+    }
+}

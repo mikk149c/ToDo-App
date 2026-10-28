@@ -23,6 +23,11 @@ namespace ToDo_App.UI.Controls
             sync();
         }
 
+        public void SetLocalizedStrings(string language)
+        {
+            ToolTipService.SetToolTip(LanguageComboBox, language);
+        }
+
         public void SetSelectedLanguage(string language)
         {
             appearance.SetLanguage(language);

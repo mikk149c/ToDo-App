@@ -16,7 +16,7 @@ public class BugRegressionTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         plannedId = controller.CreateColumn("Planned");
         progressId = controller.CreateColumn("In Progress");
         noteId = controller.CreateNote(plannedId, "First note", "Køb bananer");
@@ -24,22 +24,16 @@ public class BugRegressionTests
     }
 
     // Was a NullReferenceException from ToDoBoard.GetColumnIdFromNoteId
-    [TestCase(nameof(BoardController.RemoveNote))]
-    [TestCase(nameof(BoardController.MoveNoteUp))]
-    [TestCase(nameof(BoardController.MoveNoteDown))]
-    [TestCase(nameof(BoardController.MoveNoteLeft))]
-    [TestCase(nameof(BoardController.MoveNoteRight))]
+    [TestCase(nameof(BoardController.TrashNote))]
+    [TestCase(nameof(BoardController.UpdateNoteTitle))]
     [TestCase(nameof(BoardController.MoveNoteToColumn))]
     public void UnknownNoteIdThrowsKeyNotFoundExceptionWithoutEvents(string method)
     {
         Guid unknownId = Guid.NewGuid();
         Action operation = method switch
         {
-            nameof(BoardController.RemoveNote) => () => controller.RemoveNote(unknownId),
-            nameof(BoardController.MoveNoteUp) => () => controller.MoveNoteUp(unknownId),
-            nameof(BoardController.MoveNoteDown) => () => controller.MoveNoteDown(unknownId),
-            nameof(BoardController.MoveNoteLeft) => () => controller.MoveNoteLeft(unknownId),
-            nameof(BoardController.MoveNoteRight) => () => controller.MoveNoteRight(unknownId),
+            nameof(BoardController.TrashNote) => () => controller.TrashNote(unknownId),
+            nameof(BoardController.UpdateNoteTitle) => () => controller.UpdateNoteTitle(unknownId, "Renamed"),
             _ => () => controller.MoveNoteToColumn(unknownId, progressId, 0)
         };
 
@@ -83,32 +77,6 @@ public class BugRegressionTests
         }
     }
 
-    // The board changed without any event
-    [Test]
-    public void MoveNoteByIndexRaisesContentChangedForBothColumnsThenBoardChanged()
-    {
-        controller.MoveNote(0, 0, 1, 0);
-
-        Assert.That(recorder.Names, Is.EqualTo(new[]
-        {
-            nameof(BoardController.ColumnContentChanged),
-            nameof(BoardController.ColumnContentChanged),
-            nameof(BoardController.BoardChanged)
-        }));
-        var changedColumns = recorder.ArgsOf<ColumnContentChangedEventArgs>().Select(e => e.ColumnId);
-        Assert.That(changedColumns, Is.EqualTo(new[] { plannedId, progressId }));
-    }
-
-    [TestCase(-1, 0, TestName = "MoveNoteByIndexFromInvalidColumnRaisesNoEvents")]
-    [TestCase(0, 1, TestName = "MoveNoteByIndexFromEmptyPositionRaisesNoEvents")]
-    public void MoveNoteByIndexWithNothingToMoveRaisesNoEvents(int fromColumnIndex, int fromPos)
-    {
-        controller.MoveNote(fromColumnIndex, fromPos, 1, 0);
-
-        Assert.That(recorder.Names, Is.Empty);
-        Assert.That(controller.GetNotesInColumn(plannedId).Single().Id, Is.EqualTo(noteId));
-    }
-
     [Test]
     public void LoadBoardFromJsonRaisesRemovedThenCreatedThenBoardChanged()
     {
@@ -145,7 +113,7 @@ public class BugRegressionTests
     private static string saveOtherBoard()
     {
         string jsonPath = Path.Combine(Path.GetTempPath(), $"todo-tests-{Guid.NewGuid()}.json");
-        var other = new BoardController();
+        var other = new LocalBoardController();
         other.CreateColumn("Loaded column");
         other.SaveBoardToJson(jsonPath);
         return jsonPath;

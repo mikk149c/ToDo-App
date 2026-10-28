@@ -96,6 +96,33 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Local.
+        /// </summary>
+        internal static string button_board_local {
+            get {
+                return ResourceManager.GetString("button/board_local", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remote.
+        /// </summary>
+        internal static string button_board_remote {
+            get {
+                return ResourceManager.GetString("button/board_remote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local: the board on this PC. Remote: the board on the server at {0}.
+        /// </summary>
+        internal static string button_board_source_tooltip {
+            get {
+                return ResourceManager.GetString("button/board_source_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete column.
         /// </summary>
         internal static string button_delete_column_tooltip {
@@ -123,11 +150,11 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit.
+        ///   Looks up a localized string similar to Edit note.
         /// </summary>
-        internal static string button_edit_tooltip {
+        internal static string button_edit_note_tooltip {
             get {
-                return ResourceManager.GetString("button/edit_tooltip", resourceCulture);
+                return ResourceManager.GetString("button/edit_note_tooltip", resourceCulture);
             }
         }
         
@@ -141,6 +168,15 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Font.
+        /// </summary>
+        internal static string button_font_tooltip {
+            get {
+                return ResourceManager.GetString("button/font_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import.
         /// </summary>
         internal static string button_import {
@@ -150,11 +186,29 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        internal static string button_language_tooltip {
+            get {
+                return ResourceManager.GetString("button/language_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove attached file.
         /// </summary>
         internal static string button_remove_attached_file_tooltip {
             get {
                 return ResourceManager.GetString("button/remove_attached_file_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove note.
+        /// </summary>
+        internal static string button_remove_note_tooltip {
+            get {
+                return ResourceManager.GetString("button/remove_note_tooltip", resourceCulture);
             }
         }
         
@@ -276,15 +330,6 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Move &quot;{0}&quot; to trash bin?.
-        /// </summary>
-        internal static string dialog_content_delete_note {
-            get {
-                return ResourceManager.GetString("dialog/content_delete_note", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Permanently delete &quot;{0}&quot;? This can&apos;t be undone..
         /// </summary>
         internal static string dialog_content_permanent_delete_note {
@@ -294,11 +339,20 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Move &quot;{0}&quot; to trash bin?.
+        /// </summary>
+        internal static string dialog_content_remove_note {
+            get {
+                return ResourceManager.GetString("dialog/content_remove_note", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
-        internal static string dialog_delete {
+        internal static string dialog_delete_permanent {
             get {
-                return ResourceManager.GetString("dialog/delete", resourceCulture);
+                return ResourceManager.GetString("dialog/delete_permanent", resourceCulture);
             }
         }
         
@@ -429,6 +483,15 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        internal static string dialog_remove {
+            get {
+                return ResourceManager.GetString("dialog/remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove &quot;{0}&quot;.
         /// </summary>
         internal static string dialog_remove_tag {
@@ -546,15 +609,6 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete Note?.
-        /// </summary>
-        internal static string dialog_title_delete_note_q {
-            get {
-                return ResourceManager.GetString("dialog/title_delete_note_q", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Edit Column.
         /// </summary>
         internal static string dialog_title_edit_column {
@@ -573,11 +627,38 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove Note?.
+        /// </summary>
+        internal static string dialog_title_remove_note_q {
+            get {
+                return ResourceManager.GetString("dialog/title_remove_note_q", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;{0}&quot; was attached in the Windows app and is saved on that PC, so it can&apos;t be opened from the browser..
+        /// </summary>
+        internal static string error_attachment_only_on_pc {
+            get {
+                return ResourceManager.GetString("error/attachment_only_on_pc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to attach file..
         /// </summary>
         internal static string error_failed_to_attach_file {
             get {
                 return ResourceManager.GetString("error/failed_to_attach_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not connect to the server at {0}.
+        /// </summary>
+        internal static string error_failed_to_connect {
+            get {
+                return ResourceManager.GetString("error/failed_to_connect", resourceCulture);
             }
         }
         

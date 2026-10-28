@@ -1,0 +1,48 @@
+@implements IDisposable
+@inject AppearanceManager Appearance
+
+@* Picks the font of the whole app, the web version of the font selector in the Windows app. A browser can't list
+   the fonts on a PC, so these are the common ones; a font the PC doesn't have falls back to the browser's. *@
+<select class="font-selector" aria-label="@FontLabel" title="@FontLabel" value="@(Appearance.Current.Font ?? "")" @onchange="OnFontChanged">
+    <option value="">@DefaultText</option>
+    @foreach (string font in Fonts)
+    {
+        <option value="@font" style="font-family: '@font'">@font</option>
+    }
+</select>
+
+@code {
+    [Parameter] public string FontLabel { get; set; } = "Font";
+    
+    private static readonly string[] Fonts =
+    {
+        "Arial", "Calibri", "Cambria", "Candara", "Comic Sans MS", "Consolas", "Courier New", "Georgia",
+        "Segoe UI", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana"
+    };
+
+    [Parameter] public string Label { get; set; } = "Font";
+
+    /// <summary>The choice that keeps the app's own font.</summary>
+    [Parameter] public string DefaultText { get; set; } = "Aa";
+
+    protected override void OnInitialized()
+    {
+        Appearance.Changed += onAppearanceChanged;
+    }
+
+    private Task OnFontChanged(ChangeEventArgs e)
+    {
+        string? font = e.Value?.ToString();
+        return Appearance.SetFontAsync(string.IsNullOrEmpty(font) ? null : font);
+    }
+
+    private void onAppearanceChanged(object? sender, EventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Appearance.Changed -= onAppearanceChanged;
+    }
+}

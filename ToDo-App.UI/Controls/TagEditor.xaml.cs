@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using ToDo_App.Interfaces;
 using ToDo_App.UI.Appearance;
+using ToDo_App.UI.Board;
 using Windows.System;
 
 namespace ToDo_App.UI.Controls
@@ -30,6 +31,7 @@ namespace ToDo_App.UI.Controls
 
         private readonly List<TagEntry> entries = new List<TagEntry>();
         private ITodoBoard? board;
+        private BoardChanges? changes;
         private TagEntry? flyoutEntry;
         private NoteTag? mergeTarget;
         private bool isSyncingColor;
@@ -60,9 +62,10 @@ namespace ToDo_App.UI.Controls
         /// <param name="board">Gives the existing tags, and renames or deletes a tag on every todo.</param>
         /// <param name="noteTags">The todo's current tags.</param>
         /// <param name="localizationStrings">Dictionary with relevant localized strings</param>
-        public TagEditor(ITodoBoard board, IEnumerable<NoteTag> noteTags, Dictionary<string,string> localizationStrings) : this()
+        public TagEditor(ITodoBoard board, BoardChanges changes, IEnumerable<NoteTag> noteTags, Dictionary<string,string> localizationStrings) : this()
         {
             this.board = board;
+            this.changes = changes;
             SetLocalizationStrings(localizationStrings);
 
             foreach (NoteTag tag in noteTags)
@@ -259,7 +262,7 @@ namespace ToDo_App.UI.Controls
             if (flyoutEntry.Id is Guid tagId)
             {
                 // On the board: renames it on every todo straight away
-                board?.RenameTag(tagId, name);
+                changes?.Send(board => board.UpdateTagName(tagId, name), tagId);
                 flyoutEntry.Name = name;
             }
             else
@@ -286,7 +289,8 @@ namespace ToDo_App.UI.Controls
             if (flyoutEntry.Id is Guid tagId)
             {
                 // On the board: changes the colour on every todo straight away
-                board?.SetTagColor(tagId, option.Hex);
+                string color = option.Hex;
+                changes?.Send(board => board.UpdateTagColor(tagId, color), tagId);
             }
             // Otherwise it's only in this dialog, and the colour is given to the tag when the todo is saved
             flyoutEntry.Color = option.Hex;
@@ -329,7 +333,7 @@ namespace ToDo_App.UI.Controls
             }
 
             // Removes it from every todo straight away, including this one
-            board?.DeleteTag(tagId);
+            changes?.Send(board => board.DeleteTag(tagId), tagId);
             removeEntry(flyoutEntry);
             TagFlyout.Hide();
         }
@@ -365,7 +369,8 @@ namespace ToDo_App.UI.Controls
             }
 
             // Every todo with the tag gets the target instead, straight away, including this one
-            board?.MergeTags(sourceId, mergeTarget.Id);
+            Guid targetId = mergeTarget.Id;
+            changes?.Send(board => board.MergeTags(sourceId, targetId), sourceId, targetId);
 
             if (entries.Exists(entry => entry != flyoutEntry && entry.Id == mergeTarget.Id))
             {

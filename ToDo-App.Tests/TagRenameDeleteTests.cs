@@ -20,7 +20,7 @@ public class TagRenameDeleteTests
     [SetUp]
     public void Setup()
     {
-        controller = new BoardController();
+        controller = new LocalBoardController();
         plannedId = controller.CreateColumn("Planned");
         progressId = controller.CreateColumn("In Progress");
         doneId = controller.CreateColumn("Done");
@@ -43,9 +43,9 @@ public class TagRenameDeleteTests
     // --- Rename ---
 
     [Test]
-    public void RenameTagChangesItOnEveryTodo()
+    public void UpdateTagNameChangesItOnEveryTodo()
     {
-        controller.RenameTag(wrokId, "Work");
+        controller.UpdateTagName(wrokId, "Work");
 
         Assert.That(tagNames(firstNoteId), Is.EqualTo(new[] { "Work", "Job" }));
         Assert.That(tagNames(secondNoteId), Is.EqualTo(new[] { "Work" }));
@@ -53,17 +53,17 @@ public class TagRenameDeleteTests
     }
 
     [Test]
-    public void RenameTagKeepsItsId()
+    public void UpdateTagNameKeepsItsId()
     {
-        controller.RenameTag(wrokId, "Work");
+        controller.UpdateTagName(wrokId, "Work");
 
         Assert.That(tagId("Work"), Is.EqualTo(wrokId));
     }
 
     [Test]
-    public void RenameTagTrimsTheName()
+    public void UpdateTagNameTrimsTheName()
     {
-        controller.RenameTag(wrokId, "  Work ");
+        controller.UpdateTagName(wrokId, "  Work ");
 
         Assert.That(tagNames(secondNoteId), Is.EqualTo(new[] { "Work" }));
     }
@@ -71,7 +71,7 @@ public class TagRenameDeleteTests
     [Test]
     public void RenameToAnotherTagsNameIsBlockedAndChangesNothing()
     {
-        Assert.Throws<ArgumentException>(() => controller.RenameTag(jobId, "wrok"));
+        Assert.Throws<ArgumentException>(() => controller.UpdateTagName(jobId, "wrok"));
 
         Assert.That(tagNames(firstNoteId), Is.EqualTo(new[] { "Wrok", "Job" }));
         Assert.That(recorder.Names, Is.Empty);
@@ -80,7 +80,7 @@ public class TagRenameDeleteTests
     [Test]
     public void ChangingOnlyTheCaseIsAllowed()
     {
-        controller.RenameTag(wrokId, "WROK");
+        controller.UpdateTagName(wrokId, "WROK");
 
         Assert.That(tagNames(secondNoteId), Is.EqualTo(new[] { "WROK" }));
     }
@@ -90,7 +90,7 @@ public class TagRenameDeleteTests
     [TestCase("ThirteenChars")]
     public void RenameToInvalidNameIsBlockedAndChangesNothing(string invalidName)
     {
-        Assert.Throws<ArgumentException>(() => controller.RenameTag(wrokId, invalidName));
+        Assert.Throws<ArgumentException>(() => controller.UpdateTagName(wrokId, invalidName));
 
         Assert.That(tagNames(secondNoteId), Is.EqualTo(new[] { "Wrok" }));
         Assert.That(recorder.Names, Is.Empty);
@@ -99,14 +99,14 @@ public class TagRenameDeleteTests
     [Test]
     public void RenameUnknownTagThrowsWithoutEvents()
     {
-        Assert.Throws<KeyNotFoundException>(() => controller.RenameTag(Guid.NewGuid(), "Work"));
+        Assert.Throws<KeyNotFoundException>(() => controller.UpdateTagName(Guid.NewGuid(), "Work"));
         Assert.That(recorder.Names, Is.Empty);
     }
 
     [Test]
     public void RenameRaisesTagChangedThenBoardChanged()
     {
-        controller.RenameTag(wrokId, "Work");
+        controller.UpdateTagName(wrokId, "Work");
 
         Assert.That(recorder.Names, Is.EqualTo(new[]
         {
@@ -187,15 +187,15 @@ public class TagRenameDeletePersistenceTests
     [Test]
     public void RenameAndDeleteAreKeptAfterReload()
     {
-        var original = new BoardController();
+        var original = new LocalBoardController();
         Guid columnId = original.CreateColumn("Planned");
         original.CreateNote(columnId, "First", "", tagNames: new[] { "Wrok", "Old" });
         original.CreateNote(columnId, "Second", "", tagNames: new[] { "Wrok" });
-        original.RenameTag(original.GetTags().Single(tag => tag.Name == "Wrok").Id, "Work");
+        original.UpdateTagName(original.GetTags().Single(tag => tag.Name == "Wrok").Id, "Work");
         original.DeleteTag(original.GetTags().Single(tag => tag.Name == "Old").Id);
         original.SaveBoardToJson(jsonPath);
 
-        var loaded = new BoardController();
+        var loaded = new LocalBoardController();
         loaded.LoadBoardFromJson(jsonPath);
 
         var notes = loaded.GetNotesInColumn(columnId);

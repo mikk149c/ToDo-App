@@ -1,0 +1,237 @@
+/*
+    App-wide colours and button styles, the web counterpart of App.xaml.
+    Colours are tokens, redefined for dark mode. data-theme on <html> is "light", "dark" or "system"
+    (set by AppearanceManager), and "system" follows the browser's prefers-color-scheme.
+    --accent, --accent-text-light and --accent-text-dark are set at runtime from the chosen accent colour.
+*/
+:root {
+    color-scheme: light;
+    --accent: #512BD4;
+    --accent-text-light: #512BD4;
+    --accent-text-dark: #977FE5;
+    --on-accent: #FFFFFF;
+    --accent-text: var(--accent-text-light);
+
+    --board-background: #D9DCE3;
+    --column-background: #F4F5F7;
+    --card-background: #FBFBFC;
+    --card-stroke: rgba(0, 0, 0, 0.08);
+    --control-fill: rgba(255, 255, 255, 0.7);
+    --control-fill-hover: rgba(249, 249, 249, 0.5);
+    --control-fill-pressed: rgba(249, 249, 249, 0.3);
+    --subtle-fill-hover: rgba(0, 0, 0, 0.06);
+    --subtle-fill-pressed: rgba(0, 0, 0, 0.1);
+    --control-stroke: rgba(0, 0, 0, 0.16);
+    --input-background: #FFFFFF;
+    --flyout-background: #FCFCFC;
+    --text-primary: #1A1A1A;
+    --text-secondary: #5C5C5C;
+    --critical: #C42B1C;
+    --overlay: rgba(0, 0, 0, 0.3);
+    --focus-ring: #1A1A1A;
+    --shadow: 0 8px 16px rgba(0, 0, 0, 0.14);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --accent-text: var(--accent-text-dark);
+        --board-background: #161616;
+        --column-background: #262626;
+        --card-background: #2E2E2E;
+        --card-stroke: rgba(255, 255, 255, 0.08);
+        --control-fill: rgba(255, 255, 255, 0.06);
+        --control-fill-hover: rgba(255, 255, 255, 0.08);
+        --control-fill-pressed: rgba(255, 255, 255, 0.03);
+        --subtle-fill-hover: rgba(255, 255, 255, 0.06);
+        --subtle-fill-pressed: rgba(255, 255, 255, 0.04);
+        --control-stroke: rgba(255, 255, 255, 0.14);
+        --input-background: #1F1F1F;
+        --flyout-background: #2C2C2C;
+        --text-primary: #FFFFFF;
+        --text-secondary: #C8C8C8;
+        --critical: #FF99A4;
+        --overlay: rgba(0, 0, 0, 0.5);
+        --focus-ring: #FFFFFF;
+        --shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --accent-text: var(--accent-text-dark);
+    --board-background: #161616;
+    --column-background: #262626;
+    --card-background: #2E2E2E;
+    --card-stroke: rgba(255, 255, 255, 0.08);
+    --control-fill: rgba(255, 255, 255, 0.06);
+    --control-fill-hover: rgba(255, 255, 255, 0.08);
+    --control-fill-pressed: rgba(255, 255, 255, 0.03);
+    --subtle-fill-hover: rgba(255, 255, 255, 0.06);
+    --subtle-fill-pressed: rgba(255, 255, 255, 0.04);
+    --control-stroke: rgba(255, 255, 255, 0.14);
+    --input-background: #1F1F1F;
+    --flyout-background: #2C2C2C;
+    --text-primary: #FFFFFF;
+    --text-secondary: #C8C8C8;
+    --critical: #FF99A4;
+    --overlay: rgba(0, 0, 0, 0.5);
+    --focus-ring: #FFFFFF;
+    --shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    background: var(--board-background);
+    color: var(--text-primary);
+    font-family: var(--app-font, "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif);
+    font-size: 14px;
+}
+
+:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
+}
+
+/* --- Buttons (App.xaml: Action, PrimaryAction) ---
+   .button gives a link or a label (around a file input) the same look as a button */
+
+button, .button {
+    font: inherit;
+    color: var(--text-primary);
+    background: var(--control-fill);
+    border: 1px solid var(--control-stroke);
+    border-radius: 4px;
+    padding: 5px 11px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+button:hover:not(:disabled), .button:hover:not(.disabled) {
+    background: var(--control-fill-hover);
+}
+
+button:active:not(:disabled), .button:active:not(.disabled) {
+    background: var(--control-fill-pressed);
+}
+
+button:disabled, .button.disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* Keeps the hidden file input inside the label, so one in a scrolled-away column can't widen the page */
+label.button {
+    position: relative;
+}
+
+/* A label has no focus of its own: show the ring when the file input inside it has focus */
+label.button:focus-within {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
+}
+
+/* A small square button with just an icon, like the edit and delete buttons on cards and columns */
+.icon-button {
+    padding: 6px;
+    min-width: 32px;
+    min-height: 32px;
+}
+
+button.primary-action, .button.primary-action {
+    background: var(--accent);
+    color: var(--on-accent);
+    border-color: transparent;
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+
+.primary-action.icon-button {
+    padding: 8px 10px;
+}
+
+button.primary-action:hover:not(:disabled), .button.primary-action:hover:not(.disabled) {
+    background: color-mix(in srgb, var(--accent) 88%, white);
+}
+
+button.primary-action:active:not(:disabled), .button.primary-action:active:not(.disabled) {
+    background: color-mix(in srgb, var(--accent) 78%, white);
+}
+
+/* --- Form fields --- */
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field > label {
+    font-size: 14px;
+}
+
+input[type="text"], textarea, select {
+    font: inherit;
+    color: var(--text-primary);
+    background: var(--input-background);
+    border: 1px solid var(--control-stroke);
+    border-bottom-color: var(--text-secondary);
+    border-radius: 4px;
+    padding: 6px 10px;
+    width: 100%;
+}
+
+input[type="text"]:focus, textarea:focus, select:focus {
+    outline: none;
+    border-bottom: 2px solid var(--accent-text);
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.error-text {
+    color: var(--critical);
+    margin: 0;
+}
+
+.secondary-text {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.visually-hidden {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* --- Blazor's own error messages --- */
+
+.blazor-error-boundary {
+    background: #b32121;
+    padding: 1rem;
+    color: white;
+}
+
+.blazor-error-boundary::after {
+    content: "An error has occurred.";
+}

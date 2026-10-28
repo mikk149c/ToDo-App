@@ -1,0 +1,45 @@
+.content-dialog {
+    width: min(540px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    padding: 24px;
+    border: 1px solid var(--card-stroke);
+    border-radius: 8px;
+    background: var(--flyout-background);
+    color: var(--text-primary);
+    box-shadow: var(--shadow);
+    /* The dialog scrolls as a whole, so a tag flyout opening below the last row can be scrolled to */
+    overflow: auto;
+}
+
+.content-dialog::backdrop {
+    background: var(--overlay);
+}
+
+.dialog-title {
+    margin: 0 0 16px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dialog-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+.dialog-buttons button {
+    min-width: 96px;
+    width: 100%;
+}
+
+.dialog-buttons .primary-action {
+    padding: 5px 11px;
+    border-radius: 4px;
+}
