@@ -72,7 +72,6 @@ public partial class MainPage
     private readonly HashSet<Guid> expandedTrashNotes = new HashSet<Guid>();
 
     [Inject] private BoardHost Host { get; set; } = null!;
-    [Inject] private AttachmentStore Attachments { get; set; } = null!;
     [Inject] private UiStrings Strings { get; set; } = null!;
     [Inject] private AppearanceManager Appearance { get; set; } = null!;
     [Inject] private BrowserPreferences Preferences { get; set; } = null!;
@@ -328,9 +327,8 @@ public partial class MainPage
     {
         try
         {
-            await using Stream upload = e.File.OpenReadStream(AttachmentStore.MaxFileSize);
-            string path = await Attachments.SaveAsync(upload, e.File.Name);
-            Board.UpdateNoteFile(note.Id, new AttachedFile(Path.GetFileName(path), path));
+            var uploadedFileReference = await Host.StorageHandler.SaveAsync(e.File.OpenReadStream(ServerStorageHandler.MaxFileSize), e.File.Name);
+            Board.UpdateNoteFile(note.Id, uploadedFileReference);
         }
         catch (Exception exception)
         {
@@ -340,7 +338,7 @@ public partial class MainPage
 
     private void onAttachmentOnPcClicked(ToDoNote note)
     {
-        errorDialog = (Strings["error/failed_to_open_attached_file"], Strings.Format("error/attachment_only_on_pc", note.File?.Name ?? ""));
+        errorDialog = (Strings["error/failed_to_open_attached_file"], Strings.Format("error/attachment_not_on_server", note.File?.Name ?? "..."));
     }
 
     private void onRemoveAttachmentClicked(ToDoNote note)

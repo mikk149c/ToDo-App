@@ -49,7 +49,7 @@ public interface ITodoBoard
 
     public void UpdateNoteTags(Guid noteId, IEnumerable<string> tagNames, IReadOnlyDictionary<string, string>? newTagColors = null);
 
-    public void UpdateNoteFile(Guid noteId, AttachedFile file);
+    public void UpdateNoteFile(Guid noteId, FileReference fileReference);
 
     public void DeleteNoteFile(Guid noteId);
 
@@ -78,4 +78,7 @@ public interface ITodoBoard
     public void SaveBoardToJson(string jsonPath);
 
     public void LoadBoardFromJson(string jsonPath);
+    
+    // --- Attached Files ---
+    public bool IsFileStoredOnServer(string fullPath);
 }

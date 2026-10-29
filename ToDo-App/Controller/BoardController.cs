@@ -15,6 +15,7 @@ namespace ToDo_App.Controller;
 public abstract class BoardController : ITodoBoard
 {
     private ToDoBoard _board = new ToDoBoard();
+    protected IStorageHandler _storageHandler;
 
     public event EventHandler? ColumnCreated;
     public event EventHandler? ColumnNameChanged;
@@ -63,6 +64,13 @@ public abstract class BoardController : ITodoBoard
 
     /// <summary>The board itself, for a child to save or send.</summary>
     protected ToDoBoard Board => _board;
+
+    protected IStorageHandler StorageHandler => _storageHandler;
+
+    protected BoardController(IStorageHandler storageHandler)
+    {
+        _storageHandler = storageHandler;
+    }
 
     // --- Reads ---
 
@@ -208,15 +216,19 @@ public abstract class BoardController : ITodoBoard
     }
 
     /// <summary>Attaches a file to a note, replacing the one it has.</summary>
-    public virtual void UpdateNoteFile(Guid noteId, AttachedFile file)
+    public virtual void UpdateNoteFile(Guid noteId, FileReference fileReference)
     {
-        _board.SetNoteFile(noteId, file);
+        _board.SetNoteFile(noteId, new AttachedFile(fileReference.guid, fileReference.name, fileReference.fullPath));
         notifyNoteChanged(noteId);
     }
 
     /// <summary>Removes a note's file.</summary>
     public virtual void DeleteNoteFile(Guid noteId)
     {
+        var file = _board.GetNoteFile(noteId);
+        if (file != null)
+            _storageHandler.Delete(file);
+        
         _board.SetNoteFile(noteId, null);
         notifyNoteChanged(noteId);
     }
@@ -357,5 +369,11 @@ public abstract class BoardController : ITodoBoard
             onColumnContentChanged(new ColumnContentChangedEventArgs(targetColumnId, GetNotesInColumn(targetColumnId)));
         }
         onBoardChanged(new BoardChangedEventArgs(_board));
+    }
+    
+    // --- Attached Files ---
+    public virtual bool IsFileStoredOnServer(string fullPath)
+    {
+        return _storageHandler.IsStored(fullPath);
     }
 }

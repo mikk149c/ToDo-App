@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Net.Http.Headers;
 using ToDo_App;
@@ -18,7 +19,6 @@ string dataDirectory = Path.GetFullPath(
     builder.Environment.ContentRootPath);
 builder.Services.AddSingleton(new BoardStorageOptions(dataDirectory));
 builder.Services.AddSingleton<BoardHost>();
-builder.Services.AddSingleton<AttachmentStore>();
 
 // Remote desktop apps: changes come in through the API, and every change goes out to every app through the hub
 builder.Services.AddSignalR();
@@ -89,15 +89,47 @@ app.MapGet("/board/export", (BoardHost host) =>
     }
 });
 
-// Opens a todo's attachment. Only files uploaded through the browser are served (see AttachmentStore.IsStored)
-app.MapGet("/attachments/{noteId:guid}", (Guid noteId, BoardHost host, AttachmentStore attachments, HttpContext context) =>
+app.MapPost("/upload-file", async ([FromForm] string name, [FromForm] IFormFile file) =>
 {
-    AttachedFile? file = host.FindNote(noteId)?.File;
-    if (file == null || !attachments.IsStored(file.FullPath))
+    app.Logger.LogInformation("Preparing to receive file data...");
+    var tempFile = Path.GetTempFileName();
+    app.Logger.LogInformation($"Created temporary file: {tempFile}");
+    await using (var saveTempStream = File.OpenWrite(tempFile))
+    {
+        await file.CopyToAsync(saveTempStream);
+    }
+    app.Logger.LogInformation("File data has been uploaded.");
+    var storageHandler = app.Services.GetService<BoardHost>().StorageHandler;
+    await using (var readTempStream = File.OpenRead(tempFile))
+    {
+        var savedFile = await storageHandler.SaveAsync(readTempStream, name);
+        app.Logger.LogInformation($"Saved uploaded file: {savedFile.fullPath}");
+        return Results.Json(savedFile);
+    }
+}).DisableAntiforgery(); //TODO: figure out how to make desktop app use antiforgery
+
+// Returns success if file is stored on server
+app.MapPost("/is-file-stored", (JsonElement[] arguments, BoardHost host) =>
+{
+    var path = arguments.FirstOrDefault().GetString();
+    if (path == null)
+    {
+        return Results.BadRequest();
+    }
+    return host.Board.IsFileStoredOnServer(path) ? Results.Ok() : Results.NotFound();
+});
+
+// Opens a todo's attachment
+app.MapGet("/attachments/{fileId:guid}", (Guid fileId, BoardHost host, HttpContext context) =>
+{
+    var storageHandler = app.Services.GetService<BoardHost>().StorageHandler;
+    
+    var file = storageHandler.GetFile(fileId);
+    if (file == null || !host.Board.IsFileStoredOnServer(file.FullPath))
     {
         return Results.NotFound();
     }
-
+    
     if (!new FileExtensionContentTypeProvider().TryGetContentType(file.Name, out string? contentType))
     {
         contentType = "application/octet-stream";

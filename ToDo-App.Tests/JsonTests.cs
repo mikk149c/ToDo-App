@@ -71,7 +71,7 @@ public class JsonTests
         Guid progressId = board.CreateColumn("In Progress");
         board.CreateColumn("Done");
         board.AddNote(plannedId, new ToDoNote("Shopping", "Køb bananer\nÆbler",
-            new AttachedFile("list.txt", Path.Combine("docs", "list.txt"))));
+            new AttachedFile(Guid.NewGuid(), "list.txt", Path.Combine("docs", "list.txt"))));
         board.AddNote(plannedId, new ToDoNote("Languages", "C#\nPython"));
         board.AddNote(progressId, new ToDoNote("Vacation", "Australia"));
         return board;

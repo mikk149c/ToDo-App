@@ -1446,8 +1446,14 @@ namespace ToDo_App.UI.Views
                 var file = await picker.PickSingleFileAsync();
                 if (file != null)
                 {
-                    var attachment = new AttachedFile(System.IO.Path.GetFileName(file.Path), file.Path);
-                    changes.Send(board => board.UpdateNoteFile(note.Id, attachment), note.Id);
+                    var fileInfo = new FileInfo(file.Path);
+                    var fileReference = new FileReference
+                    {
+                        type = FileReference.FileReferenceType.Local,
+                        name = fileInfo.Name,
+                        fullPath = file.Path
+                    };
+                    changes.Send(board => board.UpdateNoteFile(note.Id, fileReference), note.Id);
                 }
                 else
                 {
@@ -1473,21 +1479,28 @@ namespace ToDo_App.UI.Views
 
         private async void onAttachmentClicked(ToDoNote note)
         {
-            try
+            var isFileStoredOnServer = boardController.IsFileStoredOnServer(note.File.FullPath);
+            if (isFileStoredOnServer)
             {
-                Process.Start("explorer", $"\"{note.File.FullPath}\"");
+                Process.Start("explorer", $"{serverUrl()}attachments/{note.File.Guid}");
             }
-            catch (Exception e)
+            else
             {
-                var dialog = new ContentDialog()
+                if (File.Exists(note.File.FullPath))
                 {
-                    XamlRoot = this.Content.XamlRoot,
-                    Title = Res.ResourceManager.GetString("error/failed_to_open_attached_file", _currentCulture),
-                    Content = e.Message,
-                    CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
-                };
+                    Process.Start("explorer", $"\"{note.File.FullPath}\"");
+                }
+                else {
+                    var dialog = new ContentDialog()
+                    {
+                        XamlRoot = this.Content.XamlRoot,
+                        Title = Res.ResourceManager.GetString("error/failed_to_open_attached_file", _currentCulture),
+                        Content = Res.ResourceManager.GetString("error/failed_to_open_attached_file", _currentCulture),
+                        CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
+                    };
 
-                await dialog.ShowAsync();
+                    await dialog.ShowAsync();
+                }
             }
         }
 

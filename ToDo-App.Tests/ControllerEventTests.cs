@@ -108,7 +108,7 @@ public class ControllerEventTests
     [Test]
     public void UpdateNoteFileRaisesContentChangedForItsColumn()
     {
-        controller.UpdateNoteFile(firstNoteId, new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")));
+        controller.UpdateNoteFile(firstNoteId, new FileReference {fullPath = Path.Combine(Path.GetTempPath(), "list.txt")});
 
         assertContentChangedFor(plannedId);
     }
@@ -116,7 +116,7 @@ public class ControllerEventTests
     [Test]
     public void UpdateNoteRemoveFileRaisesContentChangedForItsColumn()
     {
-        controller.UpdateNoteFile(firstNoteId, new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")));
+        controller.UpdateNoteFile(firstNoteId, new FileReference {fullPath = Path.Combine(Path.GetTempPath(), "list.txt")});
         recorder.Clear();
 
         controller.DeleteNoteFile(firstNoteId);
@@ -189,7 +189,7 @@ public class ControllerEventTests
             unobserved.UpdateColumn(columnId, "Backlog");
             unobserved.UpdateNoteTitle(noteId, "Renamed");
             unobserved.UpdateNoteContent(noteId, "New content");
-            unobserved.UpdateNoteFile(noteId, new AttachedFile("list.txt", Path.Combine(Path.GetTempPath(), "list.txt")));
+            unobserved.UpdateNoteFile(noteId, new FileReference{fullPath = Path.Combine(Path.GetTempPath(), "list.txt")});
             unobserved.DeleteNoteFile(noteId);
             unobserved.MoveNoteToColumn(noteId, otherColumnId, 0);
             unobserved.MoveColumn(otherColumnId, 0);

@@ -233,6 +233,14 @@ public class ToDoBoard
         StatusColumns[columnIndex].Notes[noteIndex].File = file;
     }
 
+    public AttachedFile? GetNoteFile(Guid noteId)
+    {
+        var notePosTuple = GetNotePositionFromId(noteId);
+        int columnIndex = notePosTuple.columnIndex;
+        int noteIndex = notePosTuple.noteIndex;
+        return StatusColumns[columnIndex].Notes[noteIndex].File;
+    }
+
     public void SetNoteTitle(Guid noteId, string title)
     {
         var notePosTuple = GetNotePositionFromId(noteId);

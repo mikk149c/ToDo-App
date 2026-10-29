@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Components.Forms;
+
 namespace ToDo_App.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
@@ -99,9 +101,10 @@ public class WebAppTests
     [Test]
     public async Task UploadedAttachmentIsStoredUnderItsOwnName()
     {
-        var store = new AttachmentStore(new BoardStorageOptions(dataDirectory));
+        var store = new ServerStorageHandler(new BoardStorageOptions(dataDirectory));
 
-        string path = await store.SaveAsync(new MemoryStream("hello"u8.ToArray()), "notes.txt");
+        var fileReference = await store.SaveAsync(new MemoryStream("hello"u8.ToArray()), "notes.txt");
+        var path = fileReference.fullPath;
 
         Assert.That(Path.GetFileName(path), Is.EqualTo("notes.txt"));
         Assert.That(File.ReadAllText(path), Is.EqualTo("hello"));
@@ -111,9 +114,10 @@ public class WebAppTests
     [Test]
     public async Task AttachmentNameCannotEscapeTheAttachmentFolder()
     {
-        var store = new AttachmentStore(new BoardStorageOptions(dataDirectory));
+        var store = new ServerStorageHandler(new BoardStorageOptions(dataDirectory));
 
-        string path = await store.SaveAsync(new MemoryStream("x"u8.ToArray()), @"..\..\board.json");
+        var fileReference = await store.SaveAsync(new MemoryStream("x"u8.ToArray()), @"..\..\board.json");
+        var path = fileReference.fullPath;
 
         Assert.That(store.IsStored(path), Is.True);
         Assert.That(File.Exists(boardPath), Is.False);
@@ -122,7 +126,7 @@ public class WebAppTests
     [Test]
     public void OnlyUploadedFilesAreServed()
     {
-        var store = new AttachmentStore(new BoardStorageOptions(dataDirectory));
+        var store = new ServerStorageHandler(new BoardStorageOptions(dataDirectory));
         Directory.CreateDirectory(dataDirectory);
         File.WriteAllText(boardPath, "{}");
 
