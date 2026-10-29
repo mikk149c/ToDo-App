@@ -159,25 +159,25 @@
         <value>nuqDaq jaH warvam [[ghu'lIS|{0} ghu'lISmey]]?</value>
     </data>
     <data name="error/failed_to_attach_file" xml:space="preserve">
-        <value>ta luvevlaHbe'.</value>
+        <value>ta vevlaHbe'.</value>
     </data>
     <data name="error/failed_to_export_board" xml:space="preserve">
-        <value>teywI' 'echlet lungeHlaHbe'.</value>
+        <value>teywI' 'echlet ngeHlaHbe'.</value>
     </data>
     <data name="error/failed_to_import_board" xml:space="preserve">
-        <value>teywI' 'echlet luHevlaHbe'.</value>
+        <value>teywI' 'echlet HevlaHbe'.</value>
     </data>
     <data name="error/failed_to_load_board" xml:space="preserve">
-        <value>teywI' 'echlet lulaDlaHbe'.</value>
+        <value>teywI' 'echlet laDlaHbe'.</value>
     </data>
     <data name="error/failed_to_save_board" xml:space="preserve">
-        <value>teywI' 'echlet lupollaHbe'.</value>
+        <value>teywI' 'echlet pollaHbe'.</value>
     </data>
     <data name="error/failed_to_open_attached_file" xml:space="preserve">
         <value>poSlaHbe' ghu'lIS ta.</value>
     </data>
     <data name="error/failed_to_remove_attached_file" xml:space="preserve">
-        <value>ghu'lIS ta luteqlaHbe'.</value>
+        <value>ghu'lIS ta teqlaHbe'.</value>
     </data>
     <data name="dialog/tag_name" xml:space="preserve">
         <value>pong</value>
@@ -189,7 +189,7 @@
         <value>wejHa' latlhvaD «{0}» ponglu' neH.</value>
     </data>
     <data name="dialog/tag_new_info" xml:space="preserve">
-        <value>per chu'. ghu'lIS DapolDI' per luchellu'</value>
+        <value>per chu'. ghu'lIS DapolDI' per chellu'</value>
     </data>
     <data name="dialog/tag_used_on" xml:space="preserve">
         <value>[[lo' {0} ghu'lIS|lulo' {0} ghu'lISmey]]</value>
@@ -281,16 +281,19 @@
     <data name="button/font_tooltip" xml:space="preserve">
         <value>ngutlh tu'qom</value>
     </data>
-    <data name="error/attachment_only_on_pc" xml:space="preserve">
-        <value>«{0}» luvevmeH wInDoS nIqHom lo'lu'pu' 'ej De'wI'Daq 'oH, vaj DapoSmoHmeH weQmoQnaQ nIqHom Dalo'laHbe'.</value>
+    <data name="error/attachment_not_on_server" xml:space="preserve">
+        <value>lInHa'taHvIS «{0}» vevlu'mo' Dalo'laHbe'.</value>
     </data>
     <data name="error/failed_to_connect" xml:space="preserve">
-        <value>lInlaHbe' {0} turwI'</value>
+        <value>lInlaHbe' {0} turwI'.</value>
     </data>
     <data name="dialog/delete_permanent" xml:space="preserve">
         <value>yIQaw'</value>
     </data>
     <data name="button/remove_note_tooltip" xml:space="preserve">
         <value>ghu'lIS yIteq</value>
+    </data>
+    <data name="error/change_not_saved" xml:space="preserve">
+        <value>choHlIj polta'be'.</value>
     </data>
 </root>

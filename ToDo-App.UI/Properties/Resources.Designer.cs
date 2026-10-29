@@ -636,11 +636,20 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;{0}&quot; was attached in the Windows app and is saved on that PC, so it can&apos;t be opened from the browser..
+        ///   Looks up a localized string similar to &quot;{0}&quot; is not available, because it was attached without a connection to this server..
         /// </summary>
-        internal static string error_attachment_only_on_pc {
+        internal static string error_attachment_not_on_server {
             get {
-                return ResourceManager.GetString("error/attachment_only_on_pc", resourceCulture);
+                return ResourceManager.GetString("error/attachment_not_on_server", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your change wasn&apos;t saved..
+        /// </summary>
+        internal static string error_change_not_saved {
+            get {
+                return ResourceManager.GetString("error/change_not_saved", resourceCulture);
             }
         }
         
@@ -663,7 +672,7 @@ namespace ToDo_App.UI {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to export board from file..
+        ///   Looks up a localized string similar to Failed to export board to file..
         /// </summary>
         internal static string error_failed_to_export_board {
             get {

@@ -20,6 +20,7 @@ public sealed class BoardHost
 
     private readonly string userJsonPath;
     private readonly ILogger<BoardHost> logger;
+    private readonly IStorageHandler storageHandler;
 
     /// <param name="broadcaster">Sends every change to the remote apps. Null when none can connect (tests).</param>
     public BoardHost(BoardStorageOptions options, ILogger<BoardHost> logger, IChangeBroadcaster? broadcaster = null)
@@ -28,8 +29,10 @@ public sealed class BoardHost
         Directory.CreateDirectory(options.DataDirectory);
         userJsonPath = Path.Combine(options.DataDirectory, UserJsonFile);
 
+        storageHandler = new ServerStorageHandler(options);
+
         // Every change, from a tab or from the API, goes through the server's controller, which sends it on to remote apps
-        Board = new ServerBoardController(broadcaster);
+        Board = new ServerBoardController(options, storageHandler, broadcaster);
 
         loadInitialBoard();
         // Subscribed after loading, so falling back to the default board doesn't overwrite a board.json
@@ -38,6 +41,7 @@ public sealed class BoardHost
     }
 
     public ServerBoardController Board { get; }
+    public IStorageHandler StorageHandler => storageHandler;
 
     /// <summary>Set when loading failed, so a page can tell the user. Null when the board loaded.</summary>
     public string? LoadError { get; private set; }

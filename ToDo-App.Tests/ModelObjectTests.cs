@@ -24,7 +24,7 @@ public class ModelObjectTests
     [Test]
     public void ToDoNoteConstructorSetsTitleContentAndFile()
     {
-        var file = new AttachedFile("list.txt", Path.Combine("docs", "list.txt"));
+        var file = new AttachedFile(Guid.NewGuid(), "list.txt", Path.Combine("docs", "list.txt"));
 
         var note = new ToDoNote("Shopping", "Køb bananer", file);
 
@@ -55,7 +55,7 @@ public class ModelObjectTests
     {
         string fullPath = Path.Combine("docs", "list.txt");
 
-        var file = new AttachedFile("list.txt", fullPath);
+        var file = new AttachedFile(Guid.NewGuid(), "list.txt", fullPath);
 
         Assert.That(file.Name, Is.EqualTo("list.txt"));
         Assert.That(file.FullPath, Is.EqualTo(fullPath));

@@ -281,16 +281,19 @@
     <data name="button/font_tooltip" xml:space="preserve">
         <value>Schriftart</value>
     </data>
-    <data name="error/attachment_only_on_pc" xml:space="preserve">
-        <value>"{0}" war im Windows-app angehängt und liegt im Rechner, deswegen kann es nicht vom Browser geöffnet werden.</value>
+    <data name="error/attachment_not_on_server" xml:space="preserve">
+        <value>"{0}" is nicht verfügbar, da zum Zeitpunkt des Anfügens keine Verbindung zu diesem Server bestand.</value>
     </data>
     <data name="error/failed_to_connect" xml:space="preserve">
-        <value>Konnte nicht mit dem Server am {0} verbinden</value>
+        <value>Konnte nicht mit dem Server am {0} verbinden.</value>
     </data>
     <data name="dialog/delete_permanent" xml:space="preserve">
         <value>Löschen</value>
     </data>
     <data name="button/remove_note_tooltip" xml:space="preserve">
         <value>Notiz entfernen</value>
+    </data>
+    <data name="error/change_not_saved" xml:space="preserve">
+        <value>Deine Änderung war nicht gespeichert.</value>
     </data>
 </root>

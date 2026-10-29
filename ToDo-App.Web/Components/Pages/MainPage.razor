@@ -217,9 +217,9 @@
                                 @if (note.File != null)
                                 {
                                     <div class="attachment">
-                                        @if (Attachments.IsStored(note.File.FullPath))
+                                        @if (Board.IsFileStoredOnServer(note.File.FullPath))
                                         {
-                                            <a class="button attached-file" href="@($"attachments/{note.Id}")"
+                                            <a class="button attached-file" href="@($"attachments/{note.File.Guid}")"
                                             target="_blank" rel="noopener" title="@note.File.Name">
                                                 <Icon Name="attach" />
                                                 <span class="attachment-filename">@note.File.Name</span>
@@ -391,10 +391,10 @@
                                         @if (note.File != null)
                                         {
                                             <div class="attachment">
-                                                @if (Attachments.IsStored(note.File.FullPath))
+                                                @if (Board.IsFileStoredOnServer(note.File.FullPath))
                                                 {
                                                     <a class="button attached-file"
-                                                    href="@($"attachments/{note.Id}")"
+                                                    href="@($"attachments/{note.File.Guid}")"
                                                     target="_blank"
                                                     rel="noopener"
                                                     title="@note.File.Name">

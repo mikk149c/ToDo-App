@@ -248,9 +248,14 @@ public class RemoteBoardControllerTests
     [Test]
     public void EveryChangeCanBeReceivedByName()
     {
+        var nonChangeMethods = new List<string>
+        {
+            "IsFileStoredOnServer"
+        };
+        
         MethodInfo[] methods = typeof(BoardController)
             .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-            .Where(method => method.IsVirtual && !method.IsFinal)
+            .Where(method => method.IsVirtual && !method.IsFinal && !nonChangeMethods.Contains(method.Name))
             .ToArray();
         using var remote = new RemoteBoardController(new Uri("http://127.0.0.1:9/"));
 
