@@ -359,7 +359,7 @@ public abstract class BoardController : ITodoBoard
     }
     
     // --- Attached Files ---
-    public bool IsFileStored(string fullPath)
+    public virtual bool IsFileStoredOnServer(string fullPath)
     {
         return _storageHandler.IsStored(fullPath);
     }

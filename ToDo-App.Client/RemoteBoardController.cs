@@ -183,7 +183,18 @@ public sealed class RemoteBoardController : BoardController, IDisposable
 
     protected override void ReplaceBoard(ToDoBoard board) =>
         send(nameof(ReplaceBoard), board);
-
+    
+    public override bool IsFileStoredOnServer(string fullPath)
+    {
+        var url = "is-file-stored";
+        var arguments = new object[] { fullPath };
+        using var response = Task.Run(() => http.PostAsJsonAsync(url, arguments))
+            .GetAwaiter()
+            .GetResult();
+        
+        return response.IsSuccessStatusCode;
+    }
+    
     /// <summary>
     /// Sends a change to the server and returns once the server has made it. A change the server refuses throws the
     /// same kind of exception as the local controller does.

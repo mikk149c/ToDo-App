@@ -1473,21 +1473,28 @@ namespace ToDo_App.UI.Views
 
         private async void onAttachmentClicked(ToDoNote note)
         {
-            try
+            var isFileStoredOnServer = boardController.IsFileStoredOnServer(note.File.FullPath);
+            if (isFileStoredOnServer)
             {
-                Process.Start("explorer", $"\"{note.File.FullPath}\"");
+                Process.Start("explorer", $"{serverUrl()}attachments/{note.File.Guid}");
             }
-            catch (Exception e)
+            else
             {
-                var dialog = new ContentDialog()
+                if (File.Exists(note.File.FullPath))
                 {
-                    XamlRoot = this.Content.XamlRoot,
-                    Title = Res.ResourceManager.GetString("error/failed_to_open_attached_file", _currentCulture),
-                    Content = e.Message,
-                    CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
-                };
+                    Process.Start("explorer", $"\"{note.File.FullPath}\"");
+                }
+                else {
+                    var dialog = new ContentDialog()
+                    {
+                        XamlRoot = this.Content.XamlRoot,
+                        Title = Res.ResourceManager.GetString("error/failed_to_open_attached_file", _currentCulture),
+                        Content = Res.ResourceManager.GetString("error/failed_to_open_attached_file", _currentCulture),
+                        CloseButtonText = Res.ResourceManager.GetString("dialog/ok", _currentCulture)
+                    };
 
-                await dialog.ShowAsync();
+                    await dialog.ShowAsync();
+                }
             }
         }
 

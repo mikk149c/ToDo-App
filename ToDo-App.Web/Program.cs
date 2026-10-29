@@ -106,7 +106,18 @@ app.MapPost("/upload-file", async ([FromForm] string name, [FromForm] IFormFile 
         app.Logger.LogInformation($"Saved uploaded file: {savedFile.fullPath}");
         return Results.Json(savedFile);
     }
-}).DisableAntiforgery();
+}).DisableAntiforgery(); //TODO: figure out how to make desktop app use antiforgery
+
+// Returns success if file is stored on server
+app.MapPost("/is-file-stored", (JsonElement[] arguments, BoardHost host) =>
+{
+    var path = arguments.FirstOrDefault().GetString();
+    if (path == null)
+    {
+        return Results.BadRequest();
+    }
+    return host.Board.IsFileStoredOnServer(path) ? Results.Ok() : Results.NotFound();
+});
 
 // Opens a todo's attachment
 app.MapGet("/attachments/{fileId:guid}", (Guid fileId, BoardHost host, HttpContext context) =>
@@ -114,7 +125,7 @@ app.MapGet("/attachments/{fileId:guid}", (Guid fileId, BoardHost host, HttpConte
     var storageHandler = app.Services.GetService<BoardHost>().StorageHandler;
     
     var file = storageHandler.GetFile(fileId);
-    if (file == null || !host.Board.IsFileStored(file.FullPath))
+    if (file == null || !host.Board.IsFileStoredOnServer(file.FullPath))
     {
         return Results.NotFound();
     }

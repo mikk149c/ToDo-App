@@ -79,5 +79,5 @@ public interface ITodoBoard
     public void LoadBoardFromJson(string jsonPath);
     
     // --- Attached Files ---
-    public bool IsFileStored(string fullPath);
+    public bool IsFileStoredOnServer(string fullPath);
 }
