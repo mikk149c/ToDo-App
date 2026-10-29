@@ -13,6 +13,7 @@ public interface ITodoBoard
     public event EventHandler BoardChanged;
     public event EventHandler? ColumnOrderChanged;
     public event EventHandler? TagChanged;
+    public event EventHandler? TrashBinChanged;
 
     // --- Reads ---
 

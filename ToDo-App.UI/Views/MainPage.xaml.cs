@@ -25,6 +25,7 @@ namespace ToDo_App.UI.Views
         private const string ServerUrlVariable = "TODO_SERVER_URL";
         private const string DefaultServerUrl = "http://localhost:8080/";
         private Guid selectedTrashNoteId = Guid.Empty;
+        private Action? refreshOpenTrashBin;
         private const double ScrollSpeed = 60;
         private const double ScrollTickSpeed = 10;
 
@@ -206,6 +207,7 @@ namespace ToDo_App.UI.Views
             board.BoardChanged += onBoardChanged;
             board.ColumnOrderChanged += onColumnOrderChanged;
             board.TagChanged += onTagChanged;
+            board.TrashBinChanged += onTrashBinChanged;
         }
 
         private void unsubscribeFrom(ITodoBoard board)
@@ -217,6 +219,7 @@ namespace ToDo_App.UI.Views
             board.BoardChanged -= onBoardChanged;
             board.ColumnOrderChanged -= onColumnOrderChanged;
             board.TagChanged -= onTagChanged;
+            board.TrashBinChanged -= onTrashBinChanged;
 
             // What was on its way to the old board isn't shown as pending on the new one
             Pending.Clear();
@@ -239,6 +242,11 @@ namespace ToDo_App.UI.Views
             {
                 remoteBoard.IncomingDelay = serverDelay;
             }
+        }
+
+        private void onTrashBinChanged(object? sender, EventArgs e)
+        {
+            refreshOpenTrashBin?.Invoke();
         }
 
         private static Uri serverUrl()
@@ -373,9 +381,6 @@ namespace ToDo_App.UI.Views
                             Guid restoredNoteId = selectedTrashNoteId;
                             changes.Send(board => board.RestoreNote(restoredNoteId, columnId), columnId);
                             selectedTrashNoteId = Guid.Empty;
-
-                            RefreshTrashBin(listPanel, confirmationText, trashListView, restorePanel,
-                                            restoreHeading, restoreColumnButtons, confirmationPanel);
 
                             restorePanel.Visibility = Visibility.Collapsed;
                             trashListView.Visibility = Visibility.Visible;
@@ -534,8 +539,6 @@ namespace ToDo_App.UI.Views
                     changes.Send(board => board.DeleteNote(deletedNoteId));
                     selectedTrashNoteId = Guid.Empty;   
                 }
-                RefreshTrashBin(listPanel, confirmationText,trashListView, restorePanel, 
-                                restoreHeading, restoreColumnButtons, confirmationPanel);
                 confirmationPanel.Visibility = Visibility.Collapsed;
                 trashListView.Visibility = Visibility.Visible;
             };
@@ -588,8 +591,10 @@ namespace ToDo_App.UI.Views
             dialogContent.Children.Add(restorePanel);
             dialogContent.Children.Add(confirmationPanel);
 
-            RefreshTrashBin(listPanel, confirmationText,trashListView, restorePanel, 
-                            restoreHeading, restoreColumnButtons, confirmationPanel);
+            refreshOpenTrashBin = () =>
+                RefreshTrashBin(listPanel, confirmationText, trashListView,
+                    restorePanel, restoreHeading, restoreColumnButtons, confirmationPanel);
+            refreshOpenTrashBin();
 
             ContentDialog dialog = new ContentDialog {
                 Title = Res.ResourceManager.GetString("button/trash_bin", _currentCulture),
@@ -599,7 +604,8 @@ namespace ToDo_App.UI.Views
             };
             closeTrashBinButton.Click += (sender, e) => { dialog.Hide(); };
 
-            await dialog.ShowAsync();
+            try { await dialog.ShowAsync(); }
+            finally { refreshOpenTrashBin = null; }
         }
 
         private async void onImportBoardClicked(object sender, RoutedEventArgs e)
