@@ -336,7 +336,7 @@ public partial class MainPage
 
     private void onAttachmentOnPcClicked(ToDoNote note)
     {
-        errorDialog = (Strings["error/failed_to_open_attached_file"], Strings.Format("error/attachment_only_on_pc", note.File?.Name ?? ""));
+        errorDialog = (Strings["error/failed_to_open_attached_file"], Strings.Format("error/attachment_not_on_server", note.File?.Name ?? "..."));
     }
 
     private void onRemoveAttachmentClicked(ToDoNote note)

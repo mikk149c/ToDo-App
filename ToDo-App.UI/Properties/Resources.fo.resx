@@ -281,8 +281,8 @@
     <data name="button/font_tooltip" xml:space="preserve">
         <value>Stavsnið</value>
     </data>
-    <data name="error/attachment_only_on_pc" xml:space="preserve">
-        <value>"{0}" var fest í Windows-appina og liggur í telduni, tessvegna kan hon ikki áppnast úr kaganum.</value>
+    <data name="error/attachment_not_on_server" xml:space="preserve">
+        <value>"{0}" er ikki atkomandi, tí at viðfestingin hendi uttan samband við hesum abætaranum.</value>
     </data>
     <data name="error/failed_to_connect" xml:space="preserve">
         <value>Kundi ikki sambinda við ambætaranum á {0}</value>

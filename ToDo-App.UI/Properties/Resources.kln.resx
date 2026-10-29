@@ -281,11 +281,11 @@
     <data name="button/font_tooltip" xml:space="preserve">
         <value>ngutlh tu'qom</value>
     </data>
-    <data name="error/attachment_only_on_pc" xml:space="preserve">
-        <value>«{0}» vevmeH wInDoS nIqHom lo'lu'pu' 'ej De'wI'Daq 'oH, vaj DapoSmoHmeH weQmoQnaQ nIqHom Dalo'laHbe'.</value>
+    <data name="error/attachment_not_on_server" xml:space="preserve">
+        <value>lInHa'taHvIS «{0}» vevlu'mo' Dalo'laHbe'.</value>
     </data>
     <data name="error/failed_to_connect" xml:space="preserve">
-        <value>lInlaHbe' {0} turwI'</value>
+        <value>lInlaHbe' {0} turwI'.</value>
     </data>
     <data name="dialog/delete_permanent" xml:space="preserve">
         <value>yIQaw'</value>
