@@ -23,6 +23,7 @@ public abstract class BoardController : ITodoBoard
     public event EventHandler? BoardChanged;
     public event EventHandler? ColumnOrderChanged;
     public event EventHandler? TagChanged;
+    public event EventHandler? TrashBinChanged;
     private void onColumnCreated(ColumnCreatedEventArgs e)
     {
         ColumnCreated?.Invoke(this, e);
@@ -54,6 +55,10 @@ public abstract class BoardController : ITodoBoard
     private void onTagChanged(TagChangedEventArgs e)
     {
         TagChanged?.Invoke(this, e);
+    }
+    private void onTrashBinChanged()
+    {
+        TrashBinChanged?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>The board itself, for a child to save or send.</summary>
@@ -137,8 +142,12 @@ public abstract class BoardController : ITodoBoard
             _board.MoveAllNotes(columnId, targetColumnId);
             onColumnContentChanged(new ColumnContentChangedEventArgs(targetColumnId, GetNotesInColumn(targetColumnId)));
         }
+        else
+        {
+            _board.AddColumnNotesToTrashBin(columnId);
+            onTrashBinChanged();
+        }
 
-        _board.AddColumnNotesToTrashBin(columnId);
         _board.RemoveColumn(columnId);
         onColumnRemoved(new ColumnRemovedEventArgs(columnId));
         onBoardChanged(new BoardChangedEventArgs(_board));
@@ -260,12 +269,14 @@ public abstract class BoardController : ITodoBoard
         _board.RemoveNote(noteId);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
+        onTrashBinChanged();
     }
 
     /// <summary>Deletes a note in the trash for good.</summary>
     public virtual void DeleteNote(Guid noteId)
     {
         _board.RemoveNoteFromTrashBin(noteId);
+        onTrashBinChanged();
     }
 
     public virtual void RestoreNote(Guid noteId, Guid columnId)
@@ -273,11 +284,13 @@ public abstract class BoardController : ITodoBoard
         _board.RestoreNoteFromTrashBin(noteId, columnId);
         onColumnContentChanged(new ColumnContentChangedEventArgs(columnId, GetNotesInColumn(columnId)));
         onBoardChanged(new BoardChangedEventArgs(_board));
+        onTrashBinChanged();
     }
 
     public virtual void EmptyTrash()
     {
         _board.EmptyTrashBin();
+        onTrashBinChanged();
     }
 
     public List<ToDoNote> GetTrashBinNotes() { return _board.TrashBin.Notes; }
