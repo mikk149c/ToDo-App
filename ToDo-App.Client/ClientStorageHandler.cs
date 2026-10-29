@@ -21,31 +21,38 @@ public class ClientStorageHandler : IStorageHandler
 
     public async Task<FileReference> SaveAsync(Stream stream, string fileName)
     {
-        using (_httpClient)
+        using (var formData = new MultipartFormDataContent())
         {
-            using (var formData = new MultipartFormDataContent())
+            formData.Add(new StringContent(fileName), "name");
+            formData.Add(new StreamContent(stream), "file", fileName);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, UploadPath)
             {
-                formData.Add(new StringContent(fileName), "name");
-                formData.Add(new StreamContent(stream), "file", fileName);
+                Content = formData
+            };
+            var response = await _httpClient.SendAsync(request);
 
-                var request = new HttpRequestMessage(HttpMethod.Post, UploadPath)
-                {
-                    Content = formData
-                };
-                var response = await _httpClient.SendAsync(request);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    var reference = JsonSerializer.Deserialize<FileReference>(json, serializerOptions);
-                    return reference;
-                }
-                else
-                {
-                    throw new Exception(response.ToString());
-                }
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var reference = JsonSerializer.Deserialize<FileReference>(json, serializerOptions);
+                return reference;
+            }
+            else
+            {
+                throw new Exception(response.ToString());
             }
         }
+    }
+
+    public AttachedFile? GetFile(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Delete(AttachedFile file)
+    {
+        throw new NotImplementedException();
     }
 
     public bool IsStored(string? path)

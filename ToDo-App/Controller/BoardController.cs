@@ -216,6 +216,10 @@ public abstract class BoardController : ITodoBoard
     /// <summary>Removes a note's file.</summary>
     public virtual void DeleteNoteFile(Guid noteId)
     {
+        var file = _board.GetNoteFile(noteId);
+        if (file != null)
+            _storageHandler.Delete(file);
+        
         _board.SetNoteFile(noteId, null);
         notifyNoteChanged(noteId);
     }

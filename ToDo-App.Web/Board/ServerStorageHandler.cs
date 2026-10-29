@@ -38,6 +38,24 @@ public class ServerStorageHandler(BoardStorageOptions options) : IStorageHandler
         return uploadedFileReference;
     }
 
+    public AttachedFile? GetFile(Guid id)
+    {
+        var folder = Path.Combine(root, id.ToString());
+        
+        if (!Directory.Exists(folder))
+            return null;
+
+        var files = Directory.EnumerateFiles(folder);
+
+        return files.Select(file => new AttachedFile(id, file, Path.Combine(folder, file))).FirstOrDefault();
+    }
+
+    public void Delete(AttachedFile file)
+    {
+        var folder = Path.Combine(root, file.Guid.ToString());
+        Directory.Delete(folder, true);
+    }
+
     /// <summary>
     /// True when the path is a file uploaded through the browser. Other paths, such as attachments added in the
     /// Windows app, point somewhere on a PC and are never served, whatever an imported board says.

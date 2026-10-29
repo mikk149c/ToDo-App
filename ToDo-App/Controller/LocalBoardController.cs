@@ -10,15 +10,27 @@ namespace ToDo_App.Controller;
 public class LocalBoardController(IStorageHandler? storageHandler = null) : BoardController(storageHandler ?? new LocalStorageHandler());
 
 
-public class LocalStorageHandler() : IStorageHandler
+public class LocalStorageHandler : IStorageHandler
 {
     public Task<FileReference> SaveAsync(Stream stream, string fileName)
     {
-        throw new NotImplementedException();
+        // Don't save local files
+        return null!;
+    }
+
+    public AttachedFile? GetFile(Guid id)
+    {
+        // Only used on server
+        return null;
+    }
+
+    public void Delete(AttachedFile file)
+    {
+        // Don't delete local files
     }
 
     public bool IsStored(string? path)
     {
-        throw new NotImplementedException();
+        return false;
     }
 }

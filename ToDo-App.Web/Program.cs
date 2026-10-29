@@ -109,14 +109,16 @@ app.MapPost("/upload-file", async ([FromForm] string name, [FromForm] IFormFile 
 }).DisableAntiforgery();
 
 // Opens a todo's attachment
-app.MapGet("/attachments/{noteId:guid}", (Guid noteId, BoardHost host, HttpContext context) =>
+app.MapGet("/attachments/{fileId:guid}", (Guid fileId, BoardHost host, HttpContext context) =>
 {
-    AttachedFile? file = host.FindNote(noteId)?.File;
+    var storageHandler = app.Services.GetService<BoardHost>().StorageHandler;
+    
+    var file = storageHandler.GetFile(fileId);
     if (file == null || !host.Board.IsFileStored(file.FullPath))
     {
         return Results.NotFound();
     }
-
+    
     if (!new FileExtensionContentTypeProvider().TryGetContentType(file.Name, out string? contentType))
     {
         contentType = "application/octet-stream";
