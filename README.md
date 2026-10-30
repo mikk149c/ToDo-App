@@ -49,7 +49,7 @@ Then open http://localhost:5133.
 
 - **One board per server.** The board is saved as `App_Data/board.json` in the project folder. To keep it somewhere else, set `Board:DataDirectory` in `appsettings.json` or the environment variable `Board__DataDirectory`. The file has the same format as the Windows app's `board.json`, so you can copy a board between the apps, or use Export and Import.
 - **Every open tab shows the same board** and updates when another tab changes it.
-- **Attachments** added in the browser are uploaded to `App_Data/attachments`. Attachments added in the Windows app point to a file on that PC, so the web app shows them but can't open them.
+- **Attachments** added in the browser are uploaded to `App_Data/attachments`, which both the web and desktop app supports.
 - **Theme, accent colour and language** are remembered in the browser, not on the server.
 - **Translations** are the `.resx` files in `ToDo-App.UI/Properties`. The web app links them, so a string is added or translated once for both apps.
 - It's meant for a single user on your own machine or network. There's no sign-in, so don't put it on the internet as it is.
