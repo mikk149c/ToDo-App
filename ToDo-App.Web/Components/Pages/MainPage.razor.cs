@@ -88,6 +88,7 @@ public partial class MainPage
         Board.ColumnContentChanged += onBoardEvent;
         Board.ColumnOrderChanged += onBoardEvent;
         Board.TagChanged += onBoardEvent;
+        Board.TrashBinChanged += onBoardEvent;
         Host.SaveCompleted += onBoardEvent;
         Strings.Changed += onBoardEvent;
     }
@@ -131,6 +132,7 @@ public partial class MainPage
         Board.ColumnContentChanged -= onBoardEvent;
         Board.ColumnOrderChanged -= onBoardEvent;
         Board.TagChanged -= onBoardEvent;
+        Board.TrashBinChanged -= onBoardEvent;
         Host.SaveCompleted -= onBoardEvent;
         Strings.Changed -= onBoardEvent;
     }
