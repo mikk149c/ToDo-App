@@ -103,3 +103,16 @@ Every pull request to `main` runs the **Tests and coverage** check (`.github/wor
 - **Tooling:** coverlet's `XPlat Code Coverage` collector writes a Cobertura report. `Check-Coverage.ps1` summarises it and enforces the threshold. No external coverage service is used.
 
 Tests for known bugs are marked `[Explicit]` and `[Category("KnownBug")]`, so they don't run by default. Run them with `--filter "Category=KnownBug"`. They're expected to fail until the bug is fixed.
+
+## Documentation
+
+The project's architecture is described in these UML diagrams:
+
+- [Component diagram](docs/ComponentDiagram.md): the projects and how they depend on each other
+- [Core class diagram](docs/CoreClassDiagram.md): the board, columns, notes, tags and controllers
+- [Remote mode class diagram](docs/RemoteClassDiagram.md): the client, server and change broadcasting
+- [Sequence diagram](docs/SequenceDiagramMoveNote.md): what happens when a change is made in Remote mode by moving a note
+
+Additionally, our plan, workflow and design choices are described in this document:
+
+-[Project Plan](docs/Projektplan,%20forløb%20og%20andre%20overvejelser%20til%20software%20arkitekturt.docx)
